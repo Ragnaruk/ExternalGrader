@@ -1,6 +1,6 @@
-from src.grade_answer import grade_answer
-
 import pika
+
+from src.grade_answer import grade_answer
 
 
 def receive_messages(host: str,
@@ -8,6 +8,7 @@ def receive_messages(host: str,
                      queue_name: str) -> None:
     """
     Start consuming messages from RabbitMQ broker.
+
     :param host: string with the url of the broker.
     :param port: integer with the port of the broker.
     :param queue_name: string with a name of the queue.

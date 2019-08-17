@@ -9,6 +9,7 @@ def send_message(host: str,
                  message: str) -> None:
     """
     Send a message to a RabbitMQ broker.
+
     :param host: string with the url of the broker.
     :param port: integer with the port of the broker.
     :param queue_name: string with a name of the queue.
