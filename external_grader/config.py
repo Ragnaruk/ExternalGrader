@@ -1,0 +1,7 @@
+HOME_PATH = "/home/box/"
+CHECK_FILES_PATH = "/root/"
+
+RABBITMQ_HOST = "localhost"
+RABBITMQ_PORT = 32769
+RABBITMQ_CONSUMPTION_QUEUE = "14"
+RABBITMQ_CALLBACK_QUEUE = "student_grades"

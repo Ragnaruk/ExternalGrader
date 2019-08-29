@@ -1,7 +1,5 @@
 import pika
 
-from src.grade_answer import grade_answer
-
 
 def receive_messages(host: str,
                      port: int,
@@ -26,7 +24,16 @@ def receive_messages(host: str,
     # Start receiving messages
     channel.basic_consume(queue=queue_name, on_message_callback=grade_answer)
 
-    channel.start_consuming()
+    try:
+        channel.start_consuming()
+    except KeyboardInterrupt:
+        channel.stop_consuming()
+        connection.close()
+
+
+def grade_answer(current_channel, basic_deliver, properties, body) -> None:
+    print(body)
+    current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
 
 
 if __name__ == '__main__':
