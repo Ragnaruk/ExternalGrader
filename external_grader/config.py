@@ -1,5 +1,5 @@
 HOME_PATH = "/home/box/"
-CHECK_FILES_PATH = "/root/"
+VERIFICATION_FILES_PATH = "/root/"
 
 RABBITMQ_HOST = "localhost"
 RABBITMQ_PORT = 32769

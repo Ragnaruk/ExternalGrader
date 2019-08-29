@@ -2,7 +2,7 @@
 import re
 import random
 
-from external_grader.config import HOME_PATH, CHECK_FILES_PATH
+from external_grader.config import HOME_PATH, VERIFICATION_FILES_PATH
 
 
 ################ Функция, которая запускается снаружи ################
@@ -76,13 +76,13 @@ def check_duration(s, ss):
 
 def compare_frames_in_cropped_video(s):
     s.run(
-        'ffmpeg -i ' + HOME_PATH + 'cropped.mp4 -y ' + CHECK_FILES_PATH + 'frame.png')
+        'ffmpeg -i ' + HOME_PATH + 'cropped.mp4 -y ' + VERIFICATION_FILES_PATH + 'frame.png')
     s.run(
-        'ffmpeg -i ' + CHECK_FILES_PATH + 'cropped.mp4 -y ' + CHECK_FILES_PATH + 'frame_origin.png')
+        'ffmpeg -i ' + VERIFICATION_FILES_PATH + 'cropped.mp4 -y ' + VERIFICATION_FILES_PATH + 'frame_origin.png')
     result = s.run(
-        "compare " + CHECK_FILES_PATH + "frame.png " + CHECK_FILES_PATH + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:")
-    s.run('rm ' + CHECK_FILES_PATH + 'frame.png')
-    s.run('rm ' + CHECK_FILES_PATH + 'frame_origin.png')
+        "compare " + VERIFICATION_FILES_PATH + "frame.png " + VERIFICATION_FILES_PATH + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:")
+    s.run('rm ' + VERIFICATION_FILES_PATH + 'frame.png')
+    s.run('rm ' + VERIFICATION_FILES_PATH + 'frame_origin.png')
     assert (result == 'gray(0,0,0)') or (result == 'black') or (
                 result == 'gray(0)'), "Кажется, вы отрезали видеофрагмент не с той секунды, с какой указано в вашем командном файле."
 
@@ -92,8 +92,8 @@ def check_cropped_video(s, ss):
     assert ffmpeg_output.find(
         'Duration: 00:00:10.00') != -1, "Обрезанное видео имеет неверную длину"  # проверили длину отрезанного видео
     s.run('ffmpeg -i ' + HOME_PATH + 'input_video.mp4 -ss ' + str(
-        ss) + ' -t 10 -c copy -y ' + CHECK_FILES_PATH + 'cropped.mp4')  # создаем видео с границами из команды
-    ffmpeg_origin = s.run('ffmpeg -i ' + CHECK_FILES_PATH + 'cropped.mp4')
+        ss) + ' -t 10 -c copy -y ' + VERIFICATION_FILES_PATH + 'cropped.mp4')  # создаем видео с границами из команды
+    ffmpeg_origin = s.run('ffmpeg -i ' + VERIFICATION_FILES_PATH + 'cropped.mp4')
     start = ffmpeg_output.find('Stream #0:0')
     end = ffmpeg_output.rfind(',', 0, ffmpeg_output.find('kb/s', start))
 
@@ -131,13 +131,13 @@ def test_plate(s):
         assert re.compile(param[0]).search(svg) != None, param[1]
 
     s.run(
-        "convert -background none " + CHECK_FILES_PATH + "plate1.svg -resize 50% -depth 8 " + CHECK_FILES_PATH + "plate1.png")
+        "convert -background none " + VERIFICATION_FILES_PATH + "plate1.svg -resize 50% -depth 8 " + VERIFICATION_FILES_PATH + "plate1.png")
     s.run(
-        "convert -background none " + CHECK_FILES_PATH + "plate2.svg -resize 50% -depth 8 " + CHECK_FILES_PATH + "plate2.png")
+        "convert -background none " + VERIFICATION_FILES_PATH + "plate2.svg -resize 50% -depth 8 " + VERIFICATION_FILES_PATH + "plate2.png")
     s.run(
-        "convert -background none " + CHECK_FILES_PATH + "plate1.svg -depth 8 -resize 50% " + CHECK_FILES_PATH + "plate3.png")
+        "convert -background none " + VERIFICATION_FILES_PATH + "plate1.svg -depth 8 -resize 50% " + VERIFICATION_FILES_PATH + "plate3.png")
     s.run(
-        "convert -background none " + CHECK_FILES_PATH + "plate2.svg -depth 8 -resize 50% " + CHECK_FILES_PATH + "plate4.png")
+        "convert -background none " + VERIFICATION_FILES_PATH + "plate2.svg -depth 8 -resize 50% " + VERIFICATION_FILES_PATH + "plate4.png")
 
     res1 = s.run(
         "compare /root/plate1.png /home/box/plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:")
@@ -173,13 +173,13 @@ def compare_frames_in_plated_video(s):
               random.random() + 9]:  # проверяем плашку на (0,1), 1, (1,9), 9, (9, 10)
         t = "{0:.2f} ".format(d)
         s.run(
-            'ffmpeg -i ' + HOME_PATH + 'plated.mp4 -ss ' + t + ' -y ' + CHECK_FILES_PATH + 'frame.png')
+            'ffmpeg -i ' + HOME_PATH + 'plated.mp4 -ss ' + t + ' -y ' + VERIFICATION_FILES_PATH + 'frame.png')
         s.run(
-            'ffmpeg -i ' + CHECK_FILES_PATH + 'plated.mp4 -ss ' + t + ' -y ' + CHECK_FILES_PATH + 'frame_origin.png')
+            'ffmpeg -i ' + VERIFICATION_FILES_PATH + 'plated.mp4 -ss ' + t + ' -y ' + VERIFICATION_FILES_PATH + 'frame_origin.png')
         result = s.run(
-            "compare " + CHECK_FILES_PATH + "frame.png " + CHECK_FILES_PATH + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:")
-        s.run('rm ' + CHECK_FILES_PATH + 'frame.png')
-        s.run('rm ' + CHECK_FILES_PATH + 'frame_origin.png')
+            "compare " + VERIFICATION_FILES_PATH + "frame.png " + VERIFICATION_FILES_PATH + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:")
+        s.run('rm ' + VERIFICATION_FILES_PATH + 'frame.png')
+        s.run('rm ' + VERIFICATION_FILES_PATH + 'frame_origin.png')
         assert (result == 'gray(0,0,0)') or (result == 'black') or (
                     result == 'gray(0)'), 'Судя по видео, плашка наложена не в том промежутке, в котором ожидается'
 
@@ -188,7 +188,7 @@ def check_plated_video(s):
     ffmpeg_output = s.run('ffmpeg -i ' + HOME_PATH + 'plated.mp4')
     assert ffmpeg_output.find(
         'Duration: 00:00:10.00') != -1, "Видео с плашкой имеет неверную длину"  # проверили длину отрезанного видео
-    ffmpeg_origin = s.run('ffmpeg -i ' + CHECK_FILES_PATH + 'plated.mp4')
+    ffmpeg_origin = s.run('ffmpeg -i ' + VERIFICATION_FILES_PATH + 'plated.mp4')
     start = ffmpeg_output.find('Stream #0:0')
     end = ffmpeg_output.rfind(',', 0, ffmpeg_output.find('kb/s', start))
 
@@ -206,7 +206,7 @@ def test_plated_video(s):
     assert s.run(
         "cat /home/box/commands.sh |grep -E 'ffmpeg .+overlay *= *.*((x *= *)?0 *:(.*:)? ?(y *= *)?446|y *= *446 *:(.*:)? *x *= *0)' -o") != '', "Проверьте координаты в команде наложения плашки"
     s.run(
-        'ffmpeg -i ' + CHECK_FILES_PATH + 'cropped.mp4 -i ' + CHECK_FILES_PATH + "plate.png -filter_complex overlay=0:446:enable='between(t\,1\,9)' -y " + CHECK_FILES_PATH + 'plated.mp4')  # создаем эталонное видео с наложенной плашкой
+        'ffmpeg -i ' + VERIFICATION_FILES_PATH + 'cropped.mp4 -i ' + VERIFICATION_FILES_PATH + "plate.png -filter_complex overlay=0:446:enable='between(t\,1\,9)' -y " + VERIFICATION_FILES_PATH + 'plated.mp4')  # создаем эталонное видео с наложенной плашкой
     check_plated_video(s)
 
 
@@ -222,7 +222,7 @@ def get_text_and_fontsize(s):
     end = match.end()
     end -= 1 if cmd[
                     end - 1] == ':' else 0  # если последним было двоеточие, сдвигаемся на предыдущий символ
-    s.run('echo ' + cmd[start:end] + '>' + CHECK_FILES_PATH + 'text.txt')
+    s.run('echo ' + cmd[start:end] + '>' + VERIFICATION_FILES_PATH + 'text.txt')
     fontsize = s.run(
         "cat /home/box/commands.sh |grep -E 'fontsize *= *[0-9]{1,2}' -o")
     assert fontsize != '', "Ошибка в команде наложения текста"
@@ -236,13 +236,13 @@ def compare_frames_in_result_video(s):
               random.random() + 9]:  # проверяем текст на (0,2), 2, (2,9), 9, (9, 10)
         t = "{0:.2f} ".format(d)
         s.run(
-            'ffmpeg -i ' + HOME_PATH + 'result.mp4 -ss ' + t + ' -y ' + CHECK_FILES_PATH + 'frame.png')
+            'ffmpeg -i ' + HOME_PATH + 'result.mp4 -ss ' + t + ' -y ' + VERIFICATION_FILES_PATH + 'frame.png')
         s.run(
-            'ffmpeg -i ' + CHECK_FILES_PATH + 'result.mp4 -ss ' + t + ' -y ' + CHECK_FILES_PATH + 'frame_origin.png')
+            'ffmpeg -i ' + VERIFICATION_FILES_PATH + 'result.mp4 -ss ' + t + ' -y ' + VERIFICATION_FILES_PATH + 'frame_origin.png')
         result = s.run(
-            "compare " + CHECK_FILES_PATH + "frame.png " + CHECK_FILES_PATH + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:")
-        s.run('rm ' + CHECK_FILES_PATH + 'frame.png')
-        s.run('rm ' + CHECK_FILES_PATH + 'frame_origin.png')
+            "compare " + VERIFICATION_FILES_PATH + "frame.png " + VERIFICATION_FILES_PATH + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:")
+        s.run('rm ' + VERIFICATION_FILES_PATH + 'frame.png')
+        s.run('rm ' + VERIFICATION_FILES_PATH + 'frame_origin.png')
         assert (result == 'gray(0,0,0)') or (result == 'black') or (
                     result == 'gray(0)'), 'Судя по видео, текст наложен не в том промежутке, в котором ожидается. Или вы наложили не тот текст.'
 
@@ -251,7 +251,7 @@ def check_result_video(s):
     ffmpeg_output = s.run('ffmpeg -i ' + HOME_PATH + 'result.mp4')
     assert ffmpeg_output.find(
         'Duration: 00:00:10.00') != -1, "Итоговое видео имеет неверную длину"  # проверили длину отрезанного видео
-    ffmpeg_origin = s.run('ffmpeg -i ' + CHECK_FILES_PATH + 'result.mp4')
+    ffmpeg_origin = s.run('ffmpeg -i ' + VERIFICATION_FILES_PATH + 'result.mp4')
     start = ffmpeg_output.find('Stream #0:0')
     end = ffmpeg_output.rfind(',', 0, ffmpeg_output.find('kb/s', start))
 
@@ -269,5 +269,5 @@ def test_final_video(s):
     fontsize = get_text_and_fontsize(
         s)  # получаем текст для наложения и размер шрифта
     assert s.run(
-        'ffmpeg -i ' + CHECK_FILES_PATH + 'plated.mp4 -filter_complex drawtext=x=200:y=476:fontfile=Arial.ttf:fontsize=' + fontsize + ':textfile=' + CHECK_FILES_PATH + 'text.txt:enable=\'between(t\,2\,9)\' -y ' + CHECK_FILES_PATH + 'result.mp4').succeeded, "Пожалуйста, выберите текст для наложения без сложных комбинаций кавычек"
+        'ffmpeg -i ' + VERIFICATION_FILES_PATH + 'plated.mp4 -filter_complex drawtext=x=200:y=476:fontfile=Arial.ttf:fontsize=' + fontsize + ':textfile=' + VERIFICATION_FILES_PATH + 'text.txt:enable=\'between(t\,2\,9)\' -y ' + VERIFICATION_FILES_PATH + 'result.mp4').succeeded, "Пожалуйста, выберите текст для наложения без сложных комбинаций кавычек"
     check_result_video(s)
