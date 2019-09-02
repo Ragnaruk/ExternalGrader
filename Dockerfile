@@ -9,4 +9,6 @@ RUN \
 
 ENV PYTHONPATH /ExternalGrader/
 
+COPY ./external_grader/config.py /ExternalGrader/external_grader/config.py
+
 CMD [ "python", "./ExternalGrader/external_grader/main.py" ]
