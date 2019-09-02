@@ -1,7 +1,7 @@
 import pika
 import logging
 
-from config import RABBITMQ_PORT, RABBITMQ_HOST, RABBITMQ_CALLBACK_QUEUE,\
+from external_grader.config import RABBITMQ_PORT, RABBITMQ_HOST, RABBITMQ_CALLBACK_QUEUE,\
     RABBITMQ_CONSUMPTION_QUEUE
 
 

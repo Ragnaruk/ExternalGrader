@@ -3,8 +3,8 @@ from time import sleep
 
 import pika.exceptions
 
-from receive_messages import receive_messages
-from config import RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CONSUMPTION_QUEUE
+from external_grader.receive_messages import receive_messages
+from external_grader.config import RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CONSUMPTION_QUEUE
 
 
 def main() -> None:
