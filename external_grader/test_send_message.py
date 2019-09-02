@@ -4,6 +4,7 @@ import logging
 from external_grader.config import RABBITMQ_PORT, RABBITMQ_HOST, RABBITMQ_CALLBACK_QUEUE,\
     RABBITMQ_CONSUMPTION_QUEUE
 
+
 def send_message(host: str,
                  port: int,
                  queue_name: str,
