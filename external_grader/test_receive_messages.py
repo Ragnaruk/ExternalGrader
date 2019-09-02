@@ -1,5 +1,7 @@
 import pika
 
+from external_grader.config import RABBITMQ_PORT, RABBITMQ_HOST, RABBITMQ_CALLBACK_QUEUE
+
 
 def receive_messages(host: str,
                      port: int,
@@ -37,4 +39,4 @@ def grade_answer(current_channel, basic_deliver, properties, body) -> None:
 
 
 if __name__ == '__main__':
-    receive_messages("localhost", 32769, "student_grades")
+    receive_messages(RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CALLBACK_QUEUE)
