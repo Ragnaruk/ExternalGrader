@@ -1,6 +1,6 @@
 import pika
 
-from external_grader.grade_answer import grade_answer
+from grade_answer import grade_answer
 
 
 def receive_messages(host: str,
