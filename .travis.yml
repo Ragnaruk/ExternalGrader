@@ -12,4 +12,4 @@ before_install:
   - docker ps -a
 
 script:
-  - find ./grade_scripts/ -name *.py -exec python -m doctest -v "{}" \;
+  - find ./grade_scripts/ -type f -iname "*.py" -exec python -m doctest "{}" \; | grep -q "."; test $? -eq 1
