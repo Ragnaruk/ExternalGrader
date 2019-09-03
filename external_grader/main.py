@@ -10,7 +10,6 @@ from external_grader.config import RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CONSUM
 def main() -> None:
     """
     Initialize logger and start listening to messages from broker.
-    https://edx.readthedocs.io/projects/edx-partner-course-staff/en/latest/exercises_tools/external_graders.html#olx-definition
     """
     logging.basicConfig(
         filename="grader.log",

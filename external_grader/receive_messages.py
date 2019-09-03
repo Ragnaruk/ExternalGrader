@@ -33,6 +33,5 @@ def receive_messages(host: str,
         connection.close()
 
 
-
 if __name__ == '__main__':
     receive_messages("localhost", 32769, "student_grades")
