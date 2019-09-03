@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "3.7"
+
+services:
+  - docker
+
+before_install:
+  - docker build -t ragnaruk/external_grader .
+  - docker run -idt --name external_grader ragnaruk/external_grader
+  - docker ps -a
+
+script:
+  - find ./grade_scripts/ -name *.py -exec python -m doctest -v "{}" \;
