@@ -35,14 +35,16 @@ def grade_answer(current_channel: channel.Channel,
         }
 
         try:
-            grader = importlib.import_module("grade_scripts."
-                                             + str(message["xqueue_header"]["submission_id"])
-                                             + ".grade")
-            grader.main(subprocess, message["xqueue_body"]["student_response"])
+            grade_script = importlib.import_module("grade_scripts."
+                                                   + str(message["xqueue_header"]["submission_id"])
+                                                   + ".grade")
+            msg: str = grade_script.main(subprocess, message["xqueue_body"]["student_response"])
 
             response["xqueue_body"]["correct"] = True
+            response["xqueue_body"]["msg"] = msg if msg else ""
         except AssertionError as exception:
             logging.getLogger("ExternalGrader").info("Grading failed with message: %s", exception)
+
             response["xqueue_body"]["msg"] = str(exception)
 
         logging.getLogger("ExternalGrader").info("Response: %s", response)
