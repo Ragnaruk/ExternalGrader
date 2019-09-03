@@ -1,7 +1,6 @@
 import json
 import logging
 import importlib
-import subprocess
 
 from pika import channel, spec, BasicProperties
 
@@ -36,11 +35,12 @@ def grade_answer(current_channel: channel.Channel,
 
         try:
             grade_script = importlib.import_module("grade_scripts."
-                                                   + str(message["xqueue_header"]["submission_id"])
+                                                   + str(message["xqueue_body"]["grader_payload"])
                                                    + ".grade")
-            msg: str = grade_script.main(subprocess, message["xqueue_body"]["student_response"])
+            score, msg = grade_script.main(message["xqueue_body"]["student_response"])
 
             response["xqueue_body"]["correct"] = True
+            response["xqueue_body"]["score"] = score if score else 0
             response["xqueue_body"]["msg"] = msg if msg else ""
         except AssertionError as exception:
             logging.getLogger("ExternalGrader").info("Grading failed with message: %s", exception)

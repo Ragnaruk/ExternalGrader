@@ -1,12 +1,15 @@
 # -*- coding: UTF-8 -*-
 import re
 import random
+import subprocess
 
 from external_grader.config import HOME_PATH, VERIFICATION_FILES_PATH
 
 
 ################ Функция, которая запускается снаружи ################
-def main(s, student_submission):
+def main(student_submission):
+    s = subprocess
+
     prepare_grader(s, student_submission)
 
     test_commands_file(s)
