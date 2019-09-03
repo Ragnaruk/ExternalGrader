@@ -40,6 +40,9 @@ def main(answer):
     except AssertionError as exception:
         raise exception
     except Exception as exception:
+        import logging
+        logging.getLogger("ExternalGrader").error(exception)
+
         raise AssertionError("Неизвестная ошибка. Обратитесь к составителю скрипта проверки.")
 
 
