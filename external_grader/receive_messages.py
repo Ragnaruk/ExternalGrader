@@ -31,7 +31,3 @@ def receive_messages(host: str,
     except KeyboardInterrupt:
         channel.stop_consuming()
         connection.close()
-
-
-if __name__ == '__main__':
-    receive_messages("localhost", 32769, "student_grades")
