@@ -1,4 +1,6 @@
 # External Grader
+![](https://travis-ci.org/Ragnaruk/ExternalGrader.svg?branch=master)
+
 Внешний грейдер для LMS.
 
 ## Формат сообщений
