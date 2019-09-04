@@ -39,7 +39,7 @@ def prepare_grader(s, student_submission):
 ################ Провеяем файл с командами ################
 def test_commands_file(s):
     assert s.run(
-        'test -e ' + HOME_PATH + 'commands.sh', shell=True).succeeded, "Не найден командный файл 'commands.sh'"
+        'test -e ' + HOME_PATH + 'commands.sh', shell=True).returncode == 0, "Не найден командный файл 'commands.sh'"
 
 
 ################ Проверяем обрезанное видео ################
@@ -110,7 +110,7 @@ def check_cropped_video(s, ss):
 
 def test_cropped_video(s):
     assert s.run(
-        'test -e ' + HOME_PATH + 'cropped.mp4', shell=True).succeeded, "Не найден файл с обрезанным видео"
+        'test -e ' + HOME_PATH + 'cropped.mp4', shell=True).returncode == 0, "Не найден файл с обрезанным видео"
     ss = get_starttime(s)
     check_duration(s, ss)
     check_cropped_video(s, ss)
@@ -119,7 +119,7 @@ def test_cropped_video(s):
 ################ Проверяем плашку ################
 def test_plate(s):
     assert s.run(
-        'test -e ' + HOME_PATH + 'plate.svg', shell=True).succeeded, "Не найден svg-файл с кодом плашки"
+        'test -e ' + HOME_PATH + 'plate.svg', shell=True).returncode == 0, "Не найден svg-файл с кодом плашки"
     svg = s.run('cat ' + HOME_PATH + 'plate.svg', shell=True)
     assert svg != '', "Ваш svg-файл пуст"
     checklist = [['<circle .*cx *= *[\'"]?359(px)?[\'"]?',
@@ -205,7 +205,7 @@ def check_plated_video(s):
 
 def test_plated_video(s):
     assert s.run(
-        'test -e ' + HOME_PATH + 'plated.mp4', shell=True).succeeded, "Не найден видеофайл 'plated.mp4'"
+        'test -e ' + HOME_PATH + 'plated.mp4', shell=True).returncode == 0, "Не найден видеофайл 'plated.mp4'"
     assert s.run(
         "cat /home/box/commands.sh |grep -E 'ffmpeg .+overlay *= *.*((x *= *)?0 *:(.*:)? ?(y *= *)?446|y *= *446 *:(.*:)? *x *= *0)' -o", shell=True) != '', "Проверьте координаты в команде наложения плашки"
     s.run(
@@ -268,9 +268,9 @@ def check_result_video(s):
 
 def test_final_video(s):
     assert s.run(
-        'test -e ' + HOME_PATH + 'result.mp4', shell=True).succeeded, "Мы не нашли итоговое видео"
+        'test -e ' + HOME_PATH + 'result.mp4', shell=True).returncode == 0, "Мы не нашли итоговое видео"
     fontsize = get_text_and_fontsize(
         s)  # получаем текст для наложения и размер шрифта
     assert s.run(
-        'ffmpeg -i ' + VERIFICATION_FILES_PATH + 'plated.mp4 -filter_complex drawtext=x=200:y=476:fontfile=Arial.ttf:fontsize=' + fontsize + ':textfile=' + VERIFICATION_FILES_PATH + 'text.txt:enable=\'between(t\,2\,9)\' -y ' + VERIFICATION_FILES_PATH + 'result.mp4', shell=True).succeeded, "Пожалуйста, выберите текст для наложения без сложных комбинаций кавычек"
+        'ffmpeg -i ' + VERIFICATION_FILES_PATH + 'plated.mp4 -filter_complex drawtext=x=200:y=476:fontfile=Arial.ttf:fontsize=' + fontsize + ':textfile=' + VERIFICATION_FILES_PATH + 'text.txt:enable=\'between(t\,2\,9)\' -y ' + VERIFICATION_FILES_PATH + 'result.mp4', shell=True).returncode == 0, "Пожалуйста, выберите текст для наложения без сложных комбинаций кавычек"
     check_result_video(s)
