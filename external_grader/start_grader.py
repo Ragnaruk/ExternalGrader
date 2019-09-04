@@ -7,7 +7,7 @@ from external_grader.receive_messages import receive_messages
 from external_grader.config import RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CONSUMPTION_QUEUE
 
 
-def main() -> None:
+def start_grader() -> None:
     """
     Initialize logger and start listening to messages from broker.
     """
@@ -31,4 +31,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    start_grader()
