@@ -1,4 +1,4 @@
-HOME_PATH = "/home/box/"
+HOME_PATH = "/home/"
 VERIFICATION_FILES_PATH = "/root/"
 
 RABBITMQ_HOST = "localhost"
