@@ -58,7 +58,7 @@ def grade_answer(current_channel: channel.Channel,
             exchange="",
             routing_key=properties.reply_to,
             properties=BasicProperties(correlation_id=properties.correlation_id),
-            body=str(response))
+            body=json.dumps(response))
     except Exception as exception:
         logging.getLogger("ExternalGrader").error(exception)
 
