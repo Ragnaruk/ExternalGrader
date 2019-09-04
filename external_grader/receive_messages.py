@@ -14,7 +14,7 @@ def receive_messages(host: str,
     :param queue_name: string with a name of the queue.
     """
 
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host=host, port=port))
+    connection = pika.BlockingConnection(pika.ConnectionParameters(host=host, port=int(port)))
     channel = connection.channel()
 
     # Set durable=True to save messages between RabbitMQ restarts
