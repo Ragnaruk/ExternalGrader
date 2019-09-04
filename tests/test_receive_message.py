@@ -1,6 +1,6 @@
 import pika
 
-from external_grader.config import RABBITMQ_PORT, RABBITMQ_HOST, RABBITMQ_CALLBACK_QUEUE
+from external_grader.config import RABBITMQ_PORT, RABBITMQ_HOST, RABBITMQ_CONSUMPTION_QUEUE
 
 
 def receive_message(host: str,
@@ -19,4 +19,4 @@ def receive_message(host: str,
 
 
 if __name__ == '__main__':
-    receive_message(RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CALLBACK_QUEUE)
+    receive_message(RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CONSUMPTION_QUEUE)
