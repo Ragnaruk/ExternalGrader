@@ -37,7 +37,11 @@ def grade_answer(current_channel: channel.Channel,
             grade_script = importlib.import_module("grade_scripts."
                                                    + str(message["xqueue_body"]["grader_payload"])
                                                    + ".grade")
-            score, msg = grade_script.main(message["xqueue_body"]["student_response"])
+            if message["xqueue_files"]:
+                score, msg = grade_script.main(message["xqueue_body"]["student_response"],
+                                               message["xqueue_files"])
+            else:
+                score, msg = grade_script.main(message["xqueue_body"]["student_response"])
 
             response["xqueue_body"]["correct"] = True
             response["xqueue_body"]["score"] = score if score else 0

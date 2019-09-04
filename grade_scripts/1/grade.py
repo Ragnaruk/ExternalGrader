@@ -3,7 +3,7 @@
 """
 
 
-def main(answer):
+def main(answer, *args):
     """
     Тестовая проверочная функция.
     :param answer: ответ студента.

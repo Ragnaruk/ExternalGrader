@@ -7,7 +7,7 @@ from external_grader.config import HOME_PATH, VERIFICATION_FILES_PATH
 
 
 ################ Функция, которая запускается снаружи ################
-def main(student_submission):
+def main(student_submission, *args):
     s = subprocess
 
     prepare_grader(s, student_submission)
