@@ -8,7 +8,7 @@ services:
 
 before_install:
   - docker build -t ragnaruk/external_grader .
-  - docker run -idt --name external_grader ragnaruk/external_grader
+  - docker run -idt --name external_grader --network "host" ragnaruk/external_grader
   - docker ps -a
 
 script:
