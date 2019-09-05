@@ -3,6 +3,34 @@
 
 Внешний грейдер для LMS.
 
+## Установка
+
+### Docker
+
+```bash
+## Установка брокера сообщений RabbitMQ
+docker pull rabbitmq:3-management
+docker run -idt -p 5672:5672 -p 15672:15672 --name rabbitmq --hostname my-rabbit rabbitmq:3-management
+
+## Установка грейдера
+git clone https://github.com/Ragnaruk/ExternalGrader.git
+
+# Перед этим шагом можно изменить файл конфигураций /external_grader/config.py
+docker build -t external_grader .
+docker run -idt --name external_grader --network="host" external_grader
+```
+
+### Без Docker
+
+```bash
+## Установка грейдера
+git clone https://github.com/Ragnaruk/ExternalGrader.git
+pip install -r ./requirements.txt
+
+# Перед этим шагом можно изменить файл конфигураций /external_grader/config.py
+python ./external_grader/
+```
+
 ## Формат сообщений
 Грейдер получает и отправляет сообщения в формате EDX.
 
