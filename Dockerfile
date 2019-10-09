@@ -9,7 +9,7 @@ COPY . /ExternalGrader
 
 RUN \
     pip install --no-cache-dir -r /ExternalGrader/requirements.txt && \
-    ln -sf /dev/stdout /grader.log
+    ln -sf /dev/stdout /ExternalGrader/grader.log
 
 ENV PYTHONPATH /ExternalGrader/
 
