@@ -1,0 +1,11 @@
+version: '3'
+services:
+  external_grader:
+    build:
+      context: .
+    image: ragnaruk/external_grader:latest
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
