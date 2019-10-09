@@ -4,7 +4,8 @@ from time import sleep
 import pika.exceptions
 
 from external_grader.receive_messages import receive_messages
-from external_grader.config import RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CONSUMPTION_QUEUE
+from external_grader.config import RABBITMQ_HOST, RABBITMQ_PORT, RABBITMQ_CONSUMPTION_QUEUE, \
+    LOG_FILE_PATH
 
 
 def start_grader() -> None:
@@ -12,7 +13,7 @@ def start_grader() -> None:
     Initialize logger and start listening to messages from broker.
     """
     logging.basicConfig(
-        filename="grader.log",
+        filename=LOG_FILE_PATH,
         level=logging.INFO,
         filemode="w",
         format="%(asctime)s - %(levelname)s - %(name)s - %(message)s")

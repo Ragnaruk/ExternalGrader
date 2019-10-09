@@ -1,5 +1,8 @@
-HOME_PATH = "/home/"
-VERIFICATION_FILES_PATH = "/root/"
+from pathlib import Path
+
+HOME_PATH = Path("/home/")
+VERIFICATION_FILES_PATH = Path("/root/")
+LOG_FILE_PATH = Path(__file__).parent.parent / "grader.log"
 
 RABBITMQ_HOST = "localhost"
 RABBITMQ_PORT = 5672
