@@ -1,7 +1,4 @@
-language: python
-
-python:
-  - "3.8-dev"
+language: minimal
 
 services:
   - docker
@@ -13,4 +10,4 @@ install:
   - make compose
 
 script:
-  - make compose-test
+  - docker-compose exec grader /bin/sh -c "make test"

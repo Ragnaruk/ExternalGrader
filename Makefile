@@ -8,6 +8,7 @@ help:
 	@echo '    make test                  run tests                                                     '
 	@echo '    make update                reset changes in directory and pull the newest commit from git'
 	@echo '    make compose               rebuild and launch containers via docker-compose              '
+	@echo '    make compose-test          launch tests inside built docker container                    '
 	@echo '                                                                                             '
 
 requirements:
@@ -30,4 +31,4 @@ compose:
 compose-test:
 	docker-compose exec grader /bin/sh -c "make test"
 
-.PHONY: requirements requirements-test test update compose
+.PHONY: requirements requirements-test test update compose compose-test
