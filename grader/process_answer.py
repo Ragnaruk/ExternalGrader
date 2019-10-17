@@ -16,8 +16,6 @@ def process_answer(message: dict) -> dict:
     """
     logger = get_logger("process_answer")
 
-    logger.debug("Received message: %s", message)
-
     response = {}
 
     grader_script = importlib.import_module(
@@ -29,10 +27,10 @@ def process_answer(message: dict) -> dict:
     try:
         score, msg = grader_script.main(
             message["xqueue_body"]["student_response"],
-            message["xqueue_files"] if message["xqueue_files"] else None
+            message["xqueue_files"] if "xqueue_files" in message.keys() else None
         )
 
-        # clear_working_directory()
+        clear_working_directory()
 
         response["correct"] = True
         response["score"] = score if score else 0
@@ -47,13 +45,13 @@ def process_answer(message: dict) -> dict:
     return response
 
 
-# @log_exceptions
-# def clear_working_directory():
-#     """
-#     Clears the working directory.
-#     """
-#     for root, dirs, files in os.walk(PATH_HOME_DIRECTORY):
-#         for f in files:
-#             os.unlink(os.path.join(root, f))
-#         for d in dirs:
-#             shutil.rmtree(os.path.join(root, d))
+@log_exceptions
+def clear_working_directory():
+    """
+    Clears the working directory.
+    """
+    for root, dirs, files in os.walk(PATH_HOME_DIRECTORY):
+        for f in files:
+            os.unlink(os.path.join(root, f))
+        for d in dirs:
+            shutil.rmtree(os.path.join(root, d))
