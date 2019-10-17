@@ -5,8 +5,10 @@ services:
 
 before_install:
   - docker-compose --version
-  - make compose
-  - make compose-test
+
+install:
+  - docker-compose build
+  - docker-compose up -d
 
 script:
-  - echo "Test."
+  - docker-compose exec grader /bin/sh -c "pip install -qr requirements/requirements-test.txt && pytest -v"
