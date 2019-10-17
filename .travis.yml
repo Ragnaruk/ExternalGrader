@@ -8,12 +8,9 @@ services:
 
 before_install:
   - docker-compose --version
-  - make compose
-  - docker ps
-  - docker-compose exec -it grader /bin/sh -c "make test"
 
 install:
-  - make install-test
+  - make compose
 
 script:
-  - pytest
+  - make compose-test

@@ -27,4 +27,7 @@ compose:
 	docker-compose build
 	docker-compose up -d
 
+compose-test:
+	docker-compose exec grader /bin/sh -c "make test"
+
 .PHONY: requirements requirements-test test update compose
