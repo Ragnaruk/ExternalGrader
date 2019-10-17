@@ -3,17 +3,7 @@ services:
   grader:
     build:
       context: .
-    image: ragnaruk/external_grader:latest
-    restart: always
+      args:
+        - REQUIRED_PROGRAMS=
+    image: ragnaruk/external_grader_test:latest
     command: ['make', 'test']
-    depends_on:
-      - rabbitmq
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    restart: always
-    ports:
-      - 5672:5672
-      - 15672:15672
-    environment:
-      - RABBITMQ_DEFAULT_USER=user
-      - RABBITMQ_DEFAULT_PASS=test

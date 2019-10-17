@@ -3,6 +3,8 @@ services:
   grader:
     build:
       context: .
+      args:
+        - REQUIRED_PROGRAMS=ffmpeg
     image: ragnaruk/external_grader:latest
     restart: always
     volumes:

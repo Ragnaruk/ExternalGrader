@@ -1,7 +1,10 @@
 FROM python:3.8-alpine
 
 RUN apk add --no-cache make vim
-RUN apk add --no-cache ffmpeg
+
+ARG REQUIRED_PROGRAMS
+
+RUN apk add --no-cache ${REQUIRED_PROGRAMS}
 
 ENV PYTHONPATH /external_grader/
 

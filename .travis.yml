@@ -7,8 +7,7 @@ before_install:
   - docker-compose --version
 
 install:
-  - docker-compose build
-  - docker-compose up -d
+  - docker-compose -f docker-compose.test.yml build
 
 script:
-  - docker-compose exec grader /bin/sh -c "pip install -qr requirements/requirements-test.txt && pytest -v"
+  - docker-compose -f docker-compose.test.yml up
