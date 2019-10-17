@@ -3,7 +3,7 @@ PyTest test file for grader.logs module.
 """
 from logging import Logger
 
-from grader import logs
+from external_grader.grader import logs
 
 
 def test_get_logger():

@@ -2,8 +2,10 @@
 import re
 import random
 import subprocess
+from pathlib import Path
 
-from config.config import PATH_HOME_DIRECTORY, PATH_VERIFICATION_FILES
+PATH_HOME_DIRECTORY = Path("/home/")
+PATH_VERIFICATION_FILES = Path("/root/")
 
 
 ################ Функция, которая запускается снаружи ################

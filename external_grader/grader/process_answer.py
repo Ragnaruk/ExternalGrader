@@ -2,9 +2,9 @@ import importlib
 import os
 import shutil
 
-from config.config import PATH_HOME_DIRECTORY
-from grader.logs import get_logger
-from utils.decorators import log_exceptions
+from external_grader.config.config import PATH_EXECUTION_DIRECTORY
+from external_grader.grader.logs import get_logger
+from external_grader.utils.decorators import log_exceptions
 
 
 @log_exceptions
@@ -50,7 +50,7 @@ def clear_working_directory():
     """
     Clears the working directory.
     """
-    for root, dirs, files in os.walk(PATH_HOME_DIRECTORY):
+    for root, dirs, files in os.walk(PATH_EXECUTION_DIRECTORY):
         for f in files:
             os.unlink(os.path.join(root, f))
         for d in dirs:

@@ -2,7 +2,7 @@
 Decorators.
 """
 from logging import Logger
-from grader.logs import get_logger
+from external_grader.grader.logs import get_logger
 
 
 def log_exceptions_custom(logger: Logger = None,

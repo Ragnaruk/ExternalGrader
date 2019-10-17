@@ -6,9 +6,8 @@ from pathlib import Path
 import importlib
 from os import getenv
 
-PATH_HOME_DIRECTORY = Path("/home/")
-PATH_VERIFICATION_FILES = Path("/root/")
-PATH_LOG_DIRECTORY = Path(__file__).parent.parent / "logs"
+PATH_EXECUTION_DIRECTORY = Path("/home/")
+PATH_LOG_DIRECTORY = Path.cwd() / "logs"
 
 # Possible log levels: DEBUG, INFO, ERROR
 LOG_LEVEL = DEBUG
@@ -19,5 +18,5 @@ CONNECTION_RETRY_TIME = 10
 
 # Name of the python file with message broker config
 MESSAGE_BROKER = importlib.import_module(
-    "config_queue." + getenv("QUEUE_CONFIG_NAME", "rabbitmq_example")
+    "external_grader.config_queue." + getenv("QUEUE_CONFIG_NAME", "rabbitmq_example")
 )

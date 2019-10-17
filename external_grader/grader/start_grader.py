@@ -2,10 +2,10 @@ from time import sleep
 
 import pika.exceptions
 
-from config.config import CONNECTION_RETRY_TIME
-from grader.logs import get_logger
-from grader.message_brokers.rabbitmq import receive_messages
-from utils.decorators import log_exceptions
+from external_grader.config.config import CONNECTION_RETRY_TIME
+from external_grader.grader.logs import get_logger
+from external_grader.grader.message_brokers.rabbitmq import receive_messages
+from external_grader.utils.decorators import log_exceptions
 
 
 @log_exceptions

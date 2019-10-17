@@ -6,9 +6,9 @@ import json
 from pika import channel, spec, credentials, \
     BlockingConnection, ConnectionParameters, BasicProperties
 
-from config.config import MESSAGE_BROKER
-from grader.logs import get_logger
-from grader.process_answer import process_answer
+from external_grader.config.config import MESSAGE_BROKER
+from external_grader.grader.logs import get_logger
+from external_grader.grader.process_answer import process_answer
 
 
 # @log_exceptions

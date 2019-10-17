@@ -5,7 +5,7 @@ import glob
 import importlib
 from os.path import dirname, basename, isfile, join
 
-import config_queue
+from external_grader import config_queue
 
 
 def test_queue_configs():
@@ -17,7 +17,7 @@ def test_queue_configs():
 
     # Import all files in config_queue module and check whether expected variables exist
     for name in names:
-        config = importlib.import_module("config_queue." + name)
+        config = importlib.import_module("external_grader.config_queue." + name)
 
         assert config.TYPE
         assert config.HOST
