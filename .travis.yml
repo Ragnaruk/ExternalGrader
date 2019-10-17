@@ -1,15 +1,19 @@
 language: python
 
 python:
-  - "3.6"
+  - "3.8-dev"
 
 services:
   - docker
 
 before_install:
-  - docker build -t ragnaruk/external_grader .
-  - docker run -idt --name external_grader --network "host" ragnaruk/external_grader
-  - docker ps -a
+  - docker-compose --version
+  - make compose
+  - docker ps
+  - docker-compose exec -it grader /bin/sh -c "make test"
+
+install:
+  - make install-test
 
 script:
-  - find ./grade_scripts/ -type f -iname "*.py" -exec python -m doctest "{}" \; | grep -q "."; test $? -eq 1
+  - pytest

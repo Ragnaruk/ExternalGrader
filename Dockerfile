@@ -1,16 +1,12 @@
-FROM python:3
+FROM python:3.8-alpine
 
-RUN \
-    apt -y update && \
-    apt -y upgrade && \
-    apt -y install ffmpeg
+RUN apk add --no-cache make vim
 
-COPY . /ExternalGrader
+RUN apk add --no-cache ffmpeg
 
-RUN \
-    pip install --no-cache-dir -r /ExternalGrader/requirements.txt && \
-    ln -sf /dev/stdout /ExternalGrader/grader.log
+ENV PYTHONPATH /external_grader/
 
-ENV PYTHONPATH /ExternalGrader/
+COPY . /external_grader
+WORKDIR /external_grader
 
-CMD [ "python", "/ExternalGrader/external_grader/" ]
+RUN make requirements

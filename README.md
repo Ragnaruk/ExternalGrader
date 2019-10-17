@@ -1,7 +1,7 @@
 # External Grader
-[![Build Status](https://travis-ci.org/Ragnaruk/ExternalGrader.svg?branch=master)](https://travis-ci.org/Ragnaruk/ExternalGrader)
+[![Build Status](https://travis-ci.org/Ragnaruk/external_grader.svg?branch=master)](https://travis-ci.org/Ragnaruk/ExternalGrader)
 
-Внешний грейдер для LMS.
+Внешний грейдер для LMS, работающий по формату Edx.
 
 ## Установка
 
@@ -14,7 +14,7 @@ docker run -idt -p 5672:5672 -p 15672:15672 --name rabbitmq --hostname my-rabbit
 ## Установка грейдера
 git clone https://github.com/Ragnaruk/ExternalGrader.git
 
-# Перед этим шагом можно изменить файл конфигураций /external_grader/config.py
+grader
 docker build -t external_grader .
 docker run -idt --name external_grader --network="host" external_grader
 ```
@@ -64,7 +64,7 @@ python ./external_grader/
   "xqueue_body": {
     "correct": true,
     "score": 1,
-    "msg": "<p>The code passed all tests.</p>"
+    "msg": grader
   }
 }
 ```
