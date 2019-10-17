@@ -5,9 +5,8 @@ services:
 
 before_install:
   - docker-compose --version
-
-install:
   - make compose
+  - make compose-test
 
 script:
-  - docker-compose exec grader /bin/sh -c "make test"
+  - echo "Test."
