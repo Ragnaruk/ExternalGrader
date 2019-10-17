@@ -27,9 +27,10 @@ compose:
 compose-test:
 	docker-compose -f docker-compose.test.yml build
 	docker-compose -f docker-compose.test.yml up --exit-code-from grader
+	docker-compose -f docker-compose.test.yml down
 
 update:
 	git reset --hard
 	git pull https://github.com/Ragnaruk/external_grader.git
 
-.PHONY: requirements requirements-test test compose compose-test update
+.PHONY: test compose compose-test update
