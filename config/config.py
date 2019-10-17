@@ -3,6 +3,7 @@ General config.
 """
 from logging import DEBUG, INFO, ERROR
 from pathlib import Path
+import importlib
 from os import getenv
 
 PATH_HOME_DIRECTORY = Path("/home/")
@@ -17,8 +18,4 @@ LOG_FORMAT = "%(asctime)s - %(levelname)-5s - %(filename)s:%(lineno)d - %(messag
 CONNECTION_RETRY_TIME = 10
 
 # Name of the python file with message broker config
-MESSAGE_BROKER = rabbitmq
-
-print(getenv("QUEUE_TYPE", "rabbitmq"))
-print(getenv("TEST", "test"))
-print(getenv("HELLO", "hello"))
+MESSAGE_BROKER = importlib.import_module("config_queue." + getenv("QUEUE_CONFIG_NAME", "rabbitmq"))

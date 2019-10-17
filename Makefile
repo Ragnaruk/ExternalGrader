@@ -26,3 +26,5 @@ update:
 compose:
 	docker-compose build
 	docker-compose up -d
+
+.PHONY: requirements requirements-test test update compose

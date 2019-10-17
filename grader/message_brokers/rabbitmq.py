@@ -31,13 +31,13 @@ def receive_messages() -> None:
     ch = connection.channel()
 
     # Set durable=True to save messages between RabbitMQ restarts
-    ch.queue_declare(queue=MESSAGE_BROKER.CONSUMPTION_QUEUE, durable=True)
+    ch.queue_declare(queue=MESSAGE_BROKER.QUEUE, durable=True)
 
     # Make RabbitMQ avoid giving more than 1 message at a time to a worker
     ch.basic_qos(prefetch_count=1)
 
     # Start receiving messages
-    ch.basic_consume(queue=MESSAGE_BROKER.CONSUMPTION_QUEUE, on_message_callback=callback_function)
+    ch.basic_consume(queue=MESSAGE_BROKER.QUEUE, on_message_callback=callback_function)
 
     try:
         logger.info("Started consuming messages from RabbitMQ.")

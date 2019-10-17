@@ -9,9 +9,9 @@ services:
       - ./grader_scripts:/external_grader/grader_scripts
       - ./config/:/external_grader/config/
     environment:
-      - QUEUE_TYPE=rabbitmq
-      - TEST=
-      - HELLO=''
+      # Name of the queue config.
+      # To import config_queue.rabbitmq.py: QUEUE_CONFIG_NAME=rabbitmq
+      - QUEUE_CONFIG_NAME=rabbitmq
     command: ['python', '/external_grader/grader']
     depends_on:
       - rabbitmq
