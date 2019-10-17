@@ -19,5 +19,5 @@ CONNECTION_RETRY_TIME = 10
 
 # Name of the python file with message broker config
 MESSAGE_BROKER = importlib.import_module(
-    "config_queue." + getenv("QUEUE_CONFIG_NAME", "rabbitmq-example")
+    "config_queue." + getenv("QUEUE_CONFIG_NAME", "rabbitmq_example")
 )
