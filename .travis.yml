@@ -1,4 +1,7 @@
-language: minimal
+language: python
+
+python:
+  - "3.8-dev"
 
 services:
   - docker
@@ -6,5 +9,18 @@ services:
 before_install:
   - docker-compose --version
 
-script:
-  - make compose-test
+install:
+  - make requirements-test
+
+jobs:
+  include:
+    - stage: "Tests"
+      name: "Unit Tests"
+      script:
+        - pytest --cov=./ -v
+#    - name: "Integration Tests"
+#      script:
+#        - make compose
+
+after_success:
+  - codecov
