@@ -18,13 +18,15 @@ def process_answer(message: dict) -> dict:
 
     response = {}
 
-    grader_script = importlib.import_module(
-        "grader_scripts."
-        + str(message["xqueue_body"]["grader_payload"])
-        + ".grade"
-    )
+    grader_script_name = str(message["xqueue_body"]["grader_payload"])
 
     try:
+        grader_script = importlib.import_module(
+            "external_grader.grader_scripts."
+            + grader_script_name
+            + ".grade"
+        )
+
         score, msg = grader_script.main(
             message["xqueue_body"]["student_response"],
             message["xqueue_files"] if "xqueue_files" in message.keys() else None
@@ -35,6 +37,8 @@ def process_answer(message: dict) -> dict:
         response["correct"] = True
         response["score"] = score if score else 0
         response["msg"] = msg if msg else ""
+    except ModuleNotFoundError as exception:
+        logger.error("Unknown grader script with name: %s", grader_script_name, exc_info=True)
     except AssertionError as exception:
         logger.error("Grading failed with message: %s", exception)
 
