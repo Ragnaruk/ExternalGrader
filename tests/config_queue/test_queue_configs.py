@@ -19,7 +19,7 @@ def test_queue_configs():
     for name in names:
         config = importlib.import_module("external_grader.config_queue." + name)
 
-        assert config.TYPE
+        assert config.TYPE in ["rabbitmq", "xqueue"]
 
         if config.TYPE == "rabbitmq":
             assert config.HOST
