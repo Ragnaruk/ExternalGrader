@@ -8,7 +8,9 @@ from external_grader.utils.decorators import log_exceptions
 
 
 @log_exceptions
-def process_answer(message: dict) -> dict:
+def process_answer(
+        message: dict
+) -> dict:
     """
     Function which receives answers, proceeds them, and returns results.
 
