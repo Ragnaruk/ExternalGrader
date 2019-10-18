@@ -33,4 +33,4 @@ update:
 	git reset --hard
 	git pull https://github.com/Ragnaruk/external_grader.git
 
-.PHONY: test compose compose-test update
+.PHONY: requirements requirements-test test compose compose-test update
