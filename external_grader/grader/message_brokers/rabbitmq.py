@@ -6,13 +6,18 @@ import json
 from pika import channel, spec, credentials, \
     BlockingConnection, ConnectionParameters, BasicProperties
 
-from external_grader.config.config import MESSAGE_BROKER
 from external_grader.grader.logs import get_logger
 from external_grader.grader.process_answer import process_answer
 
 
 # @log_exceptions
-def receive_messages() -> None:
+def receive_messages(
+        host: str,
+        port: int,
+        user: str,
+        password: str,
+        queue: str
+) -> None:
     """
     Start consuming messages from RabbitMQ broker.
     """
@@ -20,24 +25,21 @@ def receive_messages() -> None:
 
     connection = BlockingConnection(
         ConnectionParameters(
-            host=MESSAGE_BROKER.HOST,
-            port=MESSAGE_BROKER.PORT,
-            credentials=credentials.PlainCredentials(
-                MESSAGE_BROKER.USER,
-                MESSAGE_BROKER.PASS
-            )
+            host=host,
+            port=port,
+            credentials=credentials.PlainCredentials(user, password)
         )
     )
     ch = connection.channel()
 
     # Set durable=True to save messages between RabbitMQ restarts
-    ch.queue_declare(queue=MESSAGE_BROKER.QUEUE, durable=True)
+    ch.queue_declare(queue=queue, durable=True)
 
     # Make RabbitMQ avoid giving more than 1 message at a time to a worker
     ch.basic_qos(prefetch_count=1)
 
     # Start receiving messages
-    ch.basic_consume(queue=MESSAGE_BROKER.QUEUE, on_message_callback=callback_function)
+    ch.basic_consume(queue=queue, on_message_callback=callback_function)
 
     try:
         logger.info("Started consuming messages from RabbitMQ.")
