@@ -20,8 +20,16 @@ def test_queue_configs():
         config = importlib.import_module("external_grader.config_queue." + name)
 
         assert config.TYPE
-        assert config.HOST
-        assert config.PORT
-        assert config.USER
-        assert config.PASS
-        assert config.QUEUE
+
+        if config.TYPE == "rabbitmq":
+            assert config.HOST
+            assert config.PORT
+            assert config.USER
+            assert config.PASS
+            assert config.QUEUE
+        elif config.TYPE == "xqueue":
+            assert config.HOST
+            assert config.USER
+            assert config.PASS
+            assert config.QUEUE
+            assert config.POLLING_INTERVAL

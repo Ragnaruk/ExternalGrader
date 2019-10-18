@@ -1,12 +1,16 @@
 """
-Config for local RabbitMQ message broker.
+Config for default local RabbitMQ message broker.
 """
-TYPE = "rabbitmq"
+# Either "rabbitmq" or "xqueue"
+TYPE: str = "rabbitmq"
 
-HOST = "rabbitmq"
-PORT = 5672
+# Location of message broker
+HOST: str = "rabbitmq"
+PORT: int = 5672
 
-USER = "user"
-PASS = "jn0oSx3i2SkV5TlQAFVy"
+# Credentials for basic auth
+USER: str = "user"
+PASS: str = "jn0oSx3i2SkV5TlQAFVy"
 
-QUEUE = "student_answers"
+# Submissions queue name
+QUEUE: str = "student_answers"
