@@ -5,14 +5,14 @@ Config for default XQueue message broker.
 TYPE: str = "xqueue"
 
 # Location of message broker
-HOST: str = ""
+HOST: str = "host"
 
 # Credentials for basic auth
-USER: str = ""
-PASS: str = ""
+USER: str = "user"
+PASS: str = "pass"
 
 # Submissions queue name
-QUEUE: str = ""
+QUEUE: str = "queue"
 
 # Polling interval in seconds
 POLLING_INTERVAL: int = 10
