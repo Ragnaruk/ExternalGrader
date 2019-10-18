@@ -8,13 +8,11 @@ services:
     image: ragnaruk/external_grader:latest
     restart: always
     volumes:
-      - ./grader_scripts:/external_grader/grader_scripts
-      - ./config/:/external_grader/config/
+      - ./external_grader/grader_scripts:/external_grader/external_grader/grader_scripts
     environment:
-      # Name of the imported queue config
-      # To import config_queue.rabbitmq_example.py set variable QUEUE_CONFIG_NAME=rabbitmq_example
+      # Name of the imported queue configuration file
       - QUEUE_CONFIG_NAME=rabbitmq_example
-    command: ['python', '/external_grader/grader']
+    command: ['python', 'external_grader/external_grader/grader']
     depends_on:
       - rabbitmq
   rabbitmq:
