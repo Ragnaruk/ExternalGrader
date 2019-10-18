@@ -1,11 +1,26 @@
 version: '3'
 services:
-  external_grader:
+  grader:
     build:
       context: .
+      args:
+        - REQUIRED_PROGRAMS=ffmpeg
     image: ragnaruk/external_grader:latest
+    restart: always
+    volumes:
+      - ./external_grader/grader_scripts:/external_grader/external_grader/grader_scripts
+    environment:
+      # Name of the imported queue configuration file
+      - QUEUE_CONFIG_NAME=rabbitmq_example
+    command: ['python', 'external_grader/external_grader/grader']
+    depends_on:
+      - rabbitmq
   rabbitmq:
-    image: rabbitmq:3-management
+    image: rabbitmq:3-management-alpine
+    restart: always
     ports:
       - 5672:5672
       - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=jn0oSx3i2SkV5TlQAFVy

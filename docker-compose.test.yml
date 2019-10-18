@@ -1,0 +1,9 @@
+version: '3'
+services:
+  grader:
+    build:
+      context: .
+      args:
+        - REQUIRED_PROGRAMS=
+    image: ragnaruk/external_grader_test:latest
+    command: ['make', 'test']
