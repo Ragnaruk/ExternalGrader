@@ -37,10 +37,10 @@ def listen_to_broker():
                 )
             except pika.exceptions.AMQPConnectionError:
                 logger.error("Failed to connect to RabbitMQ broker.")
-            except pika.exceptions as exception:
-                logger.error("Unhandled pika error: %s.", exception, exc_info=True)
             except KeyboardInterrupt:
                 logger.info("Program has been stopped manually.")
+            except Exception as exception:
+                logger.error("Unhandled exception: %s.", exception, exc_info=True)
     except AttributeError as exception:
         logger.error(exception, exc_info=True)
 
