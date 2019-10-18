@@ -32,7 +32,7 @@ def process_answer(
             message["xqueue_files"] if "xqueue_files" in message.keys() else None
         )
 
-        clear_working_directory()
+        # clear_working_directory()
 
         response["correct"] = True
         response["score"] = score if score else 0
