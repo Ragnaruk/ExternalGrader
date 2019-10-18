@@ -10,31 +10,33 @@ from external_grader.config.config import CONNECTION_RETRY_TIME, QUEUE_CONFIG_NA
 from external_grader.grader.logs import get_logger
 from external_grader.grader.message_brokers.rabbitmq import receive_messages as rabbitmq_receive
 from external_grader.grader.message_brokers.xqueue import receive_messages as xqueue_receive
-from external_grader.utils.decorators import log_exceptions
 
 
-@log_exceptions
 def start_grader() -> None:
     """
     Start main grader loop.
     """
     logger = get_logger("start_grader")
 
-    queue_config_name = getenv("QUEUE_CONFIG_NAME", QUEUE_CONFIG_NAME)
-
     try:
-        queue_config = importlib.import_module(
-            "external_grader.config_queue." + queue_config_name
-        )
-    except ModuleNotFoundError:
-        logger.error("Queue config with name: %s not found.", queue_config_name)
-    else:
-        while True:
-            listen_to_broker(queue_config)
-            sleep(CONNECTION_RETRY_TIME)
+        queue_config_name = getenv("QUEUE_CONFIG_NAME", QUEUE_CONFIG_NAME)
+
+        try:
+            queue_config = importlib.import_module(
+                "external_grader.config_queue." + queue_config_name
+            )
+        except ModuleNotFoundError:
+            logger.error("Queue config with name: %s not found.", queue_config_name)
+        else:
+            while True:
+                listen_to_broker(queue_config)
+                sleep(CONNECTION_RETRY_TIME)
+    except Exception as exception:
+        logger.error(exception, exc_info=True)
+
+        raise exception
 
 
-@log_exceptions
 def listen_to_broker(
     queue_config: Any
 ):

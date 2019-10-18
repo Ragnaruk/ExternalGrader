@@ -4,10 +4,8 @@ import shutil
 
 from external_grader.config.config import PATH_EXECUTION_DIRECTORY
 from external_grader.grader.logs import get_logger
-from external_grader.utils.decorators import log_exceptions
 
 
-@log_exceptions
 def process_answer(
         message: dict
 ) -> dict:
@@ -39,19 +37,20 @@ def process_answer(
         response["correct"] = True
         response["score"] = score if score else 0
         response["msg"] = msg if msg else ""
-    except ModuleNotFoundError as exception:
-        logger.error("Unknown grader script with name: %s", grader_script_name, exc_info=True)
     except AssertionError as exception:
         logger.error("Grading failed with message: %s", exception)
 
         response["msg"] = str(exception)
+    except ModuleNotFoundError as exception:
+        logger.error("Unknown grader script with name: %s", grader_script_name)
+
+        raise exception
 
     logger.debug("Response: %s", response)
 
     return response
 
 
-@log_exceptions
 def clear_working_directory():
     """
     Clears the working directory.

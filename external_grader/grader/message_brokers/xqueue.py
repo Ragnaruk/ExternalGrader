@@ -46,10 +46,12 @@ def receive_messages(
             while True:
                 process_submission(session, host, user, password, queue)
                 sleep(polling_interval)
-        except KeyboardInterrupt:
+        except KeyboardInterrupt as exception:
             logger.info("Stopped consuming messages from XQueue.")
 
             session.close()
+
+            raise exception
 
 
 def process_submission(
@@ -82,19 +84,24 @@ def process_submission(
     )
     logger.debug("GET request response: %s", response.json())
 
-    message = json.loads(response.content.decode("utf8").replace("\'", "\""))
-    logger.debug("Received message: %s", message)
+    try:
+        message = json.loads(response.content.decode("utf8").replace("\'", "\""))
+        logger.debug("Received message: %s", message)
 
-    reply: dict = {
-        "xqueue_header": message["xqueue_header"],
-        "xqueue_body": json.dumps(process_answer(message))
-    }
-    logger.debug("Reply message: %s", reply)
+        reply: dict = {
+            "xqueue_header": message["xqueue_header"],
+            "xqueue_body": json.dumps(process_answer(message))
+        }
+        logger.debug("Reply message: %s", reply)
 
-    response: requests.Response = session.post(
-        xqueue_put_result_url,
-        auth=HTTPBasicAuth(user, password),
-        verify=False,
-        data=reply
-    )
-    logger.debug("POST request response: %s", response.json())
+        response: requests.Response = session.post(
+            xqueue_put_result_url,
+            auth=HTTPBasicAuth(user, password),
+            verify=False,
+            data=reply
+        )
+        logger.debug("POST request response: %s", response.json())
+    except KeyboardInterrupt as exception:
+        raise exception
+    except Exception as exception:
+        logger.error(exception, exc_info=True)

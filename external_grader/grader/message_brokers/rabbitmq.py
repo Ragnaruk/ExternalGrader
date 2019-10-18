@@ -11,7 +11,6 @@ from external_grader.grader.logs import get_logger
 from external_grader.grader.process_answer import process_answer
 
 
-# @log_exceptions
 def receive_messages(
         host: str,
         port: int,
@@ -52,14 +51,15 @@ def receive_messages(
         logger.info("Started consuming messages from RabbitMQ.")
 
         ch.start_consuming()
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as exception:
         logger.info("Stopped consuming messages from RabbitMQ.")
 
         ch.stop_consuming()
         connection.close()
 
+        raise exception
 
-# @log_exceptions
+
 def callback_function(
         current_channel: channel.Channel,
         basic_deliver: spec.Basic.Deliver,
@@ -93,6 +93,8 @@ def callback_function(
             routing_key=properties.reply_to,
             properties=BasicProperties(correlation_id=properties.correlation_id),
             body=json.dumps(reply))
+    except KeyboardInterrupt as exception:
+        raise exception
     except Exception as exception:
         logger.error(exception, exc_info=True)
 
