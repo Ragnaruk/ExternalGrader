@@ -17,6 +17,5 @@ LOG_FORMAT = "%(asctime)s - %(levelname)-5s - %(filename)s:%(lineno)d - %(messag
 CONNECTION_RETRY_TIME = 10
 
 # Name of the python file with message broker config
-MESSAGE_BROKER = importlib.import_module(
-    "external_grader.config_queue." + getenv("QUEUE_CONFIG_NAME", "rabbitmq_example")
-)
+# Used when
+QUEUE_CONFIG_NAME = "rabbitmq_example"
