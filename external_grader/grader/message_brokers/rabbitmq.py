@@ -103,3 +103,5 @@ def callback_function(
 
         # Acknowledge message in queue
         current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
+
+    logger.debug("Finished handling message.")
