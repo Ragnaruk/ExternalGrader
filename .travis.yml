@@ -8,6 +8,7 @@ services:
 
 before_install:
   - docker-compose --version
+  - docker pull "python:3.8-alpine"
 
 install:
   - make requirements-test
