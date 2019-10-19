@@ -4,7 +4,9 @@ from sys import stdout
 from external_grader.config.config import PATH_LOG_DIRECTORY, LOG_LEVEL, LOG_FORMAT
 
 
-def get_logger(logger_name: str) -> logging.Logger:
+def get_logger(
+        logger_name: str
+) -> logging.Logger:
     """
     Get a logger object that writes to logs directory and to stdout.
 

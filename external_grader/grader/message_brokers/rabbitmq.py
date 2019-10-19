@@ -5,12 +5,12 @@ import json
 
 from pika import channel, spec, credentials, \
     BlockingConnection, ConnectionParameters, BasicProperties
+from logging import Logger
 
 from external_grader.grader.logs import get_logger
 from external_grader.grader.process_answer import process_answer
 
 
-# @log_exceptions
 def receive_messages(
         host: str,
         port: int,
@@ -20,17 +20,23 @@ def receive_messages(
 ) -> None:
     """
     Start consuming messages from RabbitMQ broker.
-    """
-    logger = get_logger("rabbitmq")
 
-    connection = BlockingConnection(
+    :param host: Host of XQueue broker.
+    :param port: Port of XQueue broker.
+    :param user: Username for basic auth.
+    :param password: Password for basic auth.
+    :param queue: Queue name.
+    """
+    logger: Logger = get_logger("rabbitmq")
+
+    connection: BlockingConnection = BlockingConnection(
         ConnectionParameters(
             host=host,
             port=port,
             credentials=credentials.PlainCredentials(user, password)
         )
     )
-    ch = connection.channel()
+    ch: channel = connection.channel()
 
     # Set durable=True to save messages between RabbitMQ restarts
     ch.queue_declare(queue=queue, durable=True)
@@ -45,45 +51,50 @@ def receive_messages(
         logger.info("Started consuming messages from RabbitMQ.")
 
         ch.start_consuming()
-    except KeyboardInterrupt:
+    except KeyboardInterrupt as exception:
         logger.info("Stopped consuming messages from RabbitMQ.")
 
         ch.stop_consuming()
         connection.close()
 
+        raise exception
 
-# @log_exceptions
-def callback_function(current_channel: channel.Channel,
-                      basic_deliver: spec.Basic.Deliver,
-                      properties: spec.BasicProperties,
-                      body: bytes) -> None:
+
+def callback_function(
+        current_channel: channel.Channel,
+        basic_deliver: spec.Basic.Deliver,
+        properties: spec.BasicProperties,
+        body: bytes
+) -> None:
     """
     Callback function which receives and proceeds consumed messages from RabbitMQ broker.
 
-    :param current_channel: channel object.
-    :param basic_deliver: object which has exchange, routing key,
+    :param current_channel: Channel object.
+    :param basic_deliver: Object which has exchange, routing key,
      delivery tag and a redelivered flag of the message.
-    :param properties: message properties.
-    :param body: message body.
+    :param properties: Message properties.
+    :param body: Message body.
     """
-    logger = get_logger("rabbitmq")
+    logger: Logger = get_logger("rabbitmq")
 
     try:
         message: dict = json.loads(body.decode("utf8").replace("\'", "\""))
-        logger.debug("Received message: {0}".format(message))
+        logger.debug("Received message: %s", message)
 
-        response: dict = {
+        reply: dict = {
             "xqueue_header": message["xqueue_header"],
             "xqueue_body": process_answer(message)
         }
-        logger.debug("Response message: {0}".format(response))
+        logger.debug("Reply message: %s", reply)
 
         # Send a response
         current_channel.basic_publish(
             exchange="",
             routing_key=properties.reply_to,
             properties=BasicProperties(correlation_id=properties.correlation_id),
-            body=json.dumps(response))
+            body=json.dumps(reply))
+    except KeyboardInterrupt as exception:
+        raise exception
     except Exception as exception:
         logger.error(exception, exc_info=True)
 

@@ -16,5 +16,3 @@ def test_get_logger():
     assert logger.__class__ == Logger
     assert logger.name == logger_name
     assert logger.hasHandlers()
-
-    logger.info("Test message.")
