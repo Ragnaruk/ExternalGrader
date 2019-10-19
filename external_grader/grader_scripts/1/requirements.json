@@ -1,0 +1,14 @@
+{
+  "external": [
+    {
+      "name": "test-external.txt",
+      "link": "http://captive.apple.com"
+    }
+  ],
+  "local": [
+    {
+      "name": "test-local.txt",
+      "path": "requirements.json"
+    }
+  ]
+}
