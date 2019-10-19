@@ -1,5 +1,5 @@
 # External Grader
-[![Build Status](https://travis-ci.org/Ragnaruk/external_grader.svg?branch=master)](https://travis-ci.org/Ragnaruk/ExternalGrader)
+[![Build Status](https://travis-ci.org/Ragnaruk/external_grader.svg?branch=master)](https://travis-ci.org/Ragnaruk/external_grader)
 [![codecov](https://codecov.io/gh/Ragnaruk/external_grader/branch/master/graph/badge.svg)](https://codecov.io/gh/Ragnaruk/external_grader)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/Ragnaruk/external_grader/blob/master/LICENSE)
 [![Codecov Graph](https://codecov.io/gh/Ragnaruk/external_grader/branch/master/graphs/icicle.svg)](https://codecov.io/gh/Ragnaruk/external_grader/branch/master/graphs/icicle.svg)
