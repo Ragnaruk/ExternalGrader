@@ -2,14 +2,15 @@
 import re
 import random
 import subprocess
-from pathlib import Path
 
-PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = Path(".")
+PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = "./"
 
 
 ################ Функция, которая запускается снаружи ################
 def main():
     s = subprocess
+
+    prepare_commands_file(s)
 
     test_commands_file(s)
     test_cropped_video(s)
@@ -17,6 +18,13 @@ def main():
     test_IM_command(s)
     test_plated_video(s)
     test_final_video(s)
+
+
+def prepare_commands_file(s):
+    with open("./student_submission.txt") as file_in, open("./commands.sh", "w") as file_out:
+        file_out.write(file_in.read())
+
+    s.run("chmod 0647 " + PATH_HOME_DIRECTORY + "commands.sh", shell=True)
 
 
 ################ Провеяем файл с командами ################

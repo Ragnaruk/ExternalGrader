@@ -1,50 +1,50 @@
 """
-Шаблон файла со скриптом проверки и тестами.
+Шаблон файла со скриптом проверки.
 """
+import sys
 
 
-def main(answer, *args):
+def main():
     """
-    Тестовая проверочная функция.
-    :param answer: ответ студента.
-    :return: кортеж из оценки студента и сообщения.
+    Check whether student submission equals 5.
 
-
-    Юнит-тесты для проверки правильности работы функции:
-
-    Неверный формат ответа.
-    >>> main("test")
-    Traceback (most recent call last):
-      ...
-    AssertionError: Ответ — не число.
-
-    Неверный ответ.
-    >>> main(4)
-    Traceback (most recent call last):
-      ...
-    AssertionError: Ответ не равен 5.
-
-    Верный ответ.
-    >>> main(5)
-    (100, 'Верный ответ.')
+    :return: Grade of the student.
     """
     try:
-        try:
-            answer = int(answer)
-        except ValueError:
-            raise AssertionError("Ответ — не число.")
+        answer = read_student_submission()
 
-        assert answer == 5, "Ответ не равен 5."
+        parsed_answer = int(answer)
+    except ValueError:
+        print("Ответ — не число.", file=sys.stderr)
 
-        return 100, "Верный ответ."
-    except AssertionError as exception:
-        raise exception
-    except Exception as exception:
-        import logging
-        logging.getLogger("ExternalGrader").error(exception)
+        print(0)
+    else:
+        if parsed_answer != 5:
+            print("Ответ не равен 5.", file=sys.stderr)
 
-        raise AssertionError("Неизвестная ошибка. Обратитесь к составителю скрипта проверки.")
+            print(50)
+        else:
+            print("Верный ответ.", file=sys.stderr)
+
+            print(100)
+
+
+def read_student_submission() -> str:
+    """
+    Read student submission from file.
+
+    :return: Student submission.
+    """
+    with open("./student_submission.txt") as file:
+        return file.read()
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except Exception as exception:
+        exc_info = sys.exc_info()
+
+        print("Unhandled error during grading.", file=sys.stderr)
+        print("%s", exception, file=sys.stderr)
+        print("%s", exc_info, file=sys.stderr)
