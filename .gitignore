@@ -1,5 +1,12 @@
+# PyCharm
+.idea
+
+# Python virtual environment
 /venv/
+
+# Directories
 /data/
 /logs/
 
+# Files
 pytest.ini
