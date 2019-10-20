@@ -6,11 +6,11 @@ from pathlib import Path
 
 PATH_LOG_DIRECTORY = Path.cwd() / "logs"
 PATH_DATA_DIRECTORY = Path.cwd() / "data"
-PATH_GRADER_SCRIPTS_DIRECTORY = Path.cwd() / "external_grader" / "grader_scripts"
+PATH_GRADER_SCRIPTS_DIRECTORY = Path.cwd() / "grader_scripts"
 
 # Possible log levels: DEBUG, INFO, ERROR
 LOG_LEVEL = DEBUG
-LOG_FORMAT = "%(asctime)s - %(levelname)-5s - %(filename)s:%(lineno)d - %(message)s"
+LOG_FORMAT = "%(asctime)s - %(levelname)-5s - %(filename)s:%(lineno)-3d - %(message)s"
 
 # Number of seconds to wait between connections attempts to message broker
 CONNECTION_RETRY_TIME = 10
