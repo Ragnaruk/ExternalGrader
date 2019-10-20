@@ -21,7 +21,7 @@
   },
   "profile": {
     "docker_image": "ragnaruk/python:latest",
-    "user": "student",
+    "user": "guest",
     "read_only": false,
     "network_disabled": true
   }
