@@ -19,7 +19,7 @@ def test_process_answer_correct():
 
     expected_response: dict = {
         "correct": True,
-        "score": '100',
+        "score": 100,
         "msg": "Верный ответ.\n"
     }
 
@@ -39,7 +39,7 @@ def test_process_answer_incorrect():
 
     expected_response: dict = {
         "correct": False,
-        "score": '50',
+        "score": 50,
         "msg": "Ответ не равен 5.\n"
     }
 
