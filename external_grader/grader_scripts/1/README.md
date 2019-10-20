@@ -25,8 +25,8 @@ def install(package):
 
 Ответ студента будет находится в файле `student_submission.txt`, который будет находится в той же директории, что и скрипт проверки.
 
-## requirements.json
-Файл, где находятся зависимости, используемые скриптом проверки.
+## settings.json
+Файл, где находятся зависимости, используемые скриптом проверки, и имя Docker образа.
 
 Имеет формат:
 ```json
@@ -40,7 +40,7 @@ def install(package):
   "local": [
     {
       "name": "test-local.txt",
-      "path": "requirements.json"
+      "path": settings.json
     }
   ]
 }

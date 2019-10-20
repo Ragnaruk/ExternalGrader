@@ -1,0 +1,23 @@
+{
+  "files": {
+    "external": [
+      {
+        "name": "plate1.svg",
+        "link": "https://stepic.org/media/attachments/lesson/22602/plate.svg"
+      },
+      {
+        "name": "plate2.svg",
+        "link": "https://stepic.org/media/attachments/lesson/22602/plate2.svg"
+      },
+      {
+        "name": "input_video.mp4",
+        "link": "https://stepic.org/media/attachments/lesson/22602/input_video.mp4"
+      },
+      {
+        "name": "Arial.ttf",
+        "link": "https://stepic.org/media/attachments/lesson/22602/arial.ttf"
+      }
+    ]
+  },
+  "docker_image": "jrottenberg/ffmpeg:4.2-alpine"
+}

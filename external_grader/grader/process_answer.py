@@ -46,6 +46,7 @@ def process_answer(
 
     :param submission: Student submission received from message broker.
 
+    :raises ValueError: Invalid student submission.
     :raises FailedFilesLoadException: Failed to load required files.
     :raises ModuleNotFoundError: Failed to find required grading script.
     """
@@ -66,16 +67,16 @@ def process_answer(
         )
 
     # Load required files and raise FailedFilesLoadException if loading failed
-    loaded_files = load_required_files(script_name)
-    logger.debug("Loaded files results: %s", loaded_files)
+    loaded_settings = load_settings(script_name)
+    logger.debug("Loaded files results: %s", loaded_settings)
 
-    if not loaded_files["success"]:
+    if not loaded_settings["success"]:
         raise FailedFilesLoadException(
-            "Failed to load required files: %s", loaded_files
+            "Failed to load required files: %s", loaded_settings
         )
 
     # Run code in a more-or-less secure Docker container
-    grade: dict = grade_epicbox(submission, script_name, loaded_files)
+    grade: dict = grade_epicbox(submission, script_name, loaded_settings)
 
     logger.debug("Grade: %s", grade)
 
@@ -136,160 +137,125 @@ def submission_get_response(
     return response
 
 
-def load_required_files(
+def load_settings(
         script_name: str
 ) -> dict:
     """
-    Load requirements for grading script.
-
-    File name: requirements.json
-    File structure:
-    {
-        "external": [
-            {
-                "name": "file_name",
-                "link": "file_url"
-            }
-        ],
-        # Path is relative to grading script directory
-        "local": [
-            {
-                "name": "file_name",
-                "path": "file_path"
-            }
-        ]
-    }
-
-    Return dictionary structure:
-    {
-        # True if all files are loaded
-        "success": False,
-        "files": [
-            {
-                "type": "external",
-                "name": "file_name",
-                "path": "file_path",
-                "result": True
-            },
-            {
-                "type": "external",
-                "name": "file_name",
-                "path": "file_path",
-                "result": False,
-                "error": CompletedProcess
-            },
-            {
-                "type": "local",
-                "name": "file_name",
-                "path": "file_path",
-                "result": True
-            }
-        ]
-    }
+    Load settings for grading script.
 
     :param script_name: Name of the grading script.
     :return: Dictionary with file names and load results.
     """
     logger: Logger = get_logger("process_answer")
 
-    requirements_file: Path = PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "requirements.json"
-    logger.debug("Requirements file path: %s", requirements_file)
+    settings_file: Path = PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "settings.json"
+    logger.debug("Requirements file path: %s", settings_file)
 
     data_directory: Path = PATH_DATA_DIRECTORY / "grader_scripts" / script_name
     data_directory.mkdir(parents=True, exist_ok=True)
     logger.debug("Data directory path: %s", data_directory)
 
-    loaded_files: dict = {
+    loaded_settings: dict = {
         "success": True,
         "files": []
     }
 
-    # Load requirements
-    if requirements_file.is_file():
-        with requirements_file.open() as file:
-            requirements = json.load(file)
-            logger.debug("Requirements file: %s", requirements)
+    # Load settings
+    if settings_file.is_file():
+        with settings_file.open() as file:
+            settings = json.load(file)
+            logger.debug("Settings file: %s", settings)
 
-            # Loading external files
-            if "external" in requirements.keys():
-                files = requirements["external"]
+            # Docker image
+            if "docker_image" in settings.keys():
+                loaded_settings["docker_image"] = settings["docker_image"]
+            else:
+                loaded_settings["docker_image"] = EPICBOX_SETTINGS["profile"]["docker_image"]
 
-                for f in files:
-                    try:
-                        file_path: Path = data_directory / f["name"]
+            # Files
+            if "files" in settings.keys():
+                all_files = settings["files"]
 
-                        if file_path.is_file():
-                            logger.debug("File already downloaded: %s", file_path)
+                # Loading external files
+                if "external" in all_files.keys():
+                    files = all_files["external"]
 
-                            loaded_files["files"].append({
-                                "type": "external",
-                                "name": f["name"],
-                                "path": file_path,
-                                "result": True
-                            })
-                        else:
-                            try:
-                                urllib.request.urlretrieve(f["link"], file_path)
+                    for f in files:
+                        try:
+                            file_path: Path = data_directory / f["name"]
 
-                                logger.debug("File downloaded: %s", file_path)
+                            if file_path.is_file():
+                                logger.debug("File already downloaded: %s", file_path)
 
-                                loaded_files["files"].append({
+                                loaded_settings["files"].append({
                                     "type": "external",
                                     "name": f["name"],
                                     "path": file_path,
                                     "result": True
                                 })
-                            except Exception as exception:
-                                logger.error("Failed to download required file: %s", f["link"])
-                                logger.error(exception, exc_info=True)
+                            else:
+                                try:
+                                    urllib.request.urlretrieve(f["link"], file_path)
 
-                                loaded_files["files"].append({
-                                    "type": "external",
+                                    logger.debug("File downloaded: %s", file_path)
+
+                                    loaded_settings["files"].append({
+                                        "type": "external",
+                                        "name": f["name"],
+                                        "path": file_path,
+                                        "result": True
+                                    })
+                                except Exception as exception:
+                                    logger.error("Failed to download required file: %s", f["link"])
+                                    logger.error(exception, exc_info=True)
+
+                                    loaded_settings["files"].append({
+                                        "type": "external",
+                                        "name": f["name"],
+                                        "path": file_path,
+                                        "result": False
+                                    })
+                        except Exception as exception:
+                            logger.error(exception, exc_info=True)
+
+                # Check existence of local files
+                if "local" in all_files.keys():
+                    files = all_files["local"]
+
+                    for f in files:
+                        try:
+                            file_path = PATH_GRADER_SCRIPTS_DIRECTORY / script_name / f["path"]
+
+                            if file_path.is_file():
+                                logger.debug("Local file exists: %s", file_path)
+
+                                loaded_settings["files"].append({
+                                    "type": "local",
+                                    "name": f["name"],
+                                    "path": file_path,
+                                    "result": True
+                                })
+                            else:
+                                logger.error("Failed to find required local file: %s", file_path)
+
+                                loaded_settings["files"].append({
+                                    "type": "local",
                                     "name": f["name"],
                                     "path": file_path,
                                     "result": False
                                 })
-                    except Exception as exception:
-                        logger.error(exception, exc_info=True)
+                        except Exception as exception:
+                            logger.error(exception, exc_info=True)
 
-            # Check existence of local files
-            if "local" in requirements.keys():
-                files = requirements["local"]
+    loaded_settings["success"] = False not in [x["result"] for x in loaded_settings["files"]]
 
-                for f in files:
-                    try:
-                        file_path = PATH_GRADER_SCRIPTS_DIRECTORY / script_name / f["path"]
-
-                        if file_path.is_file():
-                            logger.debug("Local file exists: %s", file_path)
-
-                            loaded_files["files"].append({
-                                "type": "local",
-                                "name": f["name"],
-                                "path": file_path,
-                                "result": True
-                            })
-                        else:
-                            logger.error("Failed to find required local file: %s", file_path)
-
-                            loaded_files["files"].append({
-                                "type": "local",
-                                "name": f["name"],
-                                "path": file_path,
-                                "result": False
-                            })
-                    except Exception as exception:
-                        logger.error(exception, exc_info=True)
-
-    loaded_files["success"] = False not in [x["result"] for x in loaded_files["files"]]
-
-    return loaded_files
+    return loaded_settings
 
 
 def grade_epicbox(
     submission: dict,
     script_name: str,
-    loaded_files: dict
+    loaded_settings: dict
 ) -> dict:
     """
     Running grading script in a separate Docker container.
@@ -297,7 +263,7 @@ def grade_epicbox(
 
     :param submission: Student submission received from message broker.
     :param script_name: Name of the grading script.
-    :param loaded_files: Files loaded from requirements.json file.
+    :param loaded_settings: Settings loaded from settings.json file.
     :return: Results of grading.
     """
     logger: Logger = get_logger("process_answer")
@@ -306,13 +272,12 @@ def grade_epicbox(
         profiles=[
             epicbox.Profile(
                 name="python",
-                docker_image=EPICBOX_SETTINGS["profile"]["docker_image"],
-                user="guest",
-                read_only=EPICBOX_SETTINGS["profile"]["read_only"]
+                docker_image=loaded_settings["docker_image"],
+                user="guest"
             )
         ]
     )
-    
+
     # Get all files used during grading
     # Content field should be bytes
     files = []
@@ -325,7 +290,7 @@ def grade_epicbox(
         })
 
     # Loaded files
-    for file in loaded_files["files"]:
+    for file in loaded_settings["files"]:
         with Path(file["path"]).open("rb") as f:
             files.append({
                 "name": file["name"],
@@ -346,9 +311,9 @@ def grade_epicbox(
     logger.debug("Result: %s", result)
 
     grade: dict = {
-        # "correct": True,
+        "correct": True,
         "score": result["stdout"].decode().replace("\n", ""),
         "msg": result["stderr"].decode()
     }
-    
+
     return grade
