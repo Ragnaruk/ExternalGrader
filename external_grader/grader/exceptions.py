@@ -16,8 +16,8 @@ class InvalidSubmissionException(Exception):
     """
 
 
-class InvalidResponseException(Exception):
+class InvalidGraderScriptException(Exception):
     """
-    Exception which is called when either student asnwer doesn't exist or is empty.
+    Exception which is called when grader script returns invalid answer.
     """
     pass
