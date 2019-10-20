@@ -31,18 +31,21 @@ def install(package):
 Имеет формат:
 ```json
 {
-  "external": [
-    {
-      "name": "test-external.txt",
-      "link": "http://captive.apple.com"
-    }
-  ],
-  "local": [
-    {
-      "name": "test-local.txt",
-      "path": settings.json
-    }
-  ]
+  "files": {
+    "external": [
+      {
+        "name": "test-external.txt",
+        "link": "http://captive.apple.com"
+      }
+    ],
+    "local": [
+      {
+        "name": "test-local.txt",
+        "path": "settings.json"
+      }
+    ]
+  },
+  "docker_image": "python:3.8-alpine"
 }
 ```
 
