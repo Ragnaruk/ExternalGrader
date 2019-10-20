@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import sys
 import re
 import random
 import subprocess
@@ -268,4 +269,15 @@ def test_final_video(s):
 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    except AssertionError as exception:
+        print(exception, file=sys.stderr)
+    except Exception as exception:
+        exc_info = sys.exc_info()
+
+        print("Unhandled error during grading.", file=sys.stderr)
+        print("%s", exception, file=sys.stderr)
+        print("%s", exc_info, file=sys.stderr)
+
+    print(100)
