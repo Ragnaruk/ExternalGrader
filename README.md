@@ -32,7 +32,7 @@ cd external_grader
 
 # Добавить конфигурацию используемой очереди в /external_grader/config_queue/
 # Отредактировать файл /external_grader/config/config.py
-docker_images
+# Отредактировать файл /docker-compose.yml
 
 # Запустить файл установки с командой compose
 make compose
