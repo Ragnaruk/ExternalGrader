@@ -19,5 +19,11 @@
       }
     ]
   },
-  "docker_image": "jrottenberg/ffmpeg:4.2-alpine"
+  "docker_image": "ragnaruk/ffmpeg:latest",
+  "container_limits": {
+    "cputime": 30,
+    "realtime": 150,
+    "memory": 512,
+    "processes": -1
+  }
 }
