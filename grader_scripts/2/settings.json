@@ -19,11 +19,16 @@
       }
     ]
   },
-  "docker_image": "ragnaruk/ffmpeg:latest",
   "container_limits": {
     "cputime": 30,
     "realtime": 150,
     "memory": 512,
     "processes": -1
+  },
+  "profile": {
+    "docker_image": "ragnaruk/ffmpeg:latest",
+    "user": "root",
+    "read_only": false,
+    "network_disabled": true
   }
 }

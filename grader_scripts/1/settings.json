@@ -13,11 +13,16 @@
       }
     ]
   },
-  "docker_image": "ragnaruk/python:latest",
   "container_limits": {
     "cputime": 1,
     "realtime": 3,
     "memory": 64,
     "processes": -1
+  },
+  "profile": {
+    "docker_image": "ragnaruk/python:latest",
+    "user": "student",
+    "read_only": false,
+    "network_disabled": true
   }
 }
