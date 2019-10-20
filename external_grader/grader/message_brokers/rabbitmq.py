@@ -93,15 +93,12 @@ def callback_function(
             routing_key=properties.reply_to,
             properties=BasicProperties(correlation_id=properties.correlation_id),
             body=json.dumps(reply))
-
-        # Acknowledge message in queue
-        current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
     except KeyboardInterrupt as exception:
         raise exception
     except Exception as exception:
         logger.error(exception, exc_info=True)
 
-        # Acknowledge message in queue
-        current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
+    # Acknowledge message in queue
+    current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
 
     logger.debug("Finished handling message.")
