@@ -5,10 +5,6 @@ RUN \
     apk add --no-cache openrc make vim docker && \
     rc-update add docker boot
 
-ARG REQUIRED_PROGRAMS
-
-RUN apk add --no-cache ${REQUIRED_PROGRAMS}
-
 ENV PYTHONPATH /external_grader/
 
 COPY . /external_grader
