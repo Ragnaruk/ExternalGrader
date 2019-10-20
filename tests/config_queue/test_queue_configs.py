@@ -27,7 +27,8 @@ def test_queue_configs():
             assert config.USER
             assert config.PASS
             assert config.QUEUE
-        elif config.TYPE == "xqueue":
+        # elif config.TYPE == "xqueue":
+        else:
             assert config.HOST
             assert config.USER
             assert config.PASS
