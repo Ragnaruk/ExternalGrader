@@ -1,18 +1,17 @@
 # -*- coding: UTF-8 -*-
+import sys
 import re
 import random
 import subprocess
-from pathlib import Path
 
-PATH_HOME_DIRECTORY = Path("/home/")
-PATH_VERIFICATION_FILES = Path("/root/")
+PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = "./"
 
 
 ################ Функция, которая запускается снаружи ################
-def main(student_submission, *args):
+def main():
     s = subprocess
 
-    prepare_grader(s, student_submission)
+    prepare_commands_file(s)
 
     test_commands_file(s)
     test_cropped_video(s)
@@ -22,20 +21,11 @@ def main(student_submission, *args):
     test_final_video(s)
 
 
-################ Создаем необходимые для проверки файлы ################
-def prepare_grader(s, student_submission):
-    s.run("wget https://stepic.org/media/attachments/lesson/22602/plate.svg -O " + PATH_VERIFICATION_FILES + "plate1.svg", shell=True)
-    s.run("wget https://stepic.org/media/attachments/lesson/22602/plate2.svg -O " + PATH_VERIFICATION_FILES + "plate2.svg", shell=True)
-    s.run("wget https://stepic.org/media/attachments/lesson/22602/input_video.mp4 -O " + PATH_VERIFICATION_FILES + "input_video.mp4", shell=True)
-    s.run("wget https://stepic.org/media/attachments/lesson/22602/arial.ttf -O " + PATH_VERIFICATION_FILES + "Arial.ttf", shell=True)
+def prepare_commands_file(s):
+    with open("./student_submission.txt") as file_in, open("./commands.sh", "w") as file_out:
+        file_out.write(file_in.read())
 
-    s.run("cp /root/Arial.ttf " + PATH_HOME_DIRECTORY + "Arial.ttf", shell=True)
-    s.run("cp /root/input_video.mp4 " + PATH_HOME_DIRECTORY + "input_video.mp4", shell=True)
-    s.run("echo '' > " + PATH_HOME_DIRECTORY + "commands.sh", shell=True)
     s.run("chmod 0647 " + PATH_HOME_DIRECTORY + "commands.sh", shell=True)
-
-    with open(PATH_HOME_DIRECTORY + "commands.sh", "w") as f:
-        print(student_submission, file=f)
 
 
 ################ Провеяем файл с командами ################
@@ -276,3 +266,18 @@ def test_final_video(s):
     assert s.run(
         'ffmpeg -i ' + PATH_VERIFICATION_FILES + 'plated.mp4 -filter_complex drawtext=x=200:y=476:fontfile=Arial.ttf:fontsize=' + fontsize + ':textfile=' + PATH_VERIFICATION_FILES + 'text.txt:enable=\'between(t\,2\,9)\' -y ' + PATH_VERIFICATION_FILES + 'result.mp4', shell=True).returncode == 0, "Пожалуйста, выберите текст для наложения без сложных комбинаций кавычек"
     check_result_video(s)
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except AssertionError as exception:
+        print(exception, file=sys.stderr)
+    except Exception as exception:
+        exc_info = sys.exc_info()
+
+        print("Unhandled error during grading.", file=sys.stderr)
+        print("%s", exception, file=sys.stderr)
+        print("%s", exc_info, file=sys.stderr)
+
+    print(100)

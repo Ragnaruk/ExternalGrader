@@ -3,16 +3,14 @@ services:
   grader:
     build:
       context: .
-      args:
-        - REQUIRED_PROGRAMS=ffmpeg
     image: ragnaruk/external_grader:latest
     restart: always
     volumes:
-      - ./external_grader/grader_scripts:/external_grader/external_grader/grader_scripts
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      # Name of the imported queue configuration file
+      # Name of the used queue configuration file
       - QUEUE_CONFIG_NAME=rabbitmq_example
-    command: ['python', 'external_grader/external_grader/grader']
+    command: ['python', './external_grader/']
     depends_on:
       - rabbitmq
   rabbitmq:

@@ -1,0 +1,34 @@
+{
+  "files": {
+    "external": [
+      {
+        "name": "plate1.svg",
+        "link": "https://stepic.org/media/attachments/lesson/22602/plate.svg"
+      },
+      {
+        "name": "plate2.svg",
+        "link": "https://stepic.org/media/attachments/lesson/22602/plate2.svg"
+      },
+      {
+        "name": "input_video.mp4",
+        "link": "https://stepic.org/media/attachments/lesson/22602/input_video.mp4"
+      },
+      {
+        "name": "Arial.ttf",
+        "link": "https://stepic.org/media/attachments/lesson/22602/arial.ttf"
+      }
+    ]
+  },
+  "container_limits": {
+    "cputime": 30,
+    "realtime": 150,
+    "memory": 512,
+    "processes": -1
+  },
+  "profile": {
+    "docker_image": "ragnaruk/ffmpeg:latest",
+    "user": "root",
+    "read_only": false,
+    "network_disabled": true
+  }
+}

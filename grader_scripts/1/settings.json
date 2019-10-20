@@ -1,0 +1,28 @@
+{
+  "files": {
+    "external": [
+      {
+        "name": "test-external.txt",
+        "link": "http://captive.apple.com"
+      }
+    ],
+    "local": [
+      {
+        "name": "test-local.txt",
+        "path": "settings.json"
+      }
+    ]
+  },
+  "container_limits": {
+    "cputime": 1,
+    "realtime": 3,
+    "memory": 64,
+    "processes": -1
+  },
+  "profile": {
+    "docker_image": "ragnaruk/python:latest",
+    "user": "guest",
+    "read_only": false,
+    "network_disabled": true
+  }
+}
