@@ -33,7 +33,7 @@ import epicbox
 
 from external_grader.grader.logs import get_logger
 from external_grader.grader.exceptions import FailedFilesLoadException, \
-    InvalidSubmissionException, InvalidResponseException
+    InvalidSubmissionException, InvalidGraderScriptException
 from external_grader.config.config import PATH_DATA_DIRECTORY, PATH_GRADER_SCRIPTS_DIRECTORY, \
     EPICBOX_SETTINGS
 
@@ -53,7 +53,7 @@ def process_answer(
     logger: Logger = get_logger("process_answer")
 
     submission_validate(submission)
-    logger.debug("Student submission is valid")
+    logger.info("Student submission: %s.", submission)
 
     script_name: str = submission["xqueue_body"]["grader_payload"]
     logger.debug("Script name: %s", script_name)
@@ -63,13 +63,14 @@ def process_answer(
     logger.debug("Settings: %s", settings)
 
     # Load required files and raise FailedFilesLoadException if loading failed
-    prepared_files, docker_image, docker_limits = settings_parse(script_name, settings)
-    logger.debug("Docker image: %s", docker_image)
+    prepared_files, docker_profile, docker_limits = settings_parse(script_name, settings)
+    logger.debug("Docker profile: %s", docker_profile)
+    logger.debug("Docker limits: %s", docker_limits)
     logger.debug("Prepared files: %s", prepared_files)
 
     # Run code in a more-or-less secure Docker container
-    grade: dict = grade_epicbox(submission, script_name, prepared_files, docker_image, docker_limits)
-    logger.debug("Grade: %s", grade)
+    grade: dict = grade_epicbox(submission, script_name, prepared_files, docker_profile, docker_limits)
+    logger.info("Grade: %s", grade)
 
     return grade
 
@@ -159,13 +160,13 @@ def settings_load(
 def settings_parse(
         script_name: str,
         settings: dict
-) -> (list, str, dict):
+) -> (list, dict, dict):
     """
     Parse settings for grading script and load required files.
 
     :param script_name: Name of the grading script.
     :param settings: Settings dictionary.
-    :return: List of prepared files, name of the docker image, and container limits.
+    :return: List of prepared files, epicbox profile, and container limits.
 
     :raises FailedFilesLoadException: Failed to load or find required file.
     """
@@ -179,17 +180,17 @@ def settings_parse(
     script_directory: Path = PATH_GRADER_SCRIPTS_DIRECTORY / script_name
     logger.debug("Script directory path: %s", script_directory)
 
-    docker_image: str = EPICBOX_SETTINGS["profile"]["docker_image"]
+    docker_profile: str = EPICBOX_SETTINGS["profile"]
     docker_limits: dict = EPICBOX_SETTINGS["container_limits"]
     prepared_files: list = []
 
-    # Docker image
-    if "docker_image" in settings.keys():
-        docker_image = settings["docker_image"]
-
     # Docker container limits
-    if "docker_limits" in settings.keys():
-        docker_limits = settings["docker_limits"]
+    if "container_limits" in settings.keys():
+        docker_limits = settings["container_limits"]
+
+    # Docker profile
+    if "profile" in settings.keys():
+        docker_profile = settings["profile"]
 
     # Files
     if "files" in settings.keys():
@@ -225,14 +226,14 @@ def settings_parse(
                 else:
                     raise FailedFilesLoadException("Failed to find local file: %s", file_path)
 
-    return prepared_files, docker_image, docker_limits
+    return prepared_files, docker_profile, docker_limits
 
 
 def grade_epicbox(
         submission: dict,
         script_name: str,
         prepared_files: list,
-        docker_image: str,
+        docker_profile: dict,
         docker_limits: dict
 ) -> dict:
     """
@@ -242,7 +243,7 @@ def grade_epicbox(
     :param submission: Student submission received from message broker.
     :param script_name: Name of the grading script.
     :param prepared_files: List of files and their paths.
-    :param docker_image: Name of the docker image.
+    :param docker_profile: Epicbox profile.
     :param docker_limits: Docker container limits.
     :return: Results of grading.
     """
@@ -252,15 +253,17 @@ def grade_epicbox(
         profiles=[
             epicbox.Profile(
                 name="python",
-                docker_image=docker_image,
-                user="guest"
+                docker_image=docker_profile["docker_image"],
+                user=docker_profile["user"],
+                read_only=docker_profile["read_only"],
+                network_disabled=docker_profile["network_disabled"]
             )
         ]
     )
 
     # Get all files used during grading
     # Content field should be bytes
-    files = []
+    files: list = []
 
     # Grading script
     with Path(PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "grade.py").open("rb") as f:
@@ -283,12 +286,15 @@ def grade_epicbox(
         "content": submission_get_response(submission).encode()
     })
 
-    result = epicbox.run("python", "python3 grade.py", files=files, limits=docker_limits)
+    result: dict = epicbox.run("python", "python3 grade.py", files=files, limits=docker_limits)
     logger.debug("Result: %s", result)
 
-    score: str = result["stdout"].decode().replace("\n", "")
-    msg: str = result["stderr"].decode()
-    correct: bool = bool(score) and int(score) == 100
+    try:
+        score: int = int(result["stdout"].decode().replace("\n", ""))
+        msg: str = result["stderr"].decode()
+        correct: bool = score == 100
+    except ValueError:
+        raise InvalidGraderScriptException("Grading script returned invalid results: %s", result)
 
     grade: dict = {
         "correct": correct,
