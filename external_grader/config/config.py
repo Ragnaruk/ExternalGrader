@@ -9,7 +9,7 @@ PATH_DATA_DIRECTORY = Path.cwd() / "data"
 PATH_GRADER_SCRIPTS_DIRECTORY = Path.cwd() / "grader_scripts"
 
 # Possible log levels: DEBUG, INFO, ERROR
-LOG_LEVEL = DEBUG
+LOG_LEVEL = INFO
 LOG_FORMAT = "%(asctime)s - %(levelname)-5s - %(filename)s:%(lineno)-3d - %(message)s"
 
 # Number of seconds to wait between connections attempts to message broker
@@ -32,7 +32,10 @@ EPICBOX_SETTINGS = {
         "processes": -1
     },
     "profile": {
-        "docker_image": "python:3.8-alpine"
+        "docker_image": "ragnaruk/python:latest",
+        "user": "student",
+        "read_only": False,
+        "network_disabled": True
     }
 }
 
