@@ -6,6 +6,9 @@
 ### grade.py
 Файл, где находится основная логика скрипта проверки.
 
+Значение поля `score` берется из stdout, а поля `msg` — из stderr.
+Поле `correct` равно `true`, если `score` = 100, иначе — `false`.
+
 Ответ студента будет находится в файле: `student_submission.txt`.
 Он и все файлы из settings.json будут находится в одной директории со скриптом проверки.
 
@@ -52,12 +55,17 @@ def install(package):
       }
     ]
   },
-  "docker_image": "ragnaruk/python:latest",
   "container_limits": {
     "cputime": 1,
     "realtime": 3,
     "memory": 64,
     "processes": -1
+  },
+  "profile": {
+    "docker_image": "ragnaruk/python:latest",
+    "user": "student",
+    "read_only": true,
+    "network_disabled": true
   }
 }
 ```
@@ -67,9 +75,13 @@ def install(package):
     * `name` — название, которое будет иметь загруженный файл.
     * `link` — ссылка на файл.
     * `path` — относительный путь до файла.
-* `docker_image` — название Docker-образа, который будет взят за основу контейнера.
 * `container_limits` — лимиты контейнера.
     * `cputime` — время процессора в секундах. 
     * `realtime` — время выполнения в секундах.
     * `memory` — количество оперативной памяти в мегабайтах.
     * `processes` — количество возможных процессов. -1 для бесконечного.
+* `epicbox_profile` — профиль для контейнера.
+    * `docker_image` — название Docker-образа, который будет взят за основу контейнера.
+    * `user` — имя пользователя, от которого будет запущен скрипт.
+    * `read_only` — разрешение записи файлов внутри контейнера.
+    * `network_disabled` — разрешение использование сети.

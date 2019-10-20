@@ -74,6 +74,9 @@ make compose
 ### grade.py
 Файл, где находится основная логика скрипта проверки.
 
+Значение поля `score` берется из stdout, а поля `msg` — из stderr.
+Поле `correct` равно `true`, если `score` = 100, иначе — `false`.
+
 Ответ студента будет находится в файле: `student_submission.txt`.
 Он и все файлы из settings.json будут находится в одной директории со скриптом проверки.
 
@@ -120,12 +123,17 @@ def install(package):
       }
     ]
   },
-  "docker_image": "ragnaruk/python:latest",
   "container_limits": {
     "cputime": 1,
     "realtime": 3,
     "memory": 64,
     "processes": -1
+  },
+  "profile": {
+    "docker_image": "ragnaruk/python:latest",
+    "user": "student",
+    "read_only": true,
+    "network_disabled": true
   }
 }
 ```
@@ -141,6 +149,10 @@ def install(package):
     * `realtime` — время выполнения в секундах.
     * `memory` — количество оперативной памяти в мегабайтах.
     * `processes` — количество возможных процессов. -1 для бесконечного.
+* `epicbox_profile` — профиль для контейнера.
+    * `user` — имя пользователя, от которого будет запущен скрипт.
+    * `read_only` — разрешение записи файлов внутри контейнера.
+    * `network_disabled` — разрешение использование сети.
 
 ## Ссылки
 * [edX External Grader](https://edx.readthedocs.io/projects/edx-partner-course-staff/en/latest/exercises_tools/external_graders.html) — описание внешнего грейдера.
