@@ -32,8 +32,7 @@ EPICBOX_SETTINGS = {
         "processes": -1
     },
     "profile": {
-        "docker_image": "python:3.8-alpine",
-        "read_only": False
+        "docker_image": "python:3.8-alpine"
     }
 }
 
