@@ -24,6 +24,9 @@ requirements-dev: requirements-test
 test: requirements-test
 	pytest -vvv
 
+test-cov: requirements-test
+	pytest --cov-report term-missing --cov=./ -vvv
+
 prepare:
 	docker-compose -f docker-compose.reqs.yml build
 
@@ -35,4 +38,4 @@ update:
 	git reset --hard
 	git pull https://github.com/Ragnaruk/external_grader.git
 
-.PHONY: requirements requirements-test requirements-dev test prepare compose update
+.PHONY: requirements requirements-test requirements-dev test test-cov prepare compose update
