@@ -103,12 +103,13 @@ def submission_validate(
     if not (
             "student_response" in submission["xqueue_body"].keys()
             and submission["xqueue_body"]["student_response"]
-    ) or (
-            "xqueue_files" in submission.keys()
-            and "student_submission" in submission["xqueue_files"].keys()
-            and submission["xqueue_files"]["student_submission"]
     ):
-        raise InvalidSubmissionException("Submission has invalid student response:", submission)
+        if not (
+                "xqueue_files" in submission.keys()
+                and "student_response.txt" in submission["xqueue_files"].keys()
+                and submission["xqueue_files"]["student_response.txt"]
+        ):
+            raise InvalidSubmissionException("Submission has invalid student response:", submission)
 
 
 def submission_get_response(
@@ -124,7 +125,7 @@ def submission_get_response(
         response: str = submission["xqueue_body"]["student_response"]
     else:
         local_filename, _ = urllib.request.urlretrieve(
-            submission["xqueue_files"]["student_submission"]
+            submission["xqueue_files"]["student_response.txt"]
         )
 
         with open(local_filename) as file:
@@ -177,7 +178,7 @@ def settings_parse(
     script_directory: Path = PATH_GRADER_SCRIPTS_DIRECTORY / script_name
     logger.debug("Script directory path: %s", script_directory)
 
-    docker_profile: str = EPICBOX_SETTINGS["profile"]
+    docker_profile: dict = EPICBOX_SETTINGS["profile"]
     docker_limits: dict = EPICBOX_SETTINGS["container_limits"]
     prepared_files: list = []
 
@@ -279,7 +280,7 @@ def grade_epicbox(
 
     # Student submission
     files.append({
-        "name": "student_submission.txt",
+        "name": "student_response.txt",
         "content": submission_get_response(submission).encode()
     })
 
