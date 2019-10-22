@@ -35,7 +35,7 @@ def read_student_submission() -> str:
 
     :return: Student submission.
     """
-    with open("./student_submission.txt") as file:
+    with open("./student_response.txt") as file:
         return file.read()
 
 
