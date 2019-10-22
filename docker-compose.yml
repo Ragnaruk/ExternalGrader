@@ -7,6 +7,8 @@ services:
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - ./tests:/external_grader/tests
+      - ./grader_scripts:/external_grader/grader_scripts
     environment:
       # Name of the used queue configuration file
       - QUEUE_CONFIG_NAME=rabbitmq_example
