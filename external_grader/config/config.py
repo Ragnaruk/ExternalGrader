@@ -4,9 +4,10 @@ General config.
 from logging import DEBUG, INFO, ERROR
 from pathlib import Path
 
-PATH_LOG_DIRECTORY = Path.cwd() / "logs"
-PATH_DATA_DIRECTORY = Path.cwd() / "data"
-PATH_GRADER_SCRIPTS_DIRECTORY = Path.cwd() / "grader_scripts"
+PATH_ROOT_DIRECTORY = Path(__file__).parent.parent.parent
+PATH_LOG_DIRECTORY = PATH_ROOT_DIRECTORY / "logs"
+PATH_DATA_DIRECTORY = PATH_ROOT_DIRECTORY / "data"
+PATH_GRADER_SCRIPTS_DIRECTORY = PATH_ROOT_DIRECTORY / "grader_scripts"
 
 # Possible log levels: DEBUG, INFO, ERROR
 LOG_LEVEL = INFO
