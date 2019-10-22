@@ -19,7 +19,11 @@ def main():
 
         print(0)
     else:
-        if parsed_answer != 5:
+        if parsed_answer == -1000:
+            print("Неверный формат сообщений.", file=sys.stderr)
+
+            print("Неверный формат сообщений.")
+        elif parsed_answer != 5:
             print("Ответ не равен 5.", file=sys.stderr)
 
             print(50)
