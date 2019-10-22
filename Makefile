@@ -22,7 +22,7 @@ requirements-dev: requirements-test
 	pip install -qr requirements/requirements-dev.txt
 
 test: requirements-test
-	pytest -v
+	pytest -vvv
 
 prepare:
 	docker-compose -f docker-compose.reqs.yml build
