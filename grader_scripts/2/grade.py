@@ -22,7 +22,7 @@ def main():
 
 
 def prepare_commands_file(s):
-    with open("./student_submission.txt") as file_in, open("./commands.sh", "w") as file_out:
+    with open("./student_response.txt") as file_in, open("./commands.sh", "w") as file_out:
         file_out.write(file_in.read())
 
     s.run("chmod 0647 " + PATH_HOME_DIRECTORY + "commands.sh", shell=True)
