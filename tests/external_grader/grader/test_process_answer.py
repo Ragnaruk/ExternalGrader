@@ -288,6 +288,37 @@ def test_submission_settings_parse_valid_profile():
     assert process_answer.settings_parse(script_name, settings) == expected_response
 
 
+def test_submission_settings_parse_valid_external():
+    """
+    Test grader.process_answer.settings_parse function.
+    """
+    script_name: str = "1"
+    settings: dict = {
+        "files": {
+            "external": [
+                {
+                    "name": "test-external.txt",
+                    "link": "http://captive.apple.com"
+                }
+            ]
+        }
+    }
+
+    expected_response: tuple = (
+        [
+            {
+                "type": "external",
+                "name": "test-external.txt",
+                "path": PATH_DATA_DIRECTORY / "grader_scripts/1/test-external.txt"
+            }
+        ],
+        EPICBOX_SETTINGS["profile"],
+        EPICBOX_SETTINGS["container_limits"]
+    )
+
+    assert process_answer.settings_parse(script_name, settings) == expected_response
+
+
 def test_submission_settings_parse_valid_all():
     """
     Test grader.process_answer.settings_parse function.
