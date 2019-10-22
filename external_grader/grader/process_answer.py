@@ -149,8 +149,11 @@ def settings_load(
     logger.debug("Settings file path: %s", settings_file)
 
     # Load settings
-    with settings_file.open() as file:
-        settings = json.load(file)
+    if settings_file.is_file():
+        with settings_file.open() as file:
+            settings = json.load(file)
+    else:
+        raise InvalidGraderScriptException("Grading script has no settings file: %s", script_name)
 
     return settings
 
