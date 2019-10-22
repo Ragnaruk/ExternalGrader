@@ -74,9 +74,6 @@ make compose
 ### grade.py
 Файл, где находится основная логика скрипта проверки.
 
-Значение поля `score` берется из stdout, а поля `msg` — из stderr.
-Поле `correct` равно `true`, если `score` = 100, иначе — `false`.
-
 Ответ студента будет находится в файле: `student_submission.txt`.
 Он и все файлы из settings.json будут находится в одной директории со скриптом проверки.
 
@@ -102,6 +99,10 @@ def install(package):
         [sys.executable, "-m", "pip", "install", package]
     )
 ```
+
+Значение поля `score` берется из `stdout`, а поля `msg` — из `stderr`.
+Программа ожидает, что в stdout будет только одно число — оценка.
+Поле `correct` равно `true`, если `score` = 100, иначе — `false`.
 
 ### settings.json
 Файл, где находятся настройки скрипта проверки.
