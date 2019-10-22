@@ -93,13 +93,10 @@ def submission_validate(
     # Check grader payload
     if "grader_payload" not in submission["xqueue_body"].keys():
         raise InvalidSubmissionException("Submission doesn't have grader_payload: %s", submission)
+    
+    script_name: str = submission["xqueue_body"]["grader_payload"]
 
-    try:
-        script_name: str = submission["xqueue_body"]["grader_payload"]
-
-        if not Path(PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "grade.py").is_file():
-            raise Exception
-    except Exception:
+    if not Path(PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "grade.py").is_file():
         raise InvalidSubmissionException("Submission has invalid grader_payload: %s", submission)
 
     # Check the existence of student answer
