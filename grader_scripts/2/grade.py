@@ -271,13 +271,16 @@ def test_final_video(s):
 if __name__ == '__main__':
     try:
         main()
+
+        print(100)
     except AssertionError as exception:
         print(exception, file=sys.stderr)
+        print(0)
     except Exception as exception:
         exc_info = sys.exc_info()
 
         print("Unhandled error during grading.", file=sys.stderr)
         print("%s", exception, file=sys.stderr)
         print("%s", exc_info, file=sys.stderr)
+        print(0)
 
-    print(100)
