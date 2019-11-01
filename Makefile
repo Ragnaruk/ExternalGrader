@@ -7,6 +7,7 @@ help:
 	@echo '    make requirements-test         install test requirements                                 '
 	@echo '    make requirements-dev          install dev requirements                                  '
 	@echo '    make test                      run tests                                                 '
+	@echo '    make test-cov                  run tests with coverage                                   '
 	@echo '    make prepare                   build images required for grading                         '
 	@echo '    make compose                   build and launch prod containers via docker-compose       '
 	@echo '    make update                    reset changes and pull the newest version from git        '
