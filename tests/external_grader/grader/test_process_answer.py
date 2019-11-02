@@ -173,7 +173,7 @@ def test_submission_get_response_file():
     }
 
     expected_response: str = "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY>" \
-                             "</HTML>\n"
+                             "</HTML>"
 
     assert process_answer.submission_get_response(submission) == expected_response
 
