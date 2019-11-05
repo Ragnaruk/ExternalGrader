@@ -36,12 +36,24 @@ def test_submission_validate_valid_body_payload_dict():
     process_answer.submission_validate(submission)
 
 
-def test_submission_validate_valid_file():
+def test_submission_validate_valid_file_str():
     """
     Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_files": {"student_response.txt": "http://captive.apple.com"},
+        "xqueue_body": {"grader_payload": "1"},
+    }
+
+    process_answer.submission_validate(submission)
+
+
+def test_submission_validate_valid_file_dict():
+    """
+    Test process_answer.submission_validate function.
+    """
+    submission: dict = {
+        "xqueue_files": '{"student_response.txt": "http://captive.apple.com"}',
         "xqueue_body": {"grader_payload": "1"},
     }
 
