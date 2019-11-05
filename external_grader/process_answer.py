@@ -107,7 +107,9 @@ def submission_validate(submission: dict) -> dict:
             "Submission doesn't have grader_payload:", submission
         )
 
-    if submission["xqueue_body"]["grader_payload"].startswith("{"):
+    if isinstance(submission["xqueue_body"]["grader_payload"], str) and submission[
+        "xqueue_body"
+    ]["grader_payload"].startswith("{"):
         submission["xqueue_body"]["grader_payload"]: dict = json.loads(
             submission["xqueue_body"]["grader_payload"]
         )
