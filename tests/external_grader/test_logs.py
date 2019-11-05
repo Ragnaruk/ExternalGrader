@@ -1,7 +1,7 @@
 """
 PyTest test file for grader.logs module.
 """
-from external_grader.grader import logs
+from external_grader import logs
 
 
 def test_get_logger():

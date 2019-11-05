@@ -3,8 +3,8 @@ PyTest test file for grader_scripts.1.grade module.
 """
 import pytest
 
-from external_grader.grader import process_answer
-from external_grader.grader.exceptions import InvalidGraderScriptException
+from external_grader import process_answer
+from external_grader.exceptions import InvalidGraderScriptException
 
 
 def test_grade_incorrect_not_number():

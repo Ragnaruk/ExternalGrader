@@ -1,23 +1,23 @@
 """
-PyTest test file for config_queue.* modules.
+PyTest test file for queue_configuration.* modules.
 """
 import glob
 import importlib
 from os.path import dirname, basename, isfile, join
 
-from external_grader import config_queue
+import queue_configuration
 
 
 def test_queue_configs():
     """
-    Test config_queue.* files.
+    Test queue_configuration.* files.
     """
-    modules = glob.glob(join(dirname(config_queue.__file__), "*.py"))
+    modules = glob.glob(join(dirname(queue_configuration.__file__), "*.py"))
     names = [basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')]
 
-    # Import all files in config_queue module and check whether expected variables exist
+    # Import all files in queue_configuration module and check whether expected variables exist
     for name in names:
-        config = importlib.import_module("external_grader.config_queue." + name)
+        config = importlib.import_module("queue_configuration." + name)
 
         assert config.TYPE in ["rabbitmq", "xqueue"]
 

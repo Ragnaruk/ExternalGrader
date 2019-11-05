@@ -3,10 +3,10 @@ PyTest test file for grader.process_answer module.
 """
 import pytest
 
-from external_grader.grader import process_answer
-from external_grader.grader.exceptions import FailedFilesLoadException, \
+from external_grader import process_answer
+from external_grader.exceptions import FailedFilesLoadException, \
     InvalidSubmissionException, InvalidGraderScriptException
-from external_grader.config.config import PATH_DATA_DIRECTORY, PATH_GRADER_SCRIPTS_DIRECTORY, \
+from external_grader.config import PATH_DATA_DIRECTORY, PATH_GRADER_SCRIPTS_DIRECTORY, \
     EPICBOX_SETTINGS
 
 
