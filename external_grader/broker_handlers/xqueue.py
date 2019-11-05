@@ -33,7 +33,14 @@ def receive_messages(
     xqueue_login_url = host + "/xqueue/login/"
 
     logger.debug("Logging in to: %s with credentials: %s:%s", xqueue_login_url, user, password)
-    response = session.post(xqueue_login_url, auth=HTTPBasicAuth(user, password))
+    response = session.post(
+        xqueue_login_url,
+        auth=None,
+        data={
+            "username": user,
+            "password": password
+        }
+    )
 
     if response.status_code != 200:
         logger.error("Login failed: %s %s", response.status_code, response.content)
@@ -85,12 +92,19 @@ def process_submission(
     logger.debug("GET request response: %s", response.json())
 
     try:
-        message = json.loads(response.content.decode("utf8").replace("\'", "\""))
-        logger.debug("Received message: %s", message)
+        message: str = response.json()["content"]
+        logger.debug("Message: %s", message)
+
+        if message.startswith("Queue"):
+            logger.debug("Queue is empty: %s", message)
+            return
+
+        content: dict = json.loads(message)
+        logger.debug("Content: %s", content)
 
         reply: dict = {
-            "xqueue_header": message["xqueue_header"],
-            "xqueue_body": json.dumps(process_answer(message))
+            "xqueue_header": content["xqueue_header"],
+            "xqueue_body": json.dumps(process_answer(content))
         }
         logger.debug("Reply message: %s", reply)
 
@@ -101,7 +115,5 @@ def process_submission(
             data=reply
         )
         logger.debug("POST request response: %s", response.json())
-    except KeyboardInterrupt as exception:
-        raise exception
     except Exception as exception:
-        logger.error(exception, exc_info=True)
+        raise exception
