@@ -52,8 +52,8 @@ def process_answer(
     """
     logger: Logger = get_logger("process_answer")
 
-    submission_validate(submission)
-    logger.info("Student submission: %s.", submission)
+    submission: dict = submission_validate(submission)
+    logger.info("Student submission: %s", submission)
 
     script_name: str = submission_get_grader_payload(submission)
     logger.debug("Script name: %s", script_name)
@@ -77,7 +77,7 @@ def process_answer(
 
 def submission_validate(
         submission: dict
-) -> None:
+) -> dict:
     """
     Validate received student submission.
 
@@ -90,9 +90,16 @@ def submission_validate(
     if "xqueue_body" not in submission.keys():
         raise InvalidSubmissionException("Submission doesn't have xqueue_body:", submission)
 
+    if isinstance(submission["xqueue_body"], str):
+        submission["xqueue_body"]: dict = json.loads(submission["xqueue_body"])
+
     # Check grader payload
     if "grader_payload" not in submission["xqueue_body"].keys():
         raise InvalidSubmissionException("Submission doesn't have grader_payload:", submission)
+
+    if submission["xqueue_body"]["grader_payload"].startswith("{"):
+        submission["xqueue_body"]["grader_payload"]: dict = \
+            json.loads(submission["xqueue_body"]["grader_payload"])
 
     # Check for grading script id
     if (
@@ -119,6 +126,8 @@ def submission_validate(
                 and submission["xqueue_files"]["student_response.txt"]
         ):
             raise InvalidSubmissionException("Submission has invalid student response:", submission)
+
+    return submission
 
 
 def submission_get_response(
