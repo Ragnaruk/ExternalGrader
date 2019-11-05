@@ -7,7 +7,6 @@ class FailedFilesLoadException(Exception):
     """
     Exception which is called when grader failed to load files required for grading.
     """
-    pass
 
 
 class InvalidSubmissionException(Exception):
@@ -20,4 +19,3 @@ class InvalidGraderScriptException(Exception):
     """
     Exception which is called when grader script returns invalid answer.
     """
-    pass
