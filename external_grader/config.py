@@ -4,7 +4,7 @@ General config.
 from logging import DEBUG, INFO, ERROR
 from pathlib import Path
 
-PATH_ROOT_DIRECTORY = Path(__file__).parent.parent.parent
+PATH_ROOT_DIRECTORY = Path(__file__).parent.parent
 PATH_LOG_DIRECTORY = PATH_ROOT_DIRECTORY / "logs"
 PATH_DATA_DIRECTORY = PATH_ROOT_DIRECTORY / "data"
 PATH_GRADER_SCRIPTS_DIRECTORY = PATH_ROOT_DIRECTORY / "grader_scripts"
