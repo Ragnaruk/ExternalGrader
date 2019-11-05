@@ -137,9 +137,8 @@ def submission_validate(submission: dict) -> dict:
         "student_response" in submission["xqueue_body"].keys()
         and submission["xqueue_body"]["student_response"]
     ):
-        if (
-                "xqueue_files" in submission.keys()
-                and isinstance(submission["xqueue_files"], str)
+        if "xqueue_files" in submission.keys() and isinstance(
+            submission["xqueue_files"], str
         ):
             submission["xqueue_files"]: dict = json.loads(submission["xqueue_files"])
 
