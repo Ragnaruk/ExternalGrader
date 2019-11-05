@@ -55,7 +55,7 @@ def process_answer(
     submission_validate(submission)
     logger.info("Student submission: %s.", submission)
 
-    script_name: str = submission_get_grader_payload
+    script_name: str = submission_get_grader_payload(submission)
     logger.debug("Script name: %s", script_name)
 
     # Load settings from file
