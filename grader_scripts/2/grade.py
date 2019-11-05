@@ -272,7 +272,7 @@ if __name__ == '__main__':
     try:
         main()
 
-        print(100)
+        print(1)
     except AssertionError as exception:
         print(exception, file=sys.stderr)
         print(0)

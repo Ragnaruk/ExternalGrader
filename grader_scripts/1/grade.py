@@ -26,11 +26,11 @@ def main():
         elif parsed_answer != 5:
             print("Ответ не равен 5.", file=sys.stderr)
 
-            print(50)
+            print(0)
         else:
             print("Верный ответ.", file=sys.stderr)
 
-            print(100)
+            print(1)
 
 
 def read_student_submission() -> str:
