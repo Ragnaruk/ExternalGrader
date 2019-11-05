@@ -17,7 +17,7 @@ LOG_FORMAT = "%(asctime)s - %(levelname)-5s - %(filename)s:%(lineno)-3d - %(mess
 CONNECTION_RETRY_TIME = 10
 
 # Name of the python file with default message broker config
-QUEUE_CONFIG_NAME = "rabbitmq_example"
+QUEUE_CONFIG_NAME = "stepik"
 
 # https://github.com/StepicOrg/epicbox
 EPICBOX_SETTINGS = {
@@ -30,13 +30,12 @@ EPICBOX_SETTINGS = {
         "memory": 512,
         # Limit the max processes the sandbox can have
         # -1 or None for unlimited(default)
-        "processes": -1
+        "processes": -1,
     },
     "profile": {
         "docker_image": "ragnaruk/python:latest",
         "user": "student",
         "read_only": False,
-        "network_disabled": True
-    }
+        "network_disabled": True,
+    },
 }
-

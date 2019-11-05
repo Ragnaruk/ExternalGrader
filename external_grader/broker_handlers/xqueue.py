@@ -11,11 +11,7 @@ from external_grader.process_answer import process_answer
 
 
 def receive_messages(
-        host: str,
-        user: str,
-        password: str,
-        queue: str,
-        polling_interval: int
+    host: str, user: str, password: str, queue: str, polling_interval: int
 ) -> None:
     """
     Start consuming messages from XQueue broker.
@@ -32,14 +28,11 @@ def receive_messages(
 
     xqueue_login_url = host + "/xqueue/login/"
 
-    logger.debug("Logging in to: %s with credentials: %s:%s", xqueue_login_url, user, password)
+    logger.debug(
+        "Logging in to: %s with credentials: %s:%s", xqueue_login_url, user, password
+    )
     response = session.post(
-        xqueue_login_url,
-        auth=None,
-        data={
-            "username": user,
-            "password": password
-        }
+        xqueue_login_url, auth=None, data={"username": user, "password": password}
     )
 
     if response.status_code != 200:
@@ -62,11 +55,7 @@ def receive_messages(
 
 
 def process_submission(
-        session: requests.Session,
-        host: str,
-        user: str,
-        password: str,
-        queue: str
+    session: requests.Session, host: str, user: str, password: str, queue: str
 ) -> None:
     """
     Get submission from XQueue, process it, and put results back.
@@ -85,9 +74,7 @@ def process_submission(
     response: requests.Response = session.get(
         xqueue_get_submission_url,
         auth=HTTPBasicAuth(user, password),
-        params={
-            "queue_name": queue
-        }
+        params={"queue_name": queue},
     )
     logger.debug("GET request response: %s", response.json())
 
@@ -104,7 +91,7 @@ def process_submission(
 
         reply: dict = {
             "xqueue_header": content["xqueue_header"],
-            "xqueue_body": json.dumps(process_answer(content))
+            "xqueue_body": json.dumps(process_answer(content)),
         }
         logger.debug("Reply message: %s", reply)
 
@@ -112,7 +99,7 @@ def process_submission(
             xqueue_put_result_url,
             auth=HTTPBasicAuth(user, password),
             verify=False,
-            data=reply
+            data=reply,
         )
         logger.debug("POST request response: %s", response.json())
     except Exception as exception:

@@ -32,15 +32,19 @@ from logging import Logger
 import epicbox
 
 from external_grader.logs import get_logger
-from external_grader.exceptions import FailedFilesLoadException, \
-    InvalidSubmissionException, InvalidGraderScriptException
-from external_grader.config import PATH_DATA_DIRECTORY, PATH_GRADER_SCRIPTS_DIRECTORY, \
-    EPICBOX_SETTINGS
+from external_grader.exceptions import (
+    FailedFilesLoadException,
+    InvalidSubmissionException,
+    InvalidGraderScriptException,
+)
+from external_grader.config import (
+    PATH_DATA_DIRECTORY,
+    PATH_GRADER_SCRIPTS_DIRECTORY,
+    EPICBOX_SETTINGS,
+)
 
 
-def process_answer(
-        submission: dict
-) -> dict:
+def process_answer(submission: dict) -> dict:
     """
     Function which receives answers, proceeds them, and returns results.
 
@@ -63,21 +67,23 @@ def process_answer(
     logger.debug("Settings: %s", settings)
 
     # Load required files and raise FailedFilesLoadException if loading failed
-    prepared_files, docker_profile, docker_limits = settings_parse(script_name, settings)
+    prepared_files, docker_profile, docker_limits = settings_parse(
+        script_name, settings
+    )
     logger.debug("Docker profile: %s", docker_profile)
     logger.debug("Docker limits: %s", docker_limits)
     logger.debug("Prepared files: %s", prepared_files)
 
     # Run code in a more-or-less secure Docker container
-    grade: dict = grade_epicbox(submission, script_name, prepared_files, docker_profile, docker_limits)
+    grade: dict = grade_epicbox(
+        submission, script_name, prepared_files, docker_profile, docker_limits
+    )
     logger.info("Grade: %s", grade)
 
     return grade
 
 
-def submission_validate(
-        submission: dict
-) -> dict:
+def submission_validate(submission: dict) -> dict:
     """
     Validate received student submission.
 
@@ -88,51 +94,60 @@ def submission_validate(
     """
     # Check the existence of body field
     if "xqueue_body" not in submission.keys():
-        raise InvalidSubmissionException("Submission doesn't have xqueue_body:", submission)
+        raise InvalidSubmissionException(
+            "Submission doesn't have xqueue_body:", submission
+        )
 
     if isinstance(submission["xqueue_body"], str):
         submission["xqueue_body"]: dict = json.loads(submission["xqueue_body"])
 
     # Check grader payload
     if "grader_payload" not in submission["xqueue_body"].keys():
-        raise InvalidSubmissionException("Submission doesn't have grader_payload:", submission)
+        raise InvalidSubmissionException(
+            "Submission doesn't have grader_payload:", submission
+        )
 
     if submission["xqueue_body"]["grader_payload"].startswith("{"):
-        submission["xqueue_body"]["grader_payload"]: dict = \
-            json.loads(submission["xqueue_body"]["grader_payload"])
+        submission["xqueue_body"]["grader_payload"]: dict = json.loads(
+            submission["xqueue_body"]["grader_payload"]
+        )
 
     # Check for grading script id
     if (
-            isinstance(submission["xqueue_body"]["grader_payload"], dict)
-            and "script_id" in submission["xqueue_body"]["grader_payload"]
+        isinstance(submission["xqueue_body"]["grader_payload"], dict)
+        and "script_id" in submission["xqueue_body"]["grader_payload"]
     ):
         script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
     elif isinstance(submission["xqueue_body"]["grader_payload"], str):
         script_name: str = submission["xqueue_body"]["grader_payload"]
     else:
-        raise InvalidSubmissionException("Submission doesn't have script id:", submission)
+        raise InvalidSubmissionException(
+            "Submission doesn't have script id:", submission
+        )
 
     if not Path(PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "grade.py").is_file():
-        raise InvalidSubmissionException("Submission has invalid grader_payload:", submission)
+        raise InvalidSubmissionException(
+            "Submission has invalid grader_payload:", submission
+        )
 
     # Check the existence of student answer
     if not (
-            "student_response" in submission["xqueue_body"].keys()
-            and submission["xqueue_body"]["student_response"]
+        "student_response" in submission["xqueue_body"].keys()
+        and submission["xqueue_body"]["student_response"]
     ):
         if not (
-                "xqueue_files" in submission.keys()
-                and "student_response.txt" in submission["xqueue_files"].keys()
-                and submission["xqueue_files"]["student_response.txt"]
+            "xqueue_files" in submission.keys()
+            and "student_response.txt" in submission["xqueue_files"].keys()
+            and submission["xqueue_files"]["student_response.txt"]
         ):
-            raise InvalidSubmissionException("Submission has invalid student response:", submission)
+            raise InvalidSubmissionException(
+                "Submission has invalid student response:", submission
+            )
 
     return submission
 
 
-def submission_get_response(
-        submission: dict
-) -> str:
+def submission_get_response(submission: dict) -> str:
     """
     Get student response from submission.
 
@@ -152,9 +167,7 @@ def submission_get_response(
     return response
 
 
-def submission_get_grader_payload(
-        submission: dict
-) -> str:
+def submission_get_grader_payload(submission: dict) -> str:
     """
     Get grader payload from submission.
 
@@ -162,8 +175,8 @@ def submission_get_grader_payload(
     :return: Grader payload.
     """
     if (
-            isinstance(submission["xqueue_body"]["grader_payload"], dict)
-            and "script_id" in submission["xqueue_body"]["grader_payload"]
+        isinstance(submission["xqueue_body"]["grader_payload"], dict)
+        and "script_id" in submission["xqueue_body"]["grader_payload"]
     ):
         script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
     else:
@@ -172,9 +185,7 @@ def submission_get_grader_payload(
     return script_name
 
 
-def settings_load(
-        script_name: str
-) -> dict:
+def settings_load(script_name: str) -> dict:
     """
     Load settings for grading script.
 
@@ -191,15 +202,14 @@ def settings_load(
         with settings_file.open() as file:
             settings = json.load(file)
     else:
-        raise InvalidGraderScriptException("Grading script has no settings file: %s", script_name)
+        raise InvalidGraderScriptException(
+            "Grading script has no settings file: %s", script_name
+        )
 
     return settings
 
 
-def settings_parse(
-        script_name: str,
-        settings: dict
-) -> (list, dict, dict):
+def settings_parse(script_name: str, settings: dict) -> (list, dict, dict):
     """
     Parse settings for grading script and load required files.
 
@@ -241,7 +251,9 @@ def settings_parse(
 
             for f in files:
                 file_path: Path = data_directory / f["name"]
-                prepared_files.append({"type": "external","name": f["name"],"path": file_path})
+                prepared_files.append(
+                    {"type": "external", "name": f["name"], "path": file_path}
+                )
 
                 if file_path.is_file():
                     logger.debug("File already downloaded: %s", file_path)
@@ -250,7 +262,9 @@ def settings_parse(
                         urllib.request.urlretrieve(f["link"], file_path)
                         logger.debug("File downloaded: %s", file_path)
                     except Exception:
-                        raise FailedFilesLoadException("Failed to download file: %s", f["link"])
+                        raise FailedFilesLoadException(
+                            "Failed to download file: %s", f["link"]
+                        )
 
         # Check existence of local files
         if "local" in all_files.keys():
@@ -258,22 +272,26 @@ def settings_parse(
 
             for f in files:
                 file_path = script_directory / f["path"]
-                prepared_files.append({"type": "local","name": f["name"],"path": file_path})
+                prepared_files.append(
+                    {"type": "local", "name": f["name"], "path": file_path}
+                )
 
                 if file_path.is_file():
                     logger.debug("Local file exists: %s", file_path)
                 else:
-                    raise FailedFilesLoadException("Failed to find local file: %s", file_path)
+                    raise FailedFilesLoadException(
+                        "Failed to find local file: %s", file_path
+                    )
 
     return prepared_files, docker_profile, docker_limits
 
 
 def grade_epicbox(
-        submission: dict,
-        script_name: str,
-        prepared_files: list,
-        docker_profile: dict,
-        docker_limits: dict
+    submission: dict,
+    script_name: str,
+    prepared_files: list,
+    docker_profile: dict,
+    docker_limits: dict,
 ) -> dict:
     """
     Running grading script in a separate Docker container.
@@ -295,7 +313,7 @@ def grade_epicbox(
                 docker_image=docker_profile["docker_image"],
                 user=docker_profile["user"],
                 read_only=docker_profile["read_only"],
-                network_disabled=docker_profile["network_disabled"]
+                network_disabled=docker_profile["network_disabled"],
             )
         ]
     )
@@ -306,39 +324,35 @@ def grade_epicbox(
 
     # Grading script
     with Path(PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "grade.py").open("rb") as f:
-        files.append({
-            "name": "grade.py",
-            "content": f.read()
-        })
+        files.append({"name": "grade.py", "content": f.read()})
 
     # Required files
     for file in prepared_files:
         with Path(file["path"]).open("rb") as f:
-            files.append({
-                "name": file["name"],
-                "content": f.read()
-            })
+            files.append({"name": file["name"], "content": f.read()})
 
     # Student submission
-    files.append({
-        "name": "student_response.txt",
-        "content": submission_get_response(submission).encode()
-    })
+    files.append(
+        {
+            "name": "student_response.txt",
+            "content": submission_get_response(submission).encode(),
+        }
+    )
 
-    result: dict = epicbox.run("python", "python3 grade.py", files=files, limits=docker_limits)
+    result: dict = epicbox.run(
+        "python", "python3 grade.py", files=files, limits=docker_limits
+    )
     logger.debug("Result: %s", result)
 
     try:
         score: int = int(result["stdout"].decode().replace("\n", ""))
         msg: str = result["stderr"].decode()
-        correct: bool = score == 100
+        correct: bool = bool(score)
     except ValueError:
-        raise InvalidGraderScriptException("Grading script returned invalid results: %s", result)
+        raise InvalidGraderScriptException(
+            "Grading script returned invalid results: %s", result
+        )
 
-    grade: dict = {
-        "correct": correct,
-        "score": score,
-        "msg": msg
-    }
+    grade: dict = {"correct": correct, "score": score, "msg": msg}
 
     return grade

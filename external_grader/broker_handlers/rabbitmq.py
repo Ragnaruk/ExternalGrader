@@ -3,8 +3,14 @@ Handler for RabbitMQ message broker.
 """
 import json
 
-from pika import channel, spec, credentials, \
-    BlockingConnection, ConnectionParameters, BasicProperties
+from pika import (
+    channel,
+    spec,
+    credentials,
+    BlockingConnection,
+    ConnectionParameters,
+    BasicProperties,
+)
 from logging import Logger
 
 from external_grader.logs import get_logger
@@ -12,11 +18,7 @@ from external_grader.process_answer import process_answer
 
 
 def receive_messages(
-        host: str,
-        port: int,
-        user: str,
-        password: str,
-        queue: str
+    host: str, port: int, user: str, password: str, queue: str
 ) -> None:
     """
     Start consuming messages from RabbitMQ broker.
@@ -33,7 +35,7 @@ def receive_messages(
         ConnectionParameters(
             host=host,
             port=port,
-            credentials=credentials.PlainCredentials(user, password)
+            credentials=credentials.PlainCredentials(user, password),
         )
     )
     ch: channel = connection.channel()
@@ -61,10 +63,10 @@ def receive_messages(
 
 
 def callback_function(
-        current_channel: channel.Channel,
-        basic_deliver: spec.Basic.Deliver,
-        properties: spec.BasicProperties,
-        body: bytes
+    current_channel: channel.Channel,
+    basic_deliver: spec.Basic.Deliver,
+    properties: spec.BasicProperties,
+    body: bytes,
 ) -> None:
     """
     Callback function which receives and proceeds consumed messages from RabbitMQ broker.
@@ -78,12 +80,12 @@ def callback_function(
     logger: Logger = get_logger("rabbitmq")
 
     try:
-        message: dict = json.loads(body.decode("utf8").replace("\'", "\""))
+        message: dict = json.loads(body.decode("utf8").replace("'", '"'))
         logger.debug("Received message: %s", message)
 
         reply: dict = {
             "xqueue_header": message["xqueue_header"],
-            "xqueue_body": process_answer(message)
+            "xqueue_body": process_answer(message),
         }
         logger.debug("Reply message: %s", reply)
 
@@ -92,7 +94,8 @@ def callback_function(
             exchange="",
             routing_key=properties.reply_to,
             properties=BasicProperties(correlation_id=properties.correlation_id),
-            body=json.dumps(reply))
+            body=json.dumps(reply),
+        )
     except Exception as exception:
         raise Exception
 

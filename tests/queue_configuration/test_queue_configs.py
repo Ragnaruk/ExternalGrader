@@ -13,7 +13,9 @@ def test_queue_configs():
     Test queue_configuration.* files.
     """
     modules = glob.glob(join(dirname(queue_configuration.__file__), "*.py"))
-    names = [basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')]
+    names = [
+        basename(f)[:-3] for f in modules if isfile(f) and not f.endswith("__init__.py")
+    ]
 
     # Import all files in queue_configuration module and check whether expected variables exist
     for name in names:
