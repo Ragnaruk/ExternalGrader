@@ -30,7 +30,7 @@ def test_grade_incorrect_different_number():
 
     expected_response: dict = {
         "correct": False,
-        "score": 50,
+        "score": 0,
         "msg": "Ответ не равен 5.\n",
     }
 
@@ -53,6 +53,6 @@ def test_grade_correct():
     """
     answer: dict = {"xqueue_body": {"student_response": "5", "grader_payload": "1"}}
 
-    expected_response: dict = {"correct": True, "score": 100, "msg": "Верный ответ.\n"}
+    expected_response: dict = {"correct": True, "score": 1, "msg": "Верный ответ.\n"}
 
     assert process_answer.process_answer(answer) == expected_response
