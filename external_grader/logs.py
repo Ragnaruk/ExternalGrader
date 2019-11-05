@@ -1,7 +1,7 @@
 import logging
 from sys import stdout
 
-from external_grader.config.config import PATH_LOG_DIRECTORY, LOG_LEVEL, LOG_FORMAT
+from external_grader.config import PATH_LOG_DIRECTORY, LOG_LEVEL, LOG_FORMAT
 
 
 def get_logger(

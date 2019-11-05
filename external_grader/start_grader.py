@@ -6,10 +6,10 @@ import requests.exceptions
 import importlib
 from os import getenv
 
-from external_grader.config.config import CONNECTION_RETRY_TIME, QUEUE_CONFIG_NAME
-from external_grader.grader.logs import get_logger
-from external_grader.grader.message_brokers.rabbitmq import receive_messages as rabbitmq_receive
-from external_grader.grader.message_brokers.xqueue import receive_messages as xqueue_receive
+from external_grader.config import CONNECTION_RETRY_TIME, QUEUE_CONFIG_NAME
+from external_grader.logs import get_logger
+from external_grader.broker_handlers.rabbitmq import receive_messages as rabbitmq_receive
+from external_grader.broker_handlers.xqueue import receive_messages as xqueue_receive
 
 
 def start_grader() -> None:
@@ -23,7 +23,7 @@ def start_grader() -> None:
 
         try:
             queue_config = importlib.import_module(
-                "external_grader.config_queue." + queue_config_name
+                "queue_configuration." + queue_config_name
             )
         except ModuleNotFoundError:
             logger.error("Queue config with name: %s not found.", queue_config_name)

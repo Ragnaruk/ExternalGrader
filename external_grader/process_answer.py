@@ -31,10 +31,10 @@ from logging import Logger
 
 import epicbox
 
-from external_grader.grader.logs import get_logger
-from external_grader.grader.exceptions import FailedFilesLoadException, \
+from external_grader.logs import get_logger
+from external_grader.exceptions import FailedFilesLoadException, \
     InvalidSubmissionException, InvalidGraderScriptException
-from external_grader.config.config import PATH_DATA_DIRECTORY, PATH_GRADER_SCRIPTS_DIRECTORY, \
+from external_grader.config import PATH_DATA_DIRECTORY, PATH_GRADER_SCRIPTS_DIRECTORY, \
     EPICBOX_SETTINGS
 
 

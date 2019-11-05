@@ -7,8 +7,8 @@ from pika import channel, spec, credentials, \
     BlockingConnection, ConnectionParameters, BasicProperties
 from logging import Logger
 
-from external_grader.grader.logs import get_logger
-from external_grader.grader.process_answer import process_answer
+from external_grader.logs import get_logger
+from external_grader.process_answer import process_answer
 
 
 def receive_messages(
