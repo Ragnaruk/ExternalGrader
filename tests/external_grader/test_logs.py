@@ -1,12 +1,12 @@
 """
-PyTest test file for grader.logs module.
+PyTest test file for logs module.
 """
 from external_grader import logs
 
 
 def test_get_logger():
     """
-    Test grader.logs.get_logger function.
+    Test logs.get_logger function.
     """
     logger_name = "test"
     logger = logs.get_logger(logger_name)
