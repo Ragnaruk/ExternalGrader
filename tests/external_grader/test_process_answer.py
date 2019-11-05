@@ -1,5 +1,5 @@
 """
-PyTest test file for grader.process_answer module.
+PyTest test file for process_answer module.
 """
 import pytest
 
@@ -10,9 +10,9 @@ from external_grader.config import PATH_DATA_DIRECTORY, PATH_GRADER_SCRIPTS_DIRE
     EPICBOX_SETTINGS
 
 
-def test_submission_validate_valid_body():
+def test_submission_validate_valid_body_payload_str():
     """
-    Test grader.process_answer.submission_validate function.
+    Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_body": {
@@ -24,9 +24,25 @@ def test_submission_validate_valid_body():
     process_answer.submission_validate(submission)
 
 
+def test_submission_validate_valid_body_payload_dict():
+    """
+    Test process_answer.submission_validate function.
+    """
+    submission: dict = {
+        "xqueue_body": {
+            "student_response": "5",
+            "grader_payload": {
+                "script_id": "1"
+            }
+        }
+    }
+
+    process_answer.submission_validate(submission)
+
+
 def test_submission_validate_valid_file():
     """
-    Test grader.process_answer.submission_validate function.
+    Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_files": {
@@ -42,7 +58,7 @@ def test_submission_validate_valid_file():
 
 def test_submission_validate_invalid_no_body():
     """
-    Test grader.process_answer.submission_validate function.
+    Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_files": {
@@ -54,9 +70,9 @@ def test_submission_validate_invalid_no_body():
         process_answer.submission_validate(submission)
 
 
-def test_submission_validate_invalid_no_payload():
+def test_submission_validate_invalid_no_payload_str():
     """
-    Test grader.process_answer.submission_validate function.
+    Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_files": {
@@ -71,9 +87,29 @@ def test_submission_validate_invalid_no_payload():
         process_answer.submission_validate(submission)
 
 
+def test_submission_validate_invalid_no_payload_dict():
+    """
+    Test process_answer.submission_validate function.
+    """
+    submission: dict = {
+        "xqueue_files": {
+            "student_response.txt": "http://captive.apple.com"
+        },
+        "xqueue_body": {
+            "student_response": "5",
+            "grader_payload": {
+                "test": "1"
+            }
+        }
+    }
+
+    with pytest.raises(InvalidSubmissionException):
+        process_answer.submission_validate(submission)
+
+
 def test_submission_validate_invalid_no_grading_script():
     """
-    Test grader.process_answer.submission_validate function.
+    Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_files": {
@@ -91,7 +127,7 @@ def test_submission_validate_invalid_no_grading_script():
 
 def test_submission_validate_invalid_no_answer_body():
     """
-    Test grader.process_answer.submission_validate function.
+    Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_body": {
@@ -115,7 +151,7 @@ def test_submission_validate_invalid_no_answer_body():
 
 def test_submission_validate_invalid_no_answer_file():
     """
-    Test grader.process_answer.submission_validate function.
+    Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_files": {
@@ -143,7 +179,7 @@ def test_submission_validate_invalid_no_answer_file():
 
 def test_submission_get_response_body():
     """
-    Test grader.process_answer.submission_get_response function.
+    Test process_answer.submission_get_response function.
     Submission is expected to be valid, since this function is called after submission_validate.
     """
     submission: dict = {
@@ -153,14 +189,14 @@ def test_submission_get_response_body():
         }
     }
 
-    expected_respone: str = "5"
+    expected_response: str = "5"
 
-    assert process_answer.submission_get_response(submission) == expected_respone
+    assert process_answer.submission_get_response(submission) == expected_response
 
 
 def test_submission_get_response_file():
     """
-    Test grader.process_answer.submission_get_response function.
+    Test process_answer.submission_get_response function.
     Submission is expected to be valid, since this function is called after submission_validate.
     """
     submission: dict = {
@@ -178,9 +214,43 @@ def test_submission_get_response_file():
     assert process_answer.submission_get_response(submission) == expected_response
 
 
+def test_submission_get_grader_payload_string():
+    """
+    Test process_answer.submission_get_grader_payload function.
+    Submission is expected to be valid, since this function is called after submission_validate.
+    """
+    submission: dict = {
+        "xqueue_body": {
+            "grader_payload": "1"
+        }
+    }
+
+    expected_response: str = "1"
+
+    assert process_answer.submission_get_grader_payload(submission) == expected_response
+
+
+def test_submission_get_grader_payload_dict():
+    """
+    Test process_answer.submission_get_grader_payload function.
+    Submission is expected to be valid, since this function is called after submission_validate.
+    """
+    submission: dict = {
+        "xqueue_body": {
+            "grader_payload": {
+                "script_id": "1"
+            }
+        }
+    }
+
+    expected_response: str = "1"
+
+    assert process_answer.submission_get_grader_payload(submission) == expected_response
+
+
 def test_submission_settings_load_valid():
     """
-    Test grader.process_answer.settings_load function.
+    Test process_answer.settings_load function.
     """
     script_name: str = "1"
 
@@ -218,7 +288,7 @@ def test_submission_settings_load_valid():
 
 def test_submission_settings_load_invalid():
     """
-    Test grader.process_answer.settings_load function.
+    Test process_answer.settings_load function.
     """
     script_name: str = "some_script_name"
 
@@ -228,7 +298,7 @@ def test_submission_settings_load_invalid():
 
 def test_submission_settings_parse_valid_empty():
     """
-    Test grader.process_answer.settings_parse function.
+    Test process_answer.settings_parse function.
     """
     script_name: str = "1"
     settings: dict = {}
@@ -244,7 +314,7 @@ def test_submission_settings_parse_valid_empty():
 
 def test_submission_settings_parse_valid_container_limits():
     """
-    Test grader.process_answer.settings_parse function.
+    Test process_answer.settings_parse function.
     """
     script_name: str = "1"
     settings: dict = {
@@ -267,7 +337,7 @@ def test_submission_settings_parse_valid_container_limits():
 
 def test_submission_settings_parse_valid_profile():
     """
-    Test grader.process_answer.settings_parse function.
+    Test process_answer.settings_parse function.
     """
     script_name: str = "1"
     settings: dict = {
@@ -290,7 +360,7 @@ def test_submission_settings_parse_valid_profile():
 
 def test_submission_settings_parse_valid_external():
     """
-    Test grader.process_answer.settings_parse function.
+    Test process_answer.settings_parse function.
     """
     script_name: str = "1"
     settings: dict = {
@@ -321,7 +391,7 @@ def test_submission_settings_parse_valid_external():
 
 def test_submission_settings_parse_valid_all():
     """
-    Test grader.process_answer.settings_parse function.
+    Test process_answer.settings_parse function.
     """
     script_name: str = "1"
     settings: dict = {
@@ -375,7 +445,7 @@ def test_submission_settings_parse_valid_all():
 
 def test_submission_settings_parse_invalid_external():
     """
-    Test grader.process_answer.settings_parse function.
+    Test process_answer.settings_parse function.
     """
     script_name: str = "1"
     settings: dict = {
@@ -395,7 +465,7 @@ def test_submission_settings_parse_invalid_external():
 
 def test_submission_settings_parse_invalid_local():
     """
-    Test grader.process_answer.settings_parse function.
+    Test process_answer.settings_parse function.
     """
     script_name: str = "1"
     settings: dict = {

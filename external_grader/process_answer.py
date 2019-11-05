@@ -55,7 +55,7 @@ def process_answer(
     submission_validate(submission)
     logger.info("Student submission: %s.", submission)
 
-    script_name: str = submission["xqueue_body"]["grader_payload"]
+    script_name: str = submission_get_grader_payload
     logger.debug("Script name: %s", script_name)
 
     # Load settings from file
@@ -94,7 +94,16 @@ def submission_validate(
     if "grader_payload" not in submission["xqueue_body"].keys():
         raise InvalidSubmissionException("Submission doesn't have grader_payload:", submission)
 
-    script_name: str = submission["xqueue_body"]["grader_payload"]
+    # Check for grading script id
+    if (
+            isinstance(submission["xqueue_body"]["grader_payload"], dict)
+            and "script_id" in submission["xqueue_body"]["grader_payload"]
+    ):
+        script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
+    elif isinstance(submission["xqueue_body"]["grader_payload"], str):
+        script_name: str = submission["xqueue_body"]["grader_payload"]
+    else:
+        raise InvalidSubmissionException("Submission doesn't have script id:", submission)
 
     if not Path(PATH_GRADER_SCRIPTS_DIRECTORY / script_name / "grade.py").is_file():
         raise InvalidSubmissionException("Submission has invalid grader_payload:", submission)
@@ -132,6 +141,26 @@ def submission_get_response(
             response: str = file.read()
 
     return response
+
+
+def submission_get_grader_payload(
+        submission: dict
+) -> str:
+    """
+    Get grader payload from submission.
+
+    :param submission: Student submission received from message broker.
+    :return: Grader payload.
+    """
+    if (
+            isinstance(submission["xqueue_body"]["grader_payload"], dict)
+            and "script_id" in submission["xqueue_body"]["grader_payload"]
+    ):
+        script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
+    else:
+        script_name: str = submission["xqueue_body"]["grader_payload"]
+
+    return script_name
 
 
 def settings_load(
