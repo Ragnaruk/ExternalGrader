@@ -8,6 +8,7 @@ help:
 	@echo '    make requirements-dev          install dev requirements                                  '
 	@echo '    make test                      run tests                                                 '
 	@echo '    make test-cov                  run tests with coverage                                   '
+	@echo '    make format                    reformat all python files                                 '
 	@echo '    make prepare                   build images required for grading                         '
 	@echo '    make compose                   build and launch prod containers via docker-compose       '
 	@echo '    make update                    reset changes and pull the newest version from git        '
@@ -27,6 +28,9 @@ test: requirements-test
 
 test-cov: requirements-test
 	pytest --cov-report term-missing --cov=./ -vvv
+
+format: requirements-dev
+	black .
 
 prepare:
 	docker-compose -f docker-compose.reqs.yml build
