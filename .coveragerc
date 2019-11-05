@@ -7,7 +7,6 @@ omit =
 
     # Omit __main__.py files
     ./external_grader/__main__.py
-    ./external_grader/grader/__main__.py
 
 [report]
 # Regexes for lines to exclude from consideration
