@@ -16,7 +16,16 @@ from external_grader.config import (
 )
 
 
-def test_submission_validate_valid_body_payload_str():
+def test_submission_validate_valid_body_string():
+    """
+    Test process_answer.submission_validate function.
+    """
+    submission: dict = {"xqueue_body": '{"student_response": "5", "grader_payload": "1"}'}
+
+    process_answer.submission_validate(submission)
+
+
+def test_submission_validate_valid_body_payload_string():
     """
     Test process_answer.submission_validate function.
     """
@@ -25,12 +34,23 @@ def test_submission_validate_valid_body_payload_str():
     process_answer.submission_validate(submission)
 
 
-def test_submission_validate_valid_body_payload_dict():
+def test_submission_validate_valid_body_payload_dictionary():
     """
     Test process_answer.submission_validate function.
     """
     submission: dict = {
         "xqueue_body": {"student_response": "5", "grader_payload": {"script_id": "1"}}
+    }
+
+    process_answer.submission_validate(submission)
+
+
+def test_submission_validate_valid_body_payload_dictionary_string():
+    """
+    Test process_answer.submission_validate function.
+    """
+    submission: dict = {
+        "xqueue_body": {"student_response": "5", "grader_payload": '{"script_id": "1"}'}
     }
 
     process_answer.submission_validate(submission)
