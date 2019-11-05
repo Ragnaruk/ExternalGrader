@@ -2,6 +2,7 @@
 [![Build Status](https://travis-ci.org/Ragnaruk/external_grader.svg?branch=master)](https://travis-ci.org/Ragnaruk/external_grader)
 [![codecov](https://codecov.io/gh/Ragnaruk/external_grader/branch/master/graph/badge.svg)](https://codecov.io/gh/Ragnaruk/external_grader)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey.svg)](https://github.com/Ragnaruk/external_grader/blob/master/LICENSE)
+[![Code Style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Codecov Graph](https://codecov.io/gh/Ragnaruk/external_grader/branch/master/graphs/icicle.svg)](https://codecov.io/gh/Ragnaruk/external_grader/branch/master/graphs/icicle.svg)
 
 ## Описание
