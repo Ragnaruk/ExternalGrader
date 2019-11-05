@@ -1,10 +1,12 @@
 from time import sleep
 from typing import Any
+from os import getenv
 
 import pika.exceptions
+import epicbox.exceptions
 import requests.exceptions
 import importlib
-from os import getenv
+import socket
 
 from external_grader.config import CONNECTION_RETRY_TIME, QUEUE_CONFIG_NAME
 from external_grader.logs import get_logger
@@ -74,6 +76,10 @@ def listen_to_broker(
             logger.error("Unknown message broker type: %s", queue_config.TYPE)
     except AttributeError as exception:
         logger.error(exception, exc_info=True)
+    except epicbox.exceptions.DockerError as exception:
+        logger.error("Docker error: \n%s.", exception)
+    except socket.gaierror:
+        logger.error("Unknown host name in queue configuration file.")
     except KeyboardInterrupt:
         logger.info("Program has been stopped manually.")
     except Exception as exception:
