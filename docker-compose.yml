@@ -1,16 +1,25 @@
 version: '3'
 services:
-  grader:
+  grader-xqueue:
     build:
       context: .
     image: ragnaruk/external_grader:latest
     restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - ./tests:/external_grader/tests
       - ./grader_scripts:/external_grader/grader_scripts
     environment:
-      # Name of the used queue configuration file
+      - QUEUE_CONFIG_NAME=stepik
+    command: ['python', './external_grader/']
+  grader-rabbit:
+    build:
+      context: .
+    image: ragnaruk/external_grader:latest
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./grader_scripts:/external_grader/grader_scripts
+    environment:
       - QUEUE_CONFIG_NAME=rabbitmq_example
     command: ['python', './external_grader/']
     depends_on:
