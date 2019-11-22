@@ -20,7 +20,9 @@ def test_submission_validate_valid_body_string():
     """
     Test process_answer.submission_validate function.
     """
-    submission: dict = {"xqueue_body": '{"student_response": "5", "grader_payload": "1"}'}
+    submission: dict = {
+        "xqueue_body": '{"student_response": "5", "grader_payload": "1"}'
+    }
 
     process_answer.submission_validate(submission)
 
@@ -186,7 +188,7 @@ def test_submission_get_response_file():
         "xqueue_body": {"grader_payload": "1"},
     }
 
-    expected_response: str = "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY>" "</HTML>"
+    expected_response: str = "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>\n"
 
     assert process_answer.submission_get_response(submission) == expected_response
 
