@@ -3,8 +3,9 @@ import sys
 import re
 import random
 import subprocess
+from pathlib import Path
 
-PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = "./"
+PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = Path().absolute()
 
 
 ################ Функция, которая запускается снаружи ################
@@ -327,8 +328,7 @@ def check_plated_video(s):
 
 def test_plated_video(s):
     assert (
-        s.call("test -e " + PATH_HOME_DIRECTORY + "plated.mp4", shell=True)
-        == 0
+        s.call("test -e " + PATH_HOME_DIRECTORY + "plated.mp4", shell=True) == 0
     ), "Не найден видеофайл 'plated.mp4'"
     assert (
         s.run(
@@ -440,8 +440,7 @@ def check_result_video(s):
 
 def test_final_video(s):
     assert (
-        s.call("test -e " + PATH_HOME_DIRECTORY + "result.mp4", shell=True)
-        == 0
+        s.call("test -e " + PATH_HOME_DIRECTORY + "result.mp4", shell=True) == 0
     ), "Мы не нашли итоговое видео"
     fontsize = get_text_and_fontsize(s)  # получаем текст для наложения и размер шрифта
     assert (
