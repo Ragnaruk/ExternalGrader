@@ -144,7 +144,7 @@ def check_cropped_video(s, ss):
     ffmpeg_output = s.run(
         "ffmpeg -hide_banner -loglevel panic -i " + PATH_HOME_DIRECTORY + "cropped.mp4",
         shell=True,
-        capture_output=True
+        capture_output=True,
     ).stdout
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
@@ -160,10 +160,7 @@ def check_cropped_video(s, ss):
         shell=True,
     )  # создаем видео с границами из команды
     ffmpeg_origin = s.check_output(
-        "ffmpeg -hide_banner -i "
-        + PATH_VERIFICATION_FILES
-        + "cropped.mp4",
-        shell=True,
+        "ffmpeg -hide_banner -i " + PATH_VERIFICATION_FILES + "cropped.mp4", shell=True,
     )
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
@@ -411,10 +408,7 @@ def check_plated_video(s):
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Видео с плашкой имеет неверную длину"  # проверили длину отрезанного видео
     ffmpeg_origin = s.check_output(
-        "ffmpeg -hide_banner -i "
-        + PATH_VERIFICATION_FILES
-        + "plated.mp4",
-        shell=True,
+        "ffmpeg -hide_banner -i " + PATH_VERIFICATION_FILES + "plated.mp4", shell=True,
     )
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
@@ -554,10 +548,7 @@ def check_result_video(s):
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Итоговое видео имеет неверную длину"  # проверили длину отрезанного видео
     ffmpeg_origin = s.check_output(
-        "ffmpeg -hide_banner -i "
-        + PATH_VERIFICATION_FILES
-        + "result.mp4",
-        shell=True,
+        "ffmpeg -hide_banner -i " + PATH_VERIFICATION_FILES + "result.mp4", shell=True,
     )
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
