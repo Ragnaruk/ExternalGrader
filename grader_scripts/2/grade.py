@@ -56,7 +56,7 @@ def get_starttime(s):
         + PATH_VERIFICATION_FILES
         + "student_response.txt |grep -e '\-ss \{1,\}[0-9:\.]*' -o",
         shell=True,
-    ).decode()
+    )
     assert (
         ss != "" and ss != None
     ), "Мы не смогли найти в вашем командном файле время, начиная с которого вы отрезали видеофайл"
@@ -79,7 +79,7 @@ def check_duration(s, ss):
         + PATH_VERIFICATION_FILES
         + "student_response.txt |grep -E '\-(t|to) +{1,}[0-9:\.]*' -o",
         shell=True,
-    ).decode()
+    )
     assert (
         t != "" and t != None
     ), "Мы не смогли найти длительность отрезаемого видеофайла (или конечный момент) в вашем командном файле"
@@ -102,7 +102,7 @@ def check_duration(s, ss):
 
 def compare_frames_in_cropped_video(s):
     s.run(
-        "ffmpeg -i "
+        "ffmpeg -hide_banner -loglevel panic -i "
         + PATH_HOME_DIRECTORY
         + "cropped.mp4 -y "
         + PATH_VERIFICATION_FILES
@@ -110,7 +110,7 @@ def compare_frames_in_cropped_video(s):
         shell=True,
     )
     s.run(
-        "ffmpeg -i "
+        "ffmpeg -hide_banner -loglevel panic -i "
         + PATH_VERIFICATION_FILES
         + "cropped.mp4 -y "
         + PATH_VERIFICATION_FILES
@@ -141,14 +141,16 @@ def compare_frames_in_cropped_video(s):
 
 
 def check_cropped_video(s, ss):
-    ffmpeg_output = s.check_output(
-        "ffmpeg -i " + PATH_HOME_DIRECTORY + "cropped.mp4", shell=True
-    ).decode()
+    ffmpeg_output = s.run(
+        "ffmpeg -hide_banner -loglevel panic -i " + PATH_HOME_DIRECTORY + "cropped.mp4",
+        shell=True,
+        capture_output=True
+    ).stdout
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Обрезанное видео имеет неверную длину"  # проверили длину отрезанного видео
     s.run(
-        "ffmpeg -i "
+        "ffmpeg -hide_banner -loglevel panic -i "
         + PATH_HOME_DIRECTORY
         + "input_video.mp4 -ss "
         + str(ss)
@@ -158,8 +160,11 @@ def check_cropped_video(s, ss):
         shell=True,
     )  # создаем видео с границами из команды
     ffmpeg_origin = s.check_output(
-        "ffmpeg -i " + PATH_VERIFICATION_FILES + "cropped.mp4", shell=True
-    ).decode()
+        "ffmpeg -hide_banner -i "
+        + PATH_VERIFICATION_FILES
+        + "cropped.mp4",
+        shell=True,
+    )
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
@@ -260,7 +265,7 @@ def test_plate(s):
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).decode()
+    )
     res2 = s.check_output(
         "compare "
         + PATH_VERIFICATION_FILES
@@ -268,7 +273,7 @@ def test_plate(s):
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).decode()
+    )
     res3 = s.check_output(
         "compare "
         + PATH_VERIFICATION_FILES
@@ -276,7 +281,7 @@ def test_plate(s):
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).decode()
+    )
     res4 = s.check_output(
         "compare "
         + PATH_VERIFICATION_FILES
@@ -284,7 +289,7 @@ def test_plate(s):
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).decode()
+    )
     if (res1 == "gray(0,0,0)") or (res1 == "black") or (res1 == "gray(0)"):
         s.run(
             "cp "
@@ -354,7 +359,7 @@ def compare_frames_in_plated_video(s):
     ]:  # проверяем плашку на (0,1), 1, (1,9), 9, (9, 10)
         t = "{0:.2f} ".format(d)
         s.run(
-            "ffmpeg -i "
+            "ffmpeg -hide_banner -loglevel panic -i "
             + PATH_HOME_DIRECTORY
             + "plated.mp4 -ss "
             + t
@@ -364,7 +369,7 @@ def compare_frames_in_plated_video(s):
             shell=True,
         )
         s.run(
-            "ffmpeg -i "
+            "ffmpeg -hide_banner -loglevel panic -i "
             + PATH_VERIFICATION_FILES
             + "plated.mp4 -ss "
             + t
@@ -380,7 +385,7 @@ def compare_frames_in_plated_video(s):
             + PATH_VERIFICATION_FILES
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
-        ).decode()
+        )
         s.run(
             "rm " + PATH_VERIFICATION_FILES + "frame.png",
             shell=True,
@@ -398,16 +403,19 @@ def compare_frames_in_plated_video(s):
 
 def check_plated_video(s):
     ffmpeg_output = s.check_output(
-        "ffmpeg -i " + PATH_HOME_DIRECTORY + "plated.mp4",
+        "ffmpeg -hide_banner -i " + PATH_HOME_DIRECTORY + "plated.mp4",
         shell=True,
         cwd=PATH_HOME_DIRECTORY,
-    ).decode()
+    )
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Видео с плашкой имеет неверную длину"  # проверили длину отрезанного видео
     ffmpeg_origin = s.check_output(
-        "ffmpeg -i " + PATH_VERIFICATION_FILES + "plated.mp4", shell=True
-    ).decode()
+        "ffmpeg -hide_banner -i "
+        + PATH_VERIFICATION_FILES
+        + "plated.mp4",
+        shell=True,
+    )
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
@@ -438,7 +446,7 @@ def test_plated_video(s):
         != ""
     ), "Проверьте координаты в команде наложения плашки"
     s.run(
-        "ffmpeg -i "
+        "ffmpeg -hide_banner -loglevel panic -i "
         + PATH_VERIFICATION_FILES
         + "cropped.mp4 -i "
         + PATH_VERIFICATION_FILES
@@ -453,10 +461,12 @@ def test_plated_video(s):
 ################ Проверяем видео с текстом ################
 def get_text_and_fontsize(s):
     cmd = s.check_output(
-        "cat " + PATH_VERIFICATION_FILES + "student_response.txt |grep -E 'ffmpeg .+drawtext'",
+        "cat "
+        + PATH_VERIFICATION_FILES
+        + "student_response.txt |grep -E 'ffmpeg .+drawtext'",
         shell=True,
         cwd=PATH_HOME_DIRECTORY,
-    ).decode()
+    )
     assert cmd != "", "Мы не нашли команду для наложения текста"
     match = re.compile("[^w]text *= *").search(cmd)
     assert match != None, "Ошибка в команде наложения текста"
@@ -476,7 +486,7 @@ def get_text_and_fontsize(s):
         + PATH_VERIFICATION_FILES
         + "student_response.txt |grep -E 'fontsize *= *[0-9]{1,2}' -o",
         shell=True,
-    ).decode()
+    )
     assert fontsize != "", "Ошибка в команде наложения текста"
     fontsize = fontsize[fontsize.find("=") + 1 :].strip()  # оставляем только цифры
     return fontsize
@@ -492,7 +502,7 @@ def compare_frames_in_result_video(s):
     ]:  # проверяем текст на (0,2), 2, (2,9), 9, (9, 10)
         t = "{0:.2f} ".format(d)
         s.run(
-            "ffmpeg -i "
+            "ffmpeg -hide_banner -loglevel panic -i "
             + PATH_HOME_DIRECTORY
             + "result.mp4 -ss "
             + t
@@ -502,7 +512,7 @@ def compare_frames_in_result_video(s):
             shell=True,
         )
         s.run(
-            "ffmpeg -i "
+            "ffmpeg -hide_banner -loglevel panic -i "
             + PATH_VERIFICATION_FILES
             + "result.mp4 -ss "
             + t
@@ -518,7 +528,7 @@ def compare_frames_in_result_video(s):
             + PATH_VERIFICATION_FILES
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
-        ).decode()
+        )
         s.run(
             "rm " + PATH_VERIFICATION_FILES + "frame.png",
             shell=True,
@@ -536,16 +546,19 @@ def compare_frames_in_result_video(s):
 
 def check_result_video(s):
     ffmpeg_output = s.check_output(
-        "ffmpeg -i " + PATH_HOME_DIRECTORY + "result.mp4",
+        "ffmpeg -hide_banner -i " + PATH_HOME_DIRECTORY + "result.mp4",
         shell=True,
         cwd=PATH_HOME_DIRECTORY,
-    ).decode()
+    )
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Итоговое видео имеет неверную длину"  # проверили длину отрезанного видео
     ffmpeg_origin = s.check_output(
-        "ffmpeg -i " + PATH_VERIFICATION_FILES + "result.mp4", shell=True
-    ).decode()
+        "ffmpeg -hide_banner -i "
+        + PATH_VERIFICATION_FILES
+        + "result.mp4",
+        shell=True,
+    )
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
@@ -569,7 +582,7 @@ def test_final_video(s):
     fontsize = get_text_and_fontsize(s)  # получаем текст для наложения и размер шрифта
     assert (
         s.call(
-            "ffmpeg -i "
+            "ffmpeg -hide_banner -loglevel panic -i "
             + PATH_VERIFICATION_FILES
             + "plated.mp4 -filter_complex drawtext=x=200:y=476:fontfile=Arial.ttf:fontsize="
             + fontsize
@@ -597,6 +610,6 @@ if __name__ == "__main__":
         exc_info = sys.exc_info()
 
         print("Unhandled error during grading.", file=sys.stderr)
-        print("%s", exception, file=sys.stderr)
-        print("%s", exc_info, file=sys.stderr)
+        print(exception, file=sys.stderr)
+        print(exc_info, file=sys.stderr)
         print(0)
