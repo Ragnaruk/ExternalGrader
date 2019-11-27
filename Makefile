@@ -23,21 +23,21 @@ requirements-test: requirements
 requirements-dev: requirements-test
 	pip install -qr requirements/requirements-dev.txt
 
-test: requirements-test
+test:
 	pytest -vvv
 
-test-cov: requirements-test
+test-cov:
 	pytest --cov-report term-missing --cov=./ -vvv
 
-format: requirements-dev
+black:
 	black .
 
-prepare:
-	docker-compose -f docker-compose.reqs.yml build
-
-compose: prepare
+compose:
 	docker-compose build
 	docker-compose up -d
+
+compose-reqs:
+	docker-compose -f docker-compose.reqs.yml build
 
 update:
 	git reset --hard
