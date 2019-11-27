@@ -33,8 +33,7 @@ def prepare_commands_file(s):
 ################ Провеяем файл с командами ################
 def test_commands_file(s):
     assert (
-        s.run("test -e " + PATH_HOME_DIRECTORY + "commands.sh", shell=True).returncode
-        == 0
+        s.call("test -e " + PATH_HOME_DIRECTORY + "commands.sh", shell=True) == 0
     ), "Не найден командный файл 'commands.sh'"
 
 
@@ -148,8 +147,7 @@ def check_cropped_video(s, ss):
 
 def test_cropped_video(s):
     assert (
-        s.run("test -e " + PATH_HOME_DIRECTORY + "cropped.mp4", shell=True).returncode
-        == 0
+        s.call("test -e " + PATH_HOME_DIRECTORY + "cropped.mp4", shell=True) == 0
     ), "Не найден файл с обрезанным видео"
     ss = get_starttime(s)
     check_duration(s, ss)
@@ -159,8 +157,7 @@ def test_cropped_video(s):
 ################ Проверяем плашку ################
 def test_plate(s):
     assert (
-        s.run("test -e " + PATH_HOME_DIRECTORY + "plate.svg", shell=True).returncode
-        == 0
+        s.call("test -e " + PATH_HOME_DIRECTORY + "plate.svg", shell=True) == 0
     ), "Не найден svg-файл с кодом плашки"
     svg = s.run("cat " + PATH_HOME_DIRECTORY + "plate.svg", shell=True)
     assert svg != "", "Ваш svg-файл пуст"
@@ -330,7 +327,7 @@ def check_plated_video(s):
 
 def test_plated_video(s):
     assert (
-        s.run("test -e " + PATH_HOME_DIRECTORY + "plated.mp4", shell=True).returncode
+        s.call("test -e " + PATH_HOME_DIRECTORY + "plated.mp4", shell=True)
         == 0
     ), "Не найден видеофайл 'plated.mp4'"
     assert (
@@ -443,12 +440,12 @@ def check_result_video(s):
 
 def test_final_video(s):
     assert (
-        s.run("test -e " + PATH_HOME_DIRECTORY + "result.mp4", shell=True).returncode
+        s.call("test -e " + PATH_HOME_DIRECTORY + "result.mp4", shell=True)
         == 0
     ), "Мы не нашли итоговое видео"
     fontsize = get_text_and_fontsize(s)  # получаем текст для наложения и размер шрифта
     assert (
-        s.run(
+        s.call(
             "ffmpeg -i "
             + PATH_VERIFICATION_FILES
             + "plated.mp4 -filter_complex drawtext=x=200:y=476:fontfile=Arial.ttf:fontsize="
@@ -459,7 +456,7 @@ def test_final_video(s):
             + PATH_VERIFICATION_FILES
             + "result.mp4",
             shell=True,
-        ).returncode
+        )
         == 0
     ), "Пожалуйста, выберите текст для наложения без сложных комбинаций кавычек"
     check_result_video(s)
