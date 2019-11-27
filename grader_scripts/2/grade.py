@@ -51,12 +51,12 @@ def test_commands_file(s):
 
 ################ Проверяем обрезанное видео ################
 def get_starttime(s):
-    ss = s.run(
+    ss = s.check_output(
         "cat "
         + PATH_VERIFICATION_FILES
         + "student_response.txt |grep -e '\-ss \{1,\}[0-9:\.]*' -o",
         shell=True,
-    )
+    ).decode()
     assert (
         ss != "" and ss != None
     ), "Мы не смогли найти в вашем командном файле время, начиная с которого вы отрезали видеофайл"
@@ -74,12 +74,12 @@ def get_starttime(s):
 
 
 def check_duration(s, ss):
-    t = s.run(
+    t = s.check_output(
         "cat "
         + PATH_VERIFICATION_FILES
         + "student_response.txt |grep -E '\-(t|to) +{1,}[0-9:\.]*' -o",
         shell=True,
-    )
+    ).decode()
     assert (
         t != "" and t != None
     ), "Мы не смогли найти длительность отрезаемого видеофайла (или конечный момент) в вашем командном файле"
@@ -141,9 +141,9 @@ def compare_frames_in_cropped_video(s):
 
 
 def check_cropped_video(s, ss):
-    ffmpeg_output = s.run(
+    ffmpeg_output = s.check_output(
         "ffmpeg -i " + PATH_HOME_DIRECTORY + "cropped.mp4", shell=True
-    )
+    ).decode()
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Обрезанное видео имеет неверную длину"  # проверили длину отрезанного видео
@@ -157,9 +157,9 @@ def check_cropped_video(s, ss):
         + "cropped.mp4",
         shell=True,
     )  # создаем видео с границами из команды
-    ffmpeg_origin = s.run(
+    ffmpeg_origin = s.check_output(
         "ffmpeg -i " + PATH_VERIFICATION_FILES + "cropped.mp4", shell=True
-    )
+    ).decode()
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
@@ -195,9 +195,9 @@ def test_plate(s):
         )
         == 0
     ), "Не найден svg-файл с кодом плашки"
-    svg = s.run(
+    svg = s.check_output(
         "cat " + PATH_HOME_DIRECTORY + "plate.svg", shell=True, cwd=PATH_HOME_DIRECTORY
-    )
+    ).decode
     assert svg != "", "Ваш svg-файл пуст"
     checklist = [
         [
@@ -253,38 +253,38 @@ def test_plate(s):
         shell=True,
     )
 
-    res1 = s.run(
+    res1 = s.check_output(
         "compare "
         + PATH_VERIFICATION_FILES
         + "plate1.png "
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    )
-    res2 = s.run(
+    ).decode()
+    res2 = s.check_output(
         "compare "
         + PATH_VERIFICATION_FILES
         + "plate2.png "
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    )
-    res3 = s.run(
+    ).decode()
+    res3 = s.check_output(
         "compare "
         + PATH_VERIFICATION_FILES
         + "plate3.png "
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    )
-    res4 = s.run(
+    ).decode()
+    res4 = s.check_output(
         "compare "
         + PATH_VERIFICATION_FILES
         + "plate4.png "
         + PATH_VERIFICATION_FILES
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    )
+    ).decode()
     if (res1 == "gray(0,0,0)") or (res1 == "black") or (res1 == "gray(0)"):
         s.run(
             "cp "
@@ -373,14 +373,14 @@ def compare_frames_in_plated_video(s):
             + "frame_origin.png",
             shell=True,
         )
-        result = s.run(
+        result = s.check_output(
             "compare "
             + PATH_VERIFICATION_FILES
             + "frame.png "
             + PATH_VERIFICATION_FILES
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
-        )
+        ).decode()
         s.run(
             "rm " + PATH_VERIFICATION_FILES + "frame.png",
             shell=True,
@@ -397,17 +397,17 @@ def compare_frames_in_plated_video(s):
 
 
 def check_plated_video(s):
-    ffmpeg_output = s.run(
+    ffmpeg_output = s.check_output(
         "ffmpeg -i " + PATH_HOME_DIRECTORY + "plated.mp4",
         shell=True,
         cwd=PATH_HOME_DIRECTORY,
-    )
+    ).decode()
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Видео с плашкой имеет неверную длину"  # проверили длину отрезанного видео
-    ffmpeg_origin = s.run(
+    ffmpeg_origin = s.check_output(
         "ffmpeg -i " + PATH_VERIFICATION_FILES + "plated.mp4", shell=True
-    )
+    ).decode()
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
@@ -452,11 +452,11 @@ def test_plated_video(s):
 
 ################ Проверяем видео с текстом ################
 def get_text_and_fontsize(s):
-    cmd = s.run(
+    cmd = s.check_output(
         "cat " + PATH_VERIFICATION_FILES + "student_response.txt |grep -E 'ffmpeg .+drawtext'",
         shell=True,
         cwd=PATH_HOME_DIRECTORY,
-    )
+    ).decode()
     assert cmd != "", "Мы не нашли команду для наложения текста"
     match = re.compile("[^w]text *= *").search(cmd)
     assert match != None, "Ошибка в команде наложения текста"
@@ -471,12 +471,12 @@ def get_text_and_fontsize(s):
         "echo " + cmd[start:end] + ">" + PATH_VERIFICATION_FILES + "text.txt",
         shell=True,
     )
-    fontsize = s.run(
+    fontsize = s.check_output(
         "cat "
         + PATH_VERIFICATION_FILES
         + "student_response.txt |grep -E 'fontsize *= *[0-9]{1,2}' -o",
         shell=True,
-    )
+    ).decode()
     assert fontsize != "", "Ошибка в команде наложения текста"
     fontsize = fontsize[fontsize.find("=") + 1 :].strip()  # оставляем только цифры
     return fontsize
@@ -511,14 +511,14 @@ def compare_frames_in_result_video(s):
             + "frame_origin.png",
             shell=True,
         )
-        result = s.run(
+        result = s.check_output(
             "compare "
             + PATH_VERIFICATION_FILES
             + "frame.png "
             + PATH_VERIFICATION_FILES
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
-        )
+        ).decode()
         s.run(
             "rm " + PATH_VERIFICATION_FILES + "frame.png",
             shell=True,
@@ -535,17 +535,17 @@ def compare_frames_in_result_video(s):
 
 
 def check_result_video(s):
-    ffmpeg_output = s.run(
+    ffmpeg_output = s.check_output(
         "ffmpeg -i " + PATH_HOME_DIRECTORY + "result.mp4",
         shell=True,
         cwd=PATH_HOME_DIRECTORY,
-    )
+    ).decode()
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Итоговое видео имеет неверную длину"  # проверили длину отрезанного видео
-    ffmpeg_origin = s.run(
+    ffmpeg_origin = s.check_output(
         "ffmpeg -i " + PATH_VERIFICATION_FILES + "result.mp4", shell=True
-    )
+    ).decode()
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
