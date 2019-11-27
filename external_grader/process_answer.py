@@ -352,7 +352,7 @@ def grade_epicbox(
     logger.debug("Result: %s", result)
 
     try:
-        score: int = int(result["stdout"].decode().replace("\n", ""))
+        score: int = int(result["stdout"].decode().split("\n")[-2])
         msg: str = result["stderr"].decode()
         correct: bool = bool(score)
     except ValueError:
