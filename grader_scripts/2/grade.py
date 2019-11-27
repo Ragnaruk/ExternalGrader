@@ -5,7 +5,7 @@ import random
 import subprocess
 from pathlib import Path
 
-PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = Path().absolute()
+PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = str(Path().absolute())
 
 
 ################ Функция, которая запускается снаружи ################
