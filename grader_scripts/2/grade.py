@@ -5,16 +5,17 @@ import random
 import subprocess
 from pathlib import Path
 
-PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = str(Path().absolute())
+PATH_HOME_DIRECTORY = PATH_VERIFICATION_FILES = str(Path().absolute()) + "/"
 
 
 ################ Функция, которая запускается снаружи ################
 def main():
     s = subprocess
 
-    prepare_commands_file(s)
-
     test_commands_file(s)
+
+    run_submission(s)
+
     test_cropped_video(s)
     test_plate(s)
     test_IM_command(s)
@@ -22,26 +23,39 @@ def main():
     test_final_video(s)
 
 
-def prepare_commands_file(s):
-    with open("./student_response.txt") as file_in, open(
-        "./commands.sh", "w"
-    ) as file_out:
-        file_out.write(file_in.read())
+def run_submission(s):
+    s.run(
+        "chmod 0647 " + PATH_HOME_DIRECTORY + "student_response.txt",
+        shell=True,
+        cwd=PATH_HOME_DIRECTORY,
+    )
 
-    s.run("chmod 0647 " + PATH_HOME_DIRECTORY + "commands.sh", shell=True)
+    s.run(
+        "sh " + PATH_HOME_DIRECTORY + "student_response.txt",
+        shell=True,
+        cwd=PATH_HOME_DIRECTORY,
+    )
 
 
 ################ Провеяем файл с командами ################
 def test_commands_file(s):
     assert (
-        s.call("test -e " + PATH_HOME_DIRECTORY + "commands.sh", shell=True) == 0
-    ), "Не найден командный файл 'commands.sh'"
+        s.call(
+            "test -e " + PATH_HOME_DIRECTORY + "student_response.txt",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
+        == 0
+    ), "Не найден командный файл"
 
 
 ################ Проверяем обрезанное видео ################
 def get_starttime(s):
     ss = s.run(
-        "cat /home/box/commands.sh |grep -e '\-ss \{1,\}[0-9:\.]*' -o", shell=True
+        "cat "
+        + PATH_VERIFICATION_FILES
+        + "student_response.txt |grep -e '\-ss \{1,\}[0-9:\.]*' -o",
+        shell=True,
     )
     assert (
         ss != "" and ss != None
@@ -61,7 +75,10 @@ def get_starttime(s):
 
 def check_duration(s, ss):
     t = s.run(
-        "cat /home/box/commands.sh |grep -E '\-(t|to) +{1,}[0-9:\.]*' -o", shell=True
+        "cat "
+        + PATH_VERIFICATION_FILES
+        + "student_response.txt |grep -E '\-(t|to) +{1,}[0-9:\.]*' -o",
+        shell=True,
     )
     assert (
         t != "" and t != None
@@ -108,8 +125,16 @@ def compare_frames_in_cropped_video(s):
         + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
     )
-    s.run("rm " + PATH_VERIFICATION_FILES + "frame.png", shell=True)
-    s.run("rm " + PATH_VERIFICATION_FILES + "frame_origin.png", shell=True)
+    s.run(
+        "rm " + PATH_VERIFICATION_FILES + "frame.png",
+        shell=True,
+        cwd=PATH_HOME_DIRECTORY,
+    )
+    s.run(
+        "rm " + PATH_VERIFICATION_FILES + "frame_origin.png",
+        shell=True,
+        cwd=PATH_HOME_DIRECTORY,
+    )
     assert (
         (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
     ), "Кажется, вы отрезали видеофрагмент не с той секунды, с какой указано в вашем командном файле."
@@ -148,7 +173,12 @@ def check_cropped_video(s, ss):
 
 def test_cropped_video(s):
     assert (
-        s.call("test -e " + PATH_HOME_DIRECTORY + "cropped.mp4", shell=True) == 0
+        s.call(
+            "test -e " + PATH_HOME_DIRECTORY + "cropped.mp4",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
+        == 0
     ), "Не найден файл с обрезанным видео"
     ss = get_starttime(s)
     check_duration(s, ss)
@@ -158,9 +188,16 @@ def test_cropped_video(s):
 ################ Проверяем плашку ################
 def test_plate(s):
     assert (
-        s.call("test -e " + PATH_HOME_DIRECTORY + "plate.svg", shell=True) == 0
+        s.call(
+            "test -e " + PATH_HOME_DIRECTORY + "plate.svg",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
+        == 0
     ), "Не найден svg-файл с кодом плашки"
-    svg = s.run("cat " + PATH_HOME_DIRECTORY + "plate.svg", shell=True)
+    svg = s.run(
+        "cat " + PATH_HOME_DIRECTORY + "plate.svg", shell=True, cwd=PATH_HOME_DIRECTORY
+    )
     assert svg != "", "Ваш svg-файл пуст"
     checklist = [
         [
@@ -217,33 +254,75 @@ def test_plate(s):
     )
 
     res1 = s.run(
-        "compare /root/plate1.png /home/box/plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        "compare "
+        + PATH_VERIFICATION_FILES
+        + "plate1.png "
+        + PATH_VERIFICATION_FILES
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
     )
     res2 = s.run(
-        "compare /root/plate2.png /home/box/plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        "compare "
+        + PATH_VERIFICATION_FILES
+        + "plate2.png "
+        + PATH_VERIFICATION_FILES
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
     )
     res3 = s.run(
-        "compare /root/plate3.png /home/box/plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        "compare "
+        + PATH_VERIFICATION_FILES
+        + "plate3.png "
+        + PATH_VERIFICATION_FILES
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
     )
     res4 = s.run(
-        "compare /root/plate4.png /home/box/plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        "compare "
+        + PATH_VERIFICATION_FILES
+        + "plate4.png "
+        + PATH_VERIFICATION_FILES
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
     )
     if (res1 == "gray(0,0,0)") or (res1 == "black") or (res1 == "gray(0)"):
         s.run(
-            "cp /root/plate1.png /root/plate.png", shell=True
+            "cp "
+            + PATH_VERIFICATION_FILES
+            + "plate1.png "
+            + PATH_VERIFICATION_FILES
+            + "plate.png",
+            shell=True,
         )  # if plate 1 match, replace plate with it
     elif (res2 == "gray(0,0,0)") or (res2 == "black") or (res2 == "gray(0)"):
         s.run(
-            "cp /root/plate2.png /root/plate.png", shell=True
+            "cp "
+            + PATH_VERIFICATION_FILES
+            + "plate2.png "
+            + PATH_VERIFICATION_FILES
+            + "plate.png",
+            shell=True,
         )  # if plate 2 match, replace plate with it
     elif (res3 == "gray(0,0,0)") or (res3 == "black") or (res3 == "gray(0)"):
-        s.run("cp /root/plate3.png /root/plate.png", shell=True)
+        s.run(
+            "cp "
+            + PATH_VERIFICATION_FILES
+            + "plate3.png "
+            + PATH_VERIFICATION_FILES
+            + "plate.png",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
     elif (res4 == "gray(0,0,0)") or (res4 == "black") or (res4 == "gray(0)"):
-        s.run("cp /root/plate4.png /root/plate.png", shell=True)
+        s.run(
+            "cp "
+            + PATH_VERIFICATION_FILES
+            + "plate4.png "
+            + PATH_VERIFICATION_FILES
+            + "plate.png",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
     else:
         assert False, (
             "Кажется, вы неправильно сформировали плашку для титров. Служебные цифры (могут помочь при наличии ошибки):"
@@ -255,7 +334,9 @@ def test_plate(s):
 def test_IM_command(s):
     assert (
         s.run(
-            "cat /home/box/commands.sh |grep -i -E 'convert .*(-depth +8 |png8: ?)' -o",
+            "cat "
+            + PATH_VERIFICATION_FILES
+            + "student_response.txt |grep -i -E 'convert .*(-depth +8 |png8: ?)' -o",
             shell=True,
         )
         != ""
@@ -300,15 +381,27 @@ def compare_frames_in_plated_video(s):
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
         )
-        s.run("rm " + PATH_VERIFICATION_FILES + "frame.png", shell=True)
-        s.run("rm " + PATH_VERIFICATION_FILES + "frame_origin.png", shell=True)
+        s.run(
+            "rm " + PATH_VERIFICATION_FILES + "frame.png",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
+        s.run(
+            "rm " + PATH_VERIFICATION_FILES + "frame_origin.png",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
         assert (
             (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
         ), "Судя по видео, плашка наложена не в том промежутке, в котором ожидается"
 
 
 def check_plated_video(s):
-    ffmpeg_output = s.run("ffmpeg -i " + PATH_HOME_DIRECTORY + "plated.mp4", shell=True)
+    ffmpeg_output = s.run(
+        "ffmpeg -i " + PATH_HOME_DIRECTORY + "plated.mp4",
+        shell=True,
+        cwd=PATH_HOME_DIRECTORY,
+    )
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Видео с плашкой имеет неверную длину"  # проверили длину отрезанного видео
@@ -328,11 +421,18 @@ def check_plated_video(s):
 
 def test_plated_video(s):
     assert (
-        s.call("test -e " + PATH_HOME_DIRECTORY + "plated.mp4", shell=True) == 0
+        s.call(
+            "test -e " + PATH_HOME_DIRECTORY + "plated.mp4",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
+        == 0
     ), "Не найден видеофайл 'plated.mp4'"
     assert (
         s.run(
-            "cat /home/box/commands.sh |grep -E 'ffmpeg .+overlay *= *.*((x *= *)?0 *:(.*:)? ?(y *= *)?446|y *= *446 *:(.*:)? *x *= *0)' -o",
+            "cat "
+            + PATH_VERIFICATION_FILES
+            + "student_response.txt |grep -E 'ffmpeg .+overlay *= *.*((x *= *)?0 *:(.*:)? ?(y *= *)?446|y *= *446 *:(.*:)? *x *= *0)' -o",
             shell=True,
         )
         != ""
@@ -352,7 +452,11 @@ def test_plated_video(s):
 
 ################ Проверяем видео с текстом ################
 def get_text_and_fontsize(s):
-    cmd = s.run("cat /home/box/commands.sh |grep -E 'ffmpeg .+drawtext'", shell=True)
+    cmd = s.run(
+        "cat " + PATH_VERIFICATION_FILES + "student_response.txt |grep -E 'ffmpeg .+drawtext'",
+        shell=True,
+        cwd=PATH_HOME_DIRECTORY,
+    )
     assert cmd != "", "Мы не нашли команду для наложения текста"
     match = re.compile("[^w]text *= *").search(cmd)
     assert match != None, "Ошибка в команде наложения текста"
@@ -368,7 +472,10 @@ def get_text_and_fontsize(s):
         shell=True,
     )
     fontsize = s.run(
-        "cat /home/box/commands.sh |grep -E 'fontsize *= *[0-9]{1,2}' -o", shell=True
+        "cat "
+        + PATH_VERIFICATION_FILES
+        + "student_response.txt |grep -E 'fontsize *= *[0-9]{1,2}' -o",
+        shell=True,
     )
     assert fontsize != "", "Ошибка в команде наложения текста"
     fontsize = fontsize[fontsize.find("=") + 1 :].strip()  # оставляем только цифры
@@ -412,15 +519,27 @@ def compare_frames_in_result_video(s):
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
         )
-        s.run("rm " + PATH_VERIFICATION_FILES + "frame.png", shell=True)
-        s.run("rm " + PATH_VERIFICATION_FILES + "frame_origin.png", shell=True)
+        s.run(
+            "rm " + PATH_VERIFICATION_FILES + "frame.png",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
+        s.run(
+            "rm " + PATH_VERIFICATION_FILES + "frame_origin.png",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
         assert (
             (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
         ), "Судя по видео, текст наложен не в том промежутке, в котором ожидается. Или вы наложили не тот текст."
 
 
 def check_result_video(s):
-    ffmpeg_output = s.run("ffmpeg -i " + PATH_HOME_DIRECTORY + "result.mp4", shell=True)
+    ffmpeg_output = s.run(
+        "ffmpeg -i " + PATH_HOME_DIRECTORY + "result.mp4",
+        shell=True,
+        cwd=PATH_HOME_DIRECTORY,
+    )
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Итоговое видео имеет неверную длину"  # проверили длину отрезанного видео
@@ -440,7 +559,12 @@ def check_result_video(s):
 
 def test_final_video(s):
     assert (
-        s.call("test -e " + PATH_HOME_DIRECTORY + "result.mp4", shell=True) == 0
+        s.call(
+            "test -e " + PATH_HOME_DIRECTORY + "result.mp4",
+            shell=True,
+            cwd=PATH_HOME_DIRECTORY,
+        )
+        == 0
     ), "Мы не нашли итоговое видео"
     fontsize = get_text_and_fontsize(s)  # получаем текст для наложения и размер шрифта
     assert (
