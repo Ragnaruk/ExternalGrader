@@ -24,6 +24,7 @@ test-cov:
 	pytest --cov-report term-missing --cov=./ -vvv
 
 compose:
+    docker-compose -f docker-compose.reqs.yml build
 	docker-compose build
 	docker-compose up -d
 
