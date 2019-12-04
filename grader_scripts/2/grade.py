@@ -85,7 +85,7 @@ def check_duration(s, ss):
             shell=True,
         )
     except Exception:
-        raise AssertionError("Мы не смогли найти в вашем командном файле время, начиная с которого вы отрезали видеофайл.")
+        raise AssertionError("Мы не смогли найти длительность отрезаемого видеофайла (или конечный момент) в вашем командном файле.")
 
     t = t.decode("UTF-8")
 
