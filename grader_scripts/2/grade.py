@@ -23,9 +23,7 @@ def main():
 
 def run_submission(s):
     s.run(
-        "sh " + PATH_CWD + "student_response.txt",
-        shell=True,
-        cwd=PATH_CWD,
+        "sh " + PATH_CWD + "student_response.txt", shell=True, cwd=PATH_CWD,
     )
 
 
@@ -33,9 +31,7 @@ def run_submission(s):
 def test_commands_file(s):
     assert (
         s.call(
-            "test -e " + PATH_CWD + "student_response.txt",
-            shell=True,
-            cwd=PATH_CWD,
+            "test -e " + PATH_CWD + "student_response.txt", shell=True, cwd=PATH_CWD,
         )
         == 0
     ), "Не найден командный файл."
@@ -51,7 +47,9 @@ def get_starttime(s):
             shell=True,
         )
     except Exception:
-        raise AssertionError("Мы не смогли найти в вашем командном файле время, начиная с которого вы отрезали видеофайл.")
+        raise AssertionError(
+            "Мы не смогли найти в вашем командном файле время, начиная с которого вы отрезали видеофайл."
+        )
 
     ss = ss.decode("UTF-8")
 
@@ -65,7 +63,7 @@ def get_starttime(s):
     colon = ss.rfind(":")
 
     if colon != -1:
-        ss = ss[colon + 1:]
+        ss = ss[colon + 1 :]
 
     starttime = float(ss)
 
@@ -85,7 +83,9 @@ def check_duration(s, ss):
             shell=True,
         )
     except Exception:
-        raise AssertionError("Мы не смогли найти длительность отрезаемого видеофайла (или конечный момент) в вашем командном файле.")
+        raise AssertionError(
+            "Мы не смогли найти длительность отрезаемого видеофайла (или конечный момент) в вашем командном файле."
+        )
 
     t = t.decode("UTF-8")
 
@@ -105,7 +105,9 @@ def check_duration(s, ss):
         else:
             t = t[3:].strip()
         t = float(t)
-        assert t - ss == 10, "Вы неверно задали длительность отрезаемого видеофрагмента."
+        assert (
+            t - ss == 10
+        ), "Вы неверно задали длительность отрезаемого видеофрагмента."
     else:
         assert False, "Вы неверно задали длительность отрезаемого видеофрагмента."
 
@@ -136,14 +138,10 @@ def compare_frames_in_cropped_video(s):
         shell=True,
     )
     s.run(
-        "rm " + PATH_CWD + "frame.png",
-        shell=True,
-        cwd=PATH_CWD,
+        "rm " + PATH_CWD + "frame.png", shell=True, cwd=PATH_CWD,
     )
     s.run(
-        "rm " + PATH_CWD + "frame_origin.png",
-        shell=True,
-        cwd=PATH_CWD,
+        "rm " + PATH_CWD + "frame_origin.png", shell=True, cwd=PATH_CWD,
     )
     assert (
         (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
@@ -190,12 +188,7 @@ def check_cropped_video(s, ss):
 
 def test_cropped_video(s):
     assert (
-        s.call(
-            "test -e " + PATH_CWD + "cropped.mp4",
-            shell=True,
-            cwd=PATH_CWD,
-        )
-        == 0
+        s.call("test -e " + PATH_CWD + "cropped.mp4", shell=True, cwd=PATH_CWD,) == 0
     ), "Не найден файл с обрезанным видео."
 
     ss = get_starttime(s)
@@ -207,16 +200,9 @@ def test_cropped_video(s):
 ################ Проверяем плашку ################
 def test_plate(s):
     assert (
-        s.call(
-            "test -e " + PATH_CWD + "plate.svg",
-            shell=True,
-            cwd=PATH_CWD,
-        )
-        == 0
+        s.call("test -e " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD,) == 0
     ), "Не найден svg-файл с кодом плашки"
-    svg = s.run(
-        "cat " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD
-    ).stdout
+    svg = s.run("cat " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD).stdout
     assert svg != "", "Ваш svg-файл пуст"
     checklist = [
         [
@@ -306,39 +292,21 @@ def test_plate(s):
     ).stdout
     if (res1 == "gray(0,0,0)") or (res1 == "black") or (res1 == "gray(0)"):
         s.run(
-            "cp "
-            + PATH_CWD
-            + "plate1.png "
-            + PATH_CWD
-            + "plate.png",
-            shell=True,
+            "cp " + PATH_CWD + "plate1.png " + PATH_CWD + "plate.png", shell=True,
         )  # if plate 1 match, replace plate with it
     elif (res2 == "gray(0,0,0)") or (res2 == "black") or (res2 == "gray(0)"):
         s.run(
-            "cp "
-            + PATH_CWD
-            + "plate2.png "
-            + PATH_CWD
-            + "plate.png",
-            shell=True,
+            "cp " + PATH_CWD + "plate2.png " + PATH_CWD + "plate.png", shell=True,
         )  # if plate 2 match, replace plate with it
     elif (res3 == "gray(0,0,0)") or (res3 == "black") or (res3 == "gray(0)"):
         s.run(
-            "cp "
-            + PATH_CWD
-            + "plate3.png "
-            + PATH_CWD
-            + "plate.png",
+            "cp " + PATH_CWD + "plate3.png " + PATH_CWD + "plate.png",
             shell=True,
             cwd=PATH_CWD,
         )
     elif (res4 == "gray(0,0,0)") or (res4 == "black") or (res4 == "gray(0)"):
         s.run(
-            "cp "
-            + PATH_CWD
-            + "plate4.png "
-            + PATH_CWD
-            + "plate.png",
+            "cp " + PATH_CWD + "plate4.png " + PATH_CWD + "plate.png",
             shell=True,
             cwd=PATH_CWD,
         )
@@ -401,14 +369,10 @@ def compare_frames_in_plated_video(s):
             shell=True,
         ).stdout
         s.run(
-            "rm " + PATH_CWD + "frame.png",
-            shell=True,
-            cwd=PATH_CWD,
+            "rm " + PATH_CWD + "frame.png", shell=True, cwd=PATH_CWD,
         )
         s.run(
-            "rm " + PATH_CWD + "frame_origin.png",
-            shell=True,
-            cwd=PATH_CWD,
+            "rm " + PATH_CWD + "frame_origin.png", shell=True, cwd=PATH_CWD,
         )
         assert (
             (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
@@ -417,9 +381,7 @@ def compare_frames_in_plated_video(s):
 
 def check_plated_video(s):
     ffmpeg_output = s.run(
-        "ffmpeg -hide_banner -i " + PATH_CWD + "plated.mp4",
-        shell=True,
-        cwd=PATH_CWD,
+        "ffmpeg -hide_banner -i " + PATH_CWD + "plated.mp4", shell=True, cwd=PATH_CWD,
     ).stdout
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
@@ -440,12 +402,7 @@ def check_plated_video(s):
 
 def test_plated_video(s):
     assert (
-        s.call(
-            "test -e " + PATH_CWD + "plated.mp4",
-            shell=True,
-            cwd=PATH_CWD,
-        )
-        == 0
+        s.call("test -e " + PATH_CWD + "plated.mp4", shell=True, cwd=PATH_CWD,) == 0
     ), "Не найден видеофайл 'plated.mp4'"
     assert (
         s.run(
@@ -472,9 +429,7 @@ def test_plated_video(s):
 ################ Проверяем видео с текстом ################
 def get_text_and_fontsize(s):
     cmd = s.run(
-        "cat "
-        + PATH_CWD
-        + "student_response.txt |grep -E 'ffmpeg .+drawtext'",
+        "cat " + PATH_CWD + "student_response.txt |grep -E 'ffmpeg .+drawtext'",
         shell=True,
         cwd=PATH_CWD,
     ).stdout
@@ -489,8 +444,7 @@ def get_text_and_fontsize(s):
         1 if cmd[end - 1] == ":" else 0
     )  # если последним было двоеточие, сдвигаемся на предыдущий символ
     s.run(
-        "echo " + cmd[start:end] + ">" + PATH_CWD + "text.txt",
-        shell=True,
+        "echo " + cmd[start:end] + ">" + PATH_CWD + "text.txt", shell=True,
     )
     fontsize = s.run(
         "cat "
@@ -541,14 +495,10 @@ def compare_frames_in_result_video(s):
             shell=True,
         ).stdout
         s.run(
-            "rm " + PATH_CWD + "frame.png",
-            shell=True,
-            cwd=PATH_CWD,
+            "rm " + PATH_CWD + "frame.png", shell=True, cwd=PATH_CWD,
         )
         s.run(
-            "rm " + PATH_CWD + "frame_origin.png",
-            shell=True,
-            cwd=PATH_CWD,
+            "rm " + PATH_CWD + "frame_origin.png", shell=True, cwd=PATH_CWD,
         )
         assert (
             (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
@@ -557,9 +507,7 @@ def compare_frames_in_result_video(s):
 
 def check_result_video(s):
     ffmpeg_output = s.run(
-        "ffmpeg -hide_banner -i " + PATH_CWD + "result.mp4",
-        shell=True,
-        cwd=PATH_CWD,
+        "ffmpeg -hide_banner -i " + PATH_CWD + "result.mp4", shell=True, cwd=PATH_CWD,
     ).stdout
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
@@ -580,12 +528,7 @@ def check_result_video(s):
 
 def test_final_video(s):
     assert (
-        s.call(
-            "test -e " + PATH_CWD + "result.mp4",
-            shell=True,
-            cwd=PATH_CWD,
-        )
-        == 0
+        s.call("test -e " + PATH_CWD + "result.mp4", shell=True, cwd=PATH_CWD,) == 0
     ), "Мы не нашли итоговое видео"
     fontsize = get_text_and_fontsize(s)  # получаем текст для наложения и размер шрифта
     assert (
