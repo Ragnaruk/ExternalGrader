@@ -18,7 +18,7 @@ def get_logger(logger_name: str) -> logging.Logger:
 
     logger.setLevel(LOG_LEVEL)
 
-    if len(logger.handlers) == 0:
+    if not logger.handlers:
         logger_handler = logging.FileHandler(
             PATH_LOG_DIRECTORY / "{0}.log".format(logger_name)
         )
