@@ -1,0 +1,7 @@
+FROM ragnaruk/python-slim:latest
+
+RUN \
+    pip install onvif-zeep; \
+    sed -i 's/raise NotImplementedError(/return xmlvalue/g' /usr/local/lib/python3.8/site-packages/zeep/xsd/types/simple.py; \
+    sed -i '77d' /usr/local/lib/python3.8/site-packages/zeep/xsd/types/simple.py; \
+    sed -i '77d' /usr/local/lib/python3.8/site-packages/zeep/xsd/types/simple.py
