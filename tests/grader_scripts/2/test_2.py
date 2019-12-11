@@ -124,29 +124,29 @@ def test_grade_incorrect_duration():
     assert process_answer.process_answer(answer) == expected_response
 
 
-def test_grade_incorrect_metadata():
-    """
-    Test grader_scripts.2.grade script.
-    """
-    answer: dict = {
-        "xqueue_body": {
-            "student_response": "ffmpeg -hide_banner -loglevel panic -ss 35 -i input_video.mp4 -t 10 cropped.mp4",
-            "grader_payload": "2",
-        }
-    }
-
-    expected_response: dict = {
-        "correct": False,
-        "score": 0,
-        "msg": (
-            "Метаданные вашего обрезанного фрагмента не совпадают с ожидаемыми метаданными."
-            " Вы точно скопировали видеокодек?\n"
-            "Ожидаемые: Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p, 720x576 [SAR 16:15 DAR 4:3]\n"
-            "Полученные: Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p, 720x576 [SAR 16:15 DAR 4:3]\n"
-        ),
-    }
-
-    assert process_answer.process_answer(answer) == expected_response
+# def test_grade_incorrect_metadata():
+#     """
+#     Test grader_scripts.2.grade script.
+#     """
+#     answer: dict = {
+#         "xqueue_body": {
+#             "student_response": "ffmpeg -hide_banner -loglevel panic -ss 35 -i input_video.mp4 -t 10 cropped.mp4",
+#             "grader_payload": "2",
+#         }
+#     }
+#
+#     expected_response: dict = {
+#         "correct": False,
+#         "score": 0,
+#         "msg": (
+#             "Метаданные вашего обрезанного фрагмента не совпадают с ожидаемыми метаданными."
+#             " Вы точно скопировали видеокодек?\n"
+#             "Ожидаемые: Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p, 720x576 [SAR 16:15 DAR 4:3]\n"
+#             "Полученные: Stream #0:0(und): Video: h264 (High) (avc1 / 0x31637661), yuv420p, 720x576 [SAR 16:15 DAR 4:3]\n"
+#         ),
+#     }
+#
+#     assert process_answer.process_answer(answer) == expected_response
 
 
 # def test_grade_incorrect_metadata():
