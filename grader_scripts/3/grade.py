@@ -361,7 +361,7 @@ def run():
     assert (
         position_current.PanTilt.x == 0.7
         and position_current.PanTilt.y == 0.7
-        and position_current.Zoom.x == 0.1
+        and position_current.Zoom.x == 0.0
     ), (
         "Неверная позиция камеры.\n"
         "Ожидалось: 0.7 : 0.7 : 0.0\n"
