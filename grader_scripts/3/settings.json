@@ -1,13 +1,13 @@
 {
   "container_limits": {
-    "cputime": 10,
-    "realtime": 30,
-    "memory": 64,
+    "cputime": 60,
+    "realtime": 90,
+    "memory": 128,
     "processes": -1
   },
   "profile": {
-    "docker_image": "ragnaruk/python:latest",
-    "user": "guest",
+    "docker_image": "ragnaruk/onvif:latest",
+    "user": "root",
     "read_only": false,
     "network_disabled": false
   }
