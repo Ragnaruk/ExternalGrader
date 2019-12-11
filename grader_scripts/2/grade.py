@@ -139,7 +139,7 @@ def compare_frames_in_cropped_video(s):
         + "frame.png "
         + PATH_CWD
         + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :"
-          "| convert - -resize 1x1\\! -format '%[pixel:p{0,0}]' info:",
+        "| convert - -resize 1x1\\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
         cwd=PATH_CWD,
     )
@@ -152,10 +152,10 @@ def compare_frames_in_cropped_video(s):
 
     print(result, file=sys.stderr)
 
-    assert (
-        (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
-    ), "Кажется, вы отрезали видеофрагмент не с той секунды, с какой указано в вашем командном " \
-       "файле. "
+    assert (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)"), (
+        "Кажется, вы отрезали видеофрагмент не с той секунды, с какой указано в вашем командном "
+        "файле. "
+    )
 
 
 def check_cropped_video(s, ss):
@@ -201,11 +201,11 @@ def check_cropped_video(s, ss):
     start_origin = ffmpeg_origin.find("Stream #0:0")
     end_origin = ffmpeg_origin.rfind(",", 0, ffmpeg_output.find("kb/s", start_origin))
 
-    assert (
-        ffmpeg_output[start:end] == ffmpeg_origin[start_origin:end_origin]
-    ), (
+    assert ffmpeg_output[start:end] == ffmpeg_origin[start_origin:end_origin], (
         "Метаданные вашего обрезанного фрагмента не совпадают с ожидаемыми метаданными.\n"
-        "Ожидаемые: {0}\nПолученные: {1}".format(ffmpeg_origin[start_origin:end_origin], ffmpeg_output[start:end])
+        "Ожидаемые: {0}\nПолученные: {1}".format(
+            ffmpeg_origin[start_origin:end_origin], ffmpeg_output[start:end]
+        )
     )
 
     compare_frames_in_cropped_video(s)

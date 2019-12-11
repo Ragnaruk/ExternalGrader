@@ -12,7 +12,10 @@ def test_grade_incorrect_no_output_video():
     Test grader_scripts.2.grade script.
     """
     answer: dict = {
-        "xqueue_body": {"student_response": "ffmpeg -hide_banner -loglevel panic", "grader_payload": "2"}
+        "xqueue_body": {
+            "student_response": "ffmpeg -hide_banner -loglevel panic",
+            "grader_payload": "2",
+        }
     }
 
     expected_response: dict = {
