@@ -36,13 +36,9 @@ from external_grader import process_answer
 #         "msg": "Неверная позиция камеры.\nОжидалось: 0.7 : 0.7 : 0.0\nТекущая: 0.6 : 0.6 : 0.0\n",
 #     }
 #
-#     ans = process_answer.process_answer(answer)
-#
-#     print(ans)
-#
-#     assert ans == expected_response
-#
-#
+#     assert process_answer.process_answer(answer) == expected_response
+
+
 # def test_grade_correct():
 #     """
 #     Test grader_scripts.3.grade script.
@@ -70,8 +66,8 @@ from external_grader import process_answer
 #     }
 #
 #     expected_response: dict = {
-#         "correct": False,
-#         "score": 0,
+#         "correct": True,
+#         "score": 1,
 #         "msg": "Верный ответ.\n",
 #     }
 #
