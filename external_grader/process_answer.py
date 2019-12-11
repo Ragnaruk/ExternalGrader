@@ -353,7 +353,7 @@ def grade_epicbox(
 
     try:
         score: int = int(result["stdout"].decode().split("\n")[-2])
-        msg: str = result["stderr"].decode() # .split("\n")[-2]
+        msg: str = result["stderr"].decode()  # .split("\n")[-2]
         correct: bool = bool(score)
     except ValueError:
         raise InvalidGraderScriptException(
