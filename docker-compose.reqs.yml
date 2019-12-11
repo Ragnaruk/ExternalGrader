@@ -5,8 +5,18 @@ services:
       context: ./docker_images
       dockerfile: Dockerfile-python
     image: ragnaruk/python:latest
+  python-slim:
+    build:
+      context: ./docker_images
+      dockerfile: Dockerfile-python-slim
+    image: ragnaruk/python-slim:latest
   ffmpeg:
     build:
       context: ./docker_images
       dockerfile: Dockerfile-ffmpeg
     image: ragnaruk/ffmpeg:latest
+  onvif:
+    build:
+      context: ./docker_images
+      dockerfile: Dockerfile-onvif
+    image: ragnaruk/onvif:latest
