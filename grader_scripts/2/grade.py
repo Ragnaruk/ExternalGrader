@@ -45,6 +45,7 @@ def get_starttime(s):
             + PATH_CWD
             + "student_response.txt |grep -e '\\-ss \\{1,\\}[0-9:\\.]*' -o",
             shell=True,
+            cwd=PATH_CWD,
         )
     except Exception:
         raise AssertionError(
@@ -81,6 +82,7 @@ def check_duration(s, ss):
             + PATH_CWD
             + "student_response.txt | grep -E '\-(t|to) +{1,}[0-9:\.]*' -o",
             shell=True,
+            cwd=PATH_CWD,
         )
     except Exception:
         raise AssertionError(
@@ -120,6 +122,7 @@ def compare_frames_in_cropped_video(s):
         + PATH_CWD
         + "frame.png",
         shell=True,
+        cwd=PATH_CWD,
     )
     s.run(
         "ffmpeg -hide_banner -loglevel panic -i "
@@ -128,14 +131,17 @@ def compare_frames_in_cropped_video(s):
         + PATH_CWD
         + "frame_origin.png",
         shell=True,
+        cwd=PATH_CWD,
     )
     result = s.run(
         "compare "
         + PATH_CWD
         + "frame.png "
         + PATH_CWD
-        + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :"
+          "| convert - -resize 1x1\\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
+        cwd=PATH_CWD,
     )
     s.run(
         "rm " + PATH_CWD + "frame.png", shell=True, cwd=PATH_CWD,
@@ -143,17 +149,22 @@ def compare_frames_in_cropped_video(s):
     s.run(
         "rm " + PATH_CWD + "frame_origin.png", shell=True, cwd=PATH_CWD,
     )
+
+    print(result, file=sys.stderr)
+
     assert (
         (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)")
-    ), "Кажется, вы отрезали видеофрагмент не с той секунды, с какой указано в вашем командном файле."
+    ), "Кажется, вы отрезали видеофрагмент не с той секунды, с какой указано в вашем командном " \
+       "файле. "
 
 
 def check_cropped_video(s, ss):
-    ffmpeg_output = s.check_output(
-        "ffmpeg -hide_banner -loglevel panic -i " + PATH_CWD + "cropped.mp4",
+    ffmpeg_output = s.run(
+        "ffmpeg -hide_banner -i " + PATH_CWD + "cropped.mp4",
         shell=True,
+        cwd=PATH_CWD,
         capture_output=True,
-    )
+    ).stderr
 
     ffmpeg_output = ffmpeg_output.decode("UTF-8")
 
@@ -162,6 +173,7 @@ def check_cropped_video(s, ss):
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Обрезанное видео имеет неверную длину."
 
+    # создаем видео с границами из команды
     s.run(
         "ffmpeg -hide_banner -loglevel panic -i "
         + PATH_CWD
@@ -171,18 +183,31 @@ def check_cropped_video(s, ss):
         + PATH_CWD
         + "cropped.mp4",
         shell=True,
-    )  # создаем видео с границами из команды
+        cwd=PATH_CWD,
+    )
+
     ffmpeg_origin = s.run(
-        "ffmpeg -hide_banner -i " + PATH_CWD + "cropped.mp4", shell=True,
-    ).stdout
+        "ffmpeg -hide_banner -i " + PATH_CWD + "cropped.mp4",
+        shell=True,
+        cwd=PATH_CWD,
+        capture_output=True,
+    ).stderr
+
+    ffmpeg_origin = ffmpeg_origin.decode("UTF-8")
+
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
     start_origin = ffmpeg_origin.find("Stream #0:0")
     end_origin = ffmpeg_origin.rfind(",", 0, ffmpeg_output.find("kb/s", start_origin))
+
     assert (
         ffmpeg_output[start:end] == ffmpeg_origin[start_origin:end_origin]
-    ), "Метаданные вашего обрезанного фрагмента не совпадают с ожидаемыми метаданными. Вы точно скопировали видеокодек?"
+    ), (
+        "Метаданные вашего обрезанного фрагмента не совпадают с ожидаемыми метаданными.\n"
+        "Ожидаемые: {0}\nПолученные: {1}".format(ffmpeg_origin[start_origin:end_origin], ffmpeg_output[start:end])
+    )
+
     compare_frames_in_cropped_video(s)
 
 
@@ -202,7 +227,10 @@ def test_plate(s):
     assert (
         s.call("test -e " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD,) == 0
     ), "Не найден svg-файл с кодом плашки"
-    svg = s.run("cat " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD).stdout
+    svg = s.check_output("cat " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD)
+
+    svg = svg.decode("UTF-8")
+
     assert svg != "", "Ваш svg-файл пуст"
     checklist = [
         [
@@ -232,6 +260,7 @@ def test_plate(s):
         + PATH_CWD
         + "plate1.png",
         shell=True,
+        cwd=PATH_CWD,
     )
     s.run(
         "convert -background none "
@@ -240,6 +269,7 @@ def test_plate(s):
         + PATH_CWD
         + "plate2.png",
         shell=True,
+        cwd=PATH_CWD,
     )
     s.run(
         "convert -background none "
@@ -248,6 +278,7 @@ def test_plate(s):
         + PATH_CWD
         + "plate3.png",
         shell=True,
+        cwd=PATH_CWD,
     )
     s.run(
         "convert -background none "
@@ -256,47 +287,68 @@ def test_plate(s):
         + PATH_CWD
         + "plate4.png",
         shell=True,
+        cwd=PATH_CWD,
     )
 
-    res1 = s.run(
+    res1 = s.check_output(
         "compare "
         + PATH_CWD
         + "plate1.png "
         + PATH_CWD
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).stdout
-    res2 = s.run(
+        cwd=PATH_CWD,
+    )
+
+    res1 = res1.decode("UTF-8")
+
+    res2 = s.check_output(
         "compare "
         + PATH_CWD
         + "plate2.png "
         + PATH_CWD
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).stdout
-    res3 = s.run(
+        cwd=PATH_CWD,
+    )
+
+    res2 = res2.decode("UTF-8")
+
+    res3 = s.check_output(
         "compare "
         + PATH_CWD
         + "plate3.png "
         + PATH_CWD
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).stdout
-    res4 = s.run(
+        cwd=PATH_CWD,
+    )
+
+    res3 = res3.decode("UTF-8")
+
+    res4 = s.check_output(
         "compare "
         + PATH_CWD
         + "plate4.png "
         + PATH_CWD
         + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
         shell=True,
-    ).stdout
+        cwd=PATH_CWD,
+    )
+
+    res4 = res4.decode("UTF-8")
+
     if (res1 == "gray(0,0,0)") or (res1 == "black") or (res1 == "gray(0)"):
         s.run(
-            "cp " + PATH_CWD + "plate1.png " + PATH_CWD + "plate.png", shell=True,
+            "cp " + PATH_CWD + "plate1.png " + PATH_CWD + "plate.png",
+            shell=True,
+            cwd=PATH_CWD,
         )  # if plate 1 match, replace plate with it
     elif (res2 == "gray(0,0,0)") or (res2 == "black") or (res2 == "gray(0)"):
         s.run(
-            "cp " + PATH_CWD + "plate2.png " + PATH_CWD + "plate.png", shell=True,
+            "cp " + PATH_CWD + "plate2.png " + PATH_CWD + "plate.png",
+            shell=True,
+            cwd=PATH_CWD,
         )  # if plate 2 match, replace plate with it
     elif (res3 == "gray(0,0,0)") or (res3 == "black") or (res3 == "gray(0)"):
         s.run(
@@ -325,6 +377,7 @@ def test_IM_command(s):
             + PATH_CWD
             + "student_response.txt |grep -i -E 'convert .*(-depth +8 |png8: ?)' -o",
             shell=True,
+            cwd=PATH_CWD,
         )
         != ""
     ), "Вы точно указали глубину цвета при конвертации плашки?"
@@ -349,6 +402,7 @@ def compare_frames_in_plated_video(s):
             + PATH_CWD
             + "frame.png",
             shell=True,
+            cwd=PATH_CWD,
         )
         s.run(
             "ffmpeg -hide_banner -loglevel panic -i "
@@ -359,6 +413,7 @@ def compare_frames_in_plated_video(s):
             + PATH_CWD
             + "frame_origin.png",
             shell=True,
+            cwd=PATH_CWD,
         )
         result = s.run(
             "compare "
@@ -367,7 +422,11 @@ def compare_frames_in_plated_video(s):
             + PATH_CWD
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
-        ).stdout
+            cwd=PATH_CWD,
+        )
+
+        result = result.decode("UTF-8")
+
         s.run(
             "rm " + PATH_CWD + "frame.png", shell=True, cwd=PATH_CWD,
         )
@@ -382,13 +441,19 @@ def compare_frames_in_plated_video(s):
 def check_plated_video(s):
     ffmpeg_output = s.run(
         "ffmpeg -hide_banner -i " + PATH_CWD + "plated.mp4", shell=True, cwd=PATH_CWD,
-    ).stdout
+    )
+
+    ffmpeg_output = ffmpeg_output.decode("UTF-8")
+
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Видео с плашкой имеет неверную длину"  # проверили длину отрезанного видео
     ffmpeg_origin = s.run(
-        "ffmpeg -hide_banner -i " + PATH_CWD + "plated.mp4", shell=True,
-    ).stdout
+        "ffmpeg -hide_banner -i " + PATH_CWD + "plated.mp4", shell=True, cwd=PATH_CWD,
+    )
+
+    ffmpeg_origin = ffmpeg_origin.decode("UTF-8")
+
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
@@ -422,6 +487,7 @@ def test_plated_video(s):
         + PATH_CWD
         + "plated.mp4",
         shell=True,
+        cwd=PATH_CWD,
     )  # создаем эталонное видео с наложенной плашкой
     check_plated_video(s)
 
@@ -432,7 +498,10 @@ def get_text_and_fontsize(s):
         "cat " + PATH_CWD + "student_response.txt |grep -E 'ffmpeg .+drawtext'",
         shell=True,
         cwd=PATH_CWD,
-    ).stdout
+    )
+
+    cmd = cmd.decode("UTF-8")
+
     assert cmd != "", "Мы не нашли команду для наложения текста"
     match = re.compile("[^w]text *= *").search(cmd)
     assert match != None, "Ошибка в команде наложения текста"
@@ -444,14 +513,20 @@ def get_text_and_fontsize(s):
         1 if cmd[end - 1] == ":" else 0
     )  # если последним было двоеточие, сдвигаемся на предыдущий символ
     s.run(
-        "echo " + cmd[start:end] + ">" + PATH_CWD + "text.txt", shell=True,
+        "echo " + cmd[start:end] + ">" + PATH_CWD + "text.txt",
+        shell=True,
+        cwd=PATH_CWD,
     )
-    fontsize = s.run(
+    fontsize = s.check_output(
         "cat "
         + PATH_CWD
         + "student_response.txt |grep -E 'fontsize *= *[0-9]{1,2}' -o",
         shell=True,
-    ).stdout
+        cwd=PATH_CWD,
+    )
+
+    fontsize = fontsize.decode("UTF-8")
+
     assert fontsize != "", "Ошибка в команде наложения текста"
     fontsize = fontsize[fontsize.find("=") + 1 :].strip()  # оставляем только цифры
     return fontsize
@@ -475,6 +550,7 @@ def compare_frames_in_result_video(s):
             + PATH_CWD
             + "frame.png",
             shell=True,
+            cwd=PATH_CWD,
         )
         s.run(
             "ffmpeg -hide_banner -loglevel panic -i "
@@ -485,6 +561,7 @@ def compare_frames_in_result_video(s):
             + PATH_CWD
             + "frame_origin.png",
             shell=True,
+            cwd=PATH_CWD,
         )
         result = s.run(
             "compare "
@@ -493,7 +570,11 @@ def compare_frames_in_result_video(s):
             + PATH_CWD
             + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
             shell=True,
-        ).stdout
+            cwd=PATH_CWD,
+        )
+
+        result = result.decode("UTF-8")
+
         s.run(
             "rm " + PATH_CWD + "frame.png", shell=True, cwd=PATH_CWD,
         )
@@ -508,13 +589,19 @@ def compare_frames_in_result_video(s):
 def check_result_video(s):
     ffmpeg_output = s.run(
         "ffmpeg -hide_banner -i " + PATH_CWD + "result.mp4", shell=True, cwd=PATH_CWD,
-    ).stdout
+    )
+
+    ffmpeg_output = ffmpeg_output.decode("UTF-8")
+
     assert (
         ffmpeg_output.find("Duration: 00:00:10.00") != -1
     ), "Итоговое видео имеет неверную длину"  # проверили длину отрезанного видео
     ffmpeg_origin = s.run(
-        "ffmpeg -hide_banner -i " + PATH_CWD + "result.mp4", shell=True,
-    ).stdout
+        "ffmpeg -hide_banner -i " + PATH_CWD + "result.mp4", shell=True, cwd=PATH_CWD,
+    )
+
+    ffmpeg_origin = ffmpeg_origin.decode("UTF-8")
+
     start = ffmpeg_output.find("Stream #0:0")
     end = ffmpeg_output.rfind(",", 0, ffmpeg_output.find("kb/s", start))
 
@@ -543,6 +630,7 @@ def test_final_video(s):
             + PATH_CWD
             + "result.mp4",
             shell=True,
+            cwd=PATH_CWD,
         )
         == 0
     ), "Пожалуйста, выберите текст для наложения без сложных комбинаций кавычек"
