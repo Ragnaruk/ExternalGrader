@@ -9,7 +9,7 @@ RUN \
     rc-update add docker boot
 
 # Install Python requirements
-COPY ./requirements /external_grader/requirements
+COPY ./requirements/requirements.txt /external_grader/requirements/requirements.txt
 WORKDIR /external_grader
 
 RUN pip install -r requirements/requirements.txt
