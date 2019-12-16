@@ -15,6 +15,7 @@ from logging import Logger
 
 from external_grader.logs import get_logger
 from external_grader.process_answer import process_answer
+from external_grader.exceptions import InvalidSubmissionException
 
 
 def receive_messages(
@@ -96,8 +97,10 @@ def callback_function(
             properties=BasicProperties(correlation_id=properties.correlation_id),
             body=json.dumps(reply),
         )
+    except InvalidSubmissionException:
+        pass
     except Exception as exception:
-        raise Exception
+        raise exception
 
     # Acknowledge message in queue
     current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
