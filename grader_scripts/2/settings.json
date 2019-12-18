@@ -21,7 +21,7 @@
   },
   "container_limits": {
     "cputime": 30,
-    "realtime": 150,
+    "realtime": 60,
     "memory": 512,
     "processes": -1
   },
