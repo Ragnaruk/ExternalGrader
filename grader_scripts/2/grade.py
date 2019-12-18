@@ -14,7 +14,7 @@ def main():
 
     run_submission(s)
 
-    test_cropped_video(s)
+    test_cropped_video(s)  # done
     test_plate(s)
     test_IM_command(s)
     test_plated_video(s)
@@ -133,28 +133,41 @@ def compare_frames_in_cropped_video(s):
         shell=True,
         cwd=PATH_CWD,
     )
-    result = s.run(
+
+    s.run(
         "compare "
         + PATH_CWD
         + "frame.png "
         + PATH_CWD
-        + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black :"
-        "| convert - -resize 1x1\\! -format '%[pixel:p{0,0}]' info:",
+        + "frame_origin.png -compose Src -highlight-color White -lowlight-color Black "
+        + PATH_CWD
+        + "diff.png",
         shell=True,
         cwd=PATH_CWD,
     )
+
+    result = s.run(
+        "convert " + PATH_CWD + "diff.png -resize 1x1! -format '%[pixel:p{0,0}]' info:",
+        shell=True,
+        cwd=PATH_CWD,
+        capture_output=True,
+    ).stdout
+
+    result = result.decode("UTF-8")
+
     s.run(
         "rm " + PATH_CWD + "frame.png", shell=True, cwd=PATH_CWD,
     )
     s.run(
         "rm " + PATH_CWD + "frame_origin.png", shell=True, cwd=PATH_CWD,
     )
+    s.run(
+        "rm " + PATH_CWD + "diff.png", shell=True, cwd=PATH_CWD,
+    )
 
-    print(result, file=sys.stderr)
-
-    assert (result == "gray(0,0,0)") or (result == "black") or (result == "gray(0)"), (
-        "Кажется, вы отрезали видеофрагмент не с той секунды, с какой указано в вашем командном "
-        "файле. "
+    assert result == "gray(0,0,0)" or result == "black" or result == "gray(0)", (
+        "Кажется, вы отрезали видеофрагмент не с той секунды, "
+        "с какой указано в вашем командном файле."
     )
 
 
@@ -225,13 +238,15 @@ def test_cropped_video(s):
 ################ Проверяем плашку ################
 def test_plate(s):
     assert (
-        s.call("test -e " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD,) == 0
-    ), "Не найден svg-файл с кодом плашки"
+        s.call("test -e " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD) == 0
+    ), "Не найден svg-файл с кодом плашки."
+
     svg = s.check_output("cat " + PATH_CWD + "plate.svg", shell=True, cwd=PATH_CWD)
 
     svg = svg.decode("UTF-8")
 
-    assert svg != "", "Ваш svg-файл пуст"
+    assert svg != "" and svg != "\n", "Ваш svg-файл пуст."
+
     checklist = [
         [
             "<circle .*cx *= *['\"]?359(px)?['\"]?",
@@ -250,8 +265,9 @@ def test_plate(s):
             "Вы сделали подложку из прямоугольника? А заливка верная?",
         ],
     ]
+
     for param in checklist:
-        assert re.compile(param[0]).search(svg) != None, param[1]
+        assert re.compile(param[0]).search(svg) is not None, param[1]
 
     s.run(
         "convert -background none "
@@ -262,6 +278,7 @@ def test_plate(s):
         shell=True,
         cwd=PATH_CWD,
     )
+
     s.run(
         "convert -background none "
         + PATH_CWD
@@ -271,6 +288,7 @@ def test_plate(s):
         shell=True,
         cwd=PATH_CWD,
     )
+
     s.run(
         "convert -background none "
         + PATH_CWD
@@ -280,6 +298,7 @@ def test_plate(s):
         shell=True,
         cwd=PATH_CWD,
     )
+
     s.run(
         "convert -background none "
         + PATH_CWD
@@ -290,53 +309,99 @@ def test_plate(s):
         cwd=PATH_CWD,
     )
 
-    res1 = s.check_output(
+    s.run(
         "compare "
         + PATH_CWD
         + "plate1.png "
         + PATH_CWD
-        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black "
+        + PATH_CWD
+        + "diff1.png",
         shell=True,
         cwd=PATH_CWD,
     )
 
+    res1 = s.run(
+        "convert "
+        + PATH_CWD
+        + "diff1.png -resize 1x1! -format '%[pixel:p{0,0}]' info:",
+        shell=True,
+        cwd=PATH_CWD,
+        capture_output=True,
+    ).stdout
+
     res1 = res1.decode("UTF-8")
 
-    res2 = s.check_output(
+    s.run(
         "compare "
         + PATH_CWD
         + "plate2.png "
         + PATH_CWD
-        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black "
+        + PATH_CWD
+        + "diff2.png",
         shell=True,
         cwd=PATH_CWD,
     )
 
+    res2 = s.run(
+        "convert "
+        + PATH_CWD
+        + "diff2.png -resize 1x1! -format '%[pixel:p{0,0}]' info:",
+        shell=True,
+        cwd=PATH_CWD,
+        capture_output=True,
+    ).stdout
+
     res2 = res2.decode("UTF-8")
 
-    res3 = s.check_output(
+    s.run(
         "compare "
         + PATH_CWD
         + "plate3.png "
         + PATH_CWD
-        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black "
+        + PATH_CWD
+        + "diff3.png",
         shell=True,
         cwd=PATH_CWD,
     )
+
+    res3 = s.run(
+        "convert "
+        + PATH_CWD
+        + "diff3.png -resize 1x1! -format '%[pixel:p{0,0}]' info:",
+        shell=True,
+        cwd=PATH_CWD,
+        capture_output=True,
+    ).stdout
 
     res3 = res3.decode("UTF-8")
 
-    res4 = s.check_output(
+    s.run(
         "compare "
         + PATH_CWD
-        + "plate4.png "
+        + "plate3.png "
         + PATH_CWD
-        + "plate.png -compose Src -highlight-color White -lowlight-color Black :| convert - -resize 1x1\! -format '%[pixel:p{0,0}]' info:",
+        + "plate.png -compose Src -highlight-color White -lowlight-color Black "
+        + PATH_CWD
+        + "diff4.png",
         shell=True,
         cwd=PATH_CWD,
     )
 
+    res4 = s.run(
+        "convert "
+        + PATH_CWD
+        + "diff4.png -resize 1x1! -format '%[pixel:p{0,0}]' info:",
+        shell=True,
+        cwd=PATH_CWD,
+        capture_output=True,
+    ).stdout
+
     res4 = res4.decode("UTF-8")
+
+    # TODO Tests stop here.
 
     if (res1 == "gray(0,0,0)") or (res1 == "black") or (res1 == "gray(0)"):
         s.run(
@@ -641,14 +706,16 @@ if __name__ == "__main__":
     try:
         main()
 
-        print(1)
+        print("\n1")
     except AssertionError as exception:
         print(exception, file=sys.stderr)
-        print(0)
+
+        print("\n0")
     except Exception as exception:
         exc_info = sys.exc_info()
 
         print("Unhandled error during grading.", file=sys.stderr)
         print(exception, file=sys.stderr)
         print(exc_info, file=sys.stderr)
-        print(0)
+
+        print("\n0")
