@@ -363,9 +363,7 @@ def run():
         and position_current.PanTilt.y == 0.7
         and position_current.Zoom.x == 0.0
     ), (
-        "Неверная позиция камеры.\n"
-        "Ожидалось: 0.7 : 0.7 : 0.0\n"
-        "Текущая: {0} : {1} : {2}".format(
+        "Неверная позиция камеры. Ожидалось: 0.7 : 0.7 : 0.0. Текущая: {0} : {1} : {2}.".format(
             position_current.PanTilt.x,
             position_current.PanTilt.y,
             position_current.Zoom.x,

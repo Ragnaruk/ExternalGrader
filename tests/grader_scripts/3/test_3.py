@@ -36,7 +36,7 @@ def test_grade_incorrect():
     expected_response: dict = {
         "correct": False,
         "score": 0,
-        "msg": "Неверная позиция камеры.\nОжидалось: 0.7 : 0.7 : 0.0\nТекущая: 0.6 : 0.6 : 0.0\n",
+        "msg": "Неверная позиция камеры. Ожидалось: 0.7 : 0.7 : 0.0. Текущая: 0.6 : 0.6 : 0.0.\n",
     }
 
     assert process_answer.process_answer(answer) == expected_response
