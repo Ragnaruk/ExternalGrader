@@ -8,6 +8,9 @@ omit =
     # Omit __main__.py files
     ./external_grader/__main__.py
 
+    # Omit unpassable tests
+    ./tests/grader_scripts/3/
+
 [report]
 # Regexes for lines to exclude from consideration
 exclude_lines =
