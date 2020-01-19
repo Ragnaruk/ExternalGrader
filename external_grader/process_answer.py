@@ -116,8 +116,8 @@ def submission_validate(submission: dict) -> dict:
 
     # Check for grading script id
     if (
-        isinstance(submission["xqueue_body"]["grader_payload"], dict)
-        and "script_id" in submission["xqueue_body"]["grader_payload"]
+            isinstance(submission["xqueue_body"]["grader_payload"], dict)
+            and "script_id" in submission["xqueue_body"]["grader_payload"]
     ):
         script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
     elif isinstance(submission["xqueue_body"]["grader_payload"], str):
@@ -134,18 +134,18 @@ def submission_validate(submission: dict) -> dict:
 
     # Check the existence of student answer
     if not (
-        "student_response" in submission["xqueue_body"].keys()
-        and submission["xqueue_body"]["student_response"]
+            "student_response" in submission["xqueue_body"].keys()
+            and submission["xqueue_body"]["student_response"]
     ):
         if "xqueue_files" in submission.keys() and isinstance(
-            submission["xqueue_files"], str
+                submission["xqueue_files"], str
         ):
             submission["xqueue_files"]: dict = json.loads(submission["xqueue_files"])
 
         if not (
-            "xqueue_files" in submission.keys()
-            and "student_response.txt" in submission["xqueue_files"].keys()
-            and submission["xqueue_files"]["student_response.txt"]
+                "xqueue_files" in submission.keys()
+                and "student_response.txt" in submission["xqueue_files"].keys()
+                and submission["xqueue_files"]["student_response.txt"]
         ):
             raise InvalidSubmissionException(
                 "Submission has invalid student response:", submission
@@ -182,8 +182,8 @@ def submission_get_grader_payload(submission: dict) -> str:
     :return: Grader payload.
     """
     if (
-        isinstance(submission["xqueue_body"]["grader_payload"], dict)
-        and "script_id" in submission["xqueue_body"]["grader_payload"]
+            isinstance(submission["xqueue_body"]["grader_payload"], dict)
+            and "script_id" in submission["xqueue_body"]["grader_payload"]
     ):
         script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
     else:
@@ -294,11 +294,11 @@ def settings_parse(script_name: str, settings: dict) -> (list, dict, dict):
 
 
 def grade_epicbox(
-    submission: dict,
-    script_name: str,
-    prepared_files: list,
-    docker_profile: dict,
-    docker_limits: dict,
+        submission: dict,
+        script_name: str,
+        prepared_files: list,
+        docker_profile: dict,
+        docker_limits: dict,
 ) -> dict:
     """
     Running grading script in a separate Docker container.
@@ -352,8 +352,8 @@ def grade_epicbox(
     logger.debug("Result: %s", result)
 
     try:
-        score: int = int(result["stdout"].decode().split("\n")[-2])
-        msg: str = result["stderr"].decode().split("\n")[-2] + "\n"
+        score: float = float(result["stdout"].decode().split("\n")[-2])
+        msg: str = result["stderr"].decode()  # .split("\n")[-2] + "\n"
         correct: bool = bool(score)
     except ValueError:
         raise InvalidGraderScriptException(
