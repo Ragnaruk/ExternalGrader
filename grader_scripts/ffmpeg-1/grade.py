@@ -1,9 +1,6 @@
 import re
 import sys
 
-total_grade = 0
-total_feedback = ""
-
 
 def get_answer():
     """
@@ -48,7 +45,7 @@ def run_extra(answer: str, grade: float, max_grade: float, feedback: str, regex:
     :param regex: Regex to match against.
     :return: Modified grade and feedback.
     """
-    if grade == max_grade:
+    if round(grade, 1) == max_grade:
         match = re.search(regex, answer)
 
         if match:
@@ -71,19 +68,19 @@ def task_1(answer: str):
 
     jobs = [
         {
-            "regex": r"/^\s*ffmpeg(\.exe)?\s+/",
+            "regex": r"^\s*ffmpeg(\.exe)?\s+",
             "comment": "Вызов ffmpeg.",
             "weight": 0.1,
         },
-        {"regex": r"/-i\s+input\.mp4\s+/", "comment": "Входной файл.", "weight": 0.1},
-        {"regex": r"/output\.mp4\s*$/", "comment": "Выходной файл.", "weight": 0.1},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
+        {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {
-            "regex": r"/-ss\s+((0?0:(0?0:)?)?0)?2\s+/",
+            "regex": r"-ss\s+((0?0:(0?0:)?)?0)?2\s+",
             "comment": "Начало фрагмента.",
             "weight": 0.3,
         },
         {
-            "regex": r"/-(t\s+(0?0:(0?0:)?)?10|to\s+(0?0:(0?0:)?)?12)\s+/",
+            "regex": r"-(t\s+(0?0:(0?0:)?)?10|to\s+(0?0:(0?0:)?)?12)\s+",
             "comment": "Длина (окончание) фрагмента.",
             "weight": 0.3,
         },
@@ -92,13 +89,13 @@ def task_1(answer: str):
     for job in jobs:
         answer, grade, feedback = run_job(answer, job, grade, feedback)
 
-    grade, feedback = run_extra(answer, grade, 0.9, feedback, r"/^\s*$/")
+    grade, feedback = run_extra(answer, grade, 0.9, feedback, r"^\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "Задание 1: {0}/{1}\n{2}".format(grade, 1.0, feedback)
+    total_feedback += "Задание 1: {0}/{1}\n{2}".format(round(grade, 1), 1.0, feedback)
 
 
 def task_2_1(answer_1: str, answer_2: str):
@@ -112,7 +109,7 @@ def task_2_1(answer_1: str, answer_2: str):
     feedback = ""
 
     job = {
-        "regex": r"/^\s*2360(k|000)\s*$/",
+        "regex": r"^\s*2360(k|000)\s*$",
         "comment": "Изначальный битрейт.",
         "weight": 0.3,
     }
@@ -121,25 +118,25 @@ def task_2_1(answer_1: str, answer_2: str):
 
     jobs = [
         {
-            "regex": r"/^\s*ffmpeg(\.exe)?\s+/",
+            "regex": r"^\s*ffmpeg(\.exe)?\s+",
             "comment": "Вызов ffmpeg.",
             "weight": 0.1,
         },
-        {"regex": r"/-i\s+input\.mp4\s+/", "comment": "Входной файл.", "weight": 0.1},
-        {"regex": r"/output\.mp4\s*$/", "comment": "Выходной файл.", "weight": 0.1},
-        {"regex": r"/-b\s+1180(k|000)\s+/", "comment": "Битрейт.", "weight": 0.3},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
+        {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
+        {"regex": r"-b\s+1180(k|000)\s+", "comment": "Битрейт.", "weight": 0.3},
     ]
 
     for job in jobs:
-        answer, grade, feedback = run_job(answer_2, job, grade, feedback)
+        answer_2, grade, feedback = run_job(answer_2, job, grade, feedback)
 
-    grade, feedback = run_extra(answer_2, grade, 0.9, feedback, r"/^\s*$/")
+    grade, feedback = run_extra(answer_2, grade, 0.9, feedback, r"^\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 2. Часть 1: {0}/{1}\n{2}".format(grade, 1.0, feedback)
+    total_feedback += "\nЗадание 2. Часть 1: {0}/{1}\n{2}".format(round(grade, 1), 1.0, feedback)
 
 
 def task_2_2(answer_1: str, answer_2: str):
@@ -153,7 +150,7 @@ def task_2_2(answer_1: str, answer_2: str):
     feedback = ""
 
     job = {
-        "regex": r"/^\s*129(k|000)\s*$/",
+        "regex": r"^\s*129(k|000)\s*$",
         "comment": "Изначальный битрейт.",
         "weight": 0.3,
     }
@@ -162,29 +159,29 @@ def task_2_2(answer_1: str, answer_2: str):
 
     jobs = [
         {
-            "regex": r"/^\s*ffmpeg(\.exe)?\s+/",
+            "regex": r"^\s*ffmpeg(\.exe)?\s+",
             "comment": "Вызов ffmpeg.",
             "weight": 0.1,
         },
-        {"regex": r"/-i\s+input\.mp4\s+/", "comment": "Входной файл.", "weight": 0.1},
-        {"regex": r"/output\.mp4\s*$/", "comment": "Выходной файл.", "weight": 0.1},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
+        {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {
-            "regex": r"/-b:a\s+6((4([\.,]5)?|5)k|4(5|0)00)\s+/",
+            "regex": r"-b:a\s+6((4([\.,]5)?|5)k|4(5|0)00)\s+",
             "comment": "Битрейт.",
             "weight": 0.3,
         },
     ]
 
     for job in jobs:
-        answer, grade, feedback = run_job(answer_2, job, grade, feedback)
+        answer_2, grade, feedback = run_job(answer_2, job, grade, feedback)
 
-    grade, feedback = run_extra(answer_2, grade, 0.9, feedback, r"/^\s*$/")
+    grade, feedback = run_extra(answer_2, grade, 0.9, feedback, r"^\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 2. Часть 2: {0}/{1}\n{2}".format(grade, 1.0, feedback)
+    total_feedback += "\nЗадание 2. Часть 2: {0}/{1}\n{2}".format(round(grade, 1), 1.0, feedback)
 
 
 def task_3(answer: str):
@@ -198,30 +195,30 @@ def task_3(answer: str):
 
     jobs = [
         {
-            "regex": r"/^\s*ffmpeg(\.exe)?\s+/",
+            "regex": r"^\s*ffmpeg(\.exe)?\s+",
             "comment": "Вызов ffmpeg.",
             "weight": 0.1,
         },
-        {"regex": r"/-i\s+input\.mp4\s+/", "comment": "Входной файл.", "weight": 0.1},
-        {"regex": r"/output\.mp4\s*$/", "comment": "Выходной файл.", "weight": 0.1},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
+        {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {
-            "regex": r"/-c:a\s+(mp3|libmp3lame)\s+/",
+            "regex": r"-c:a\s+(mp3|libmp3lame)\s+",
             "comment": "Аудиокодек.",
             "weight": 0.3,
         },
-        {"regex": r"/-c:v\s+copy\s+/", "comment": "Видеокодек.", "weight": 0.3},
+        {"regex": r"-c:v\s+copy\s+", "comment": "Видеокодек.", "weight": 0.3},
     ]
 
     for job in jobs:
         answer, grade, feedback = run_job(answer, job, grade, feedback)
 
-    grade, feedback = run_extra(answer, grade, 0.9, feedback, r"/^\s*$/")
+    grade, feedback = run_extra(answer, grade, 0.9, feedback, r"^\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 3: {0}/{1}\n{2}".format(grade, 1.0, feedback)
+    total_feedback += "\nЗадание 3: {0}/{1}\n{2}".format(round(grade, 1), 1.0, feedback)
 
 
 def task_4(answer: str):
@@ -235,19 +232,18 @@ def task_4(answer: str):
 
     jobs = [
         {
-            "regex": r"/^\s*ffmpeg(\.exe)?\s+/",
+            "regex": r"^\s*ffmpeg(\.exe)?\s+",
             "comment": "Вызов ffmpeg.",
             "weight": 0.1,
         },
-        {"regex": r"/-i\s+input\.mp4\s+/", "comment": "Входной файл.", "weight": 0.1},
-        {"regex": r"/output\.gif\s*$/", "comment": "Выходной файл.", "weight": 0.1},
-        {"regex": r"/-s\s+640x480\s+/", "comment": "Размер.", "weight": 0.3},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
+        {"regex": r"output\.gif\s*$", "comment": "Выходной файл.", "weight": 0.1},
+        {"regex": r"-s\s+640x480\s+", "comment": "Размер.", "weight": 0.3},
     ]
 
     # Something
     ss = 0
-    t = 0
-    match = re.search(r"/-ss\s+((\d{1,3}:[0-6])?\d:[0-6])?\d(\.\d{1,2})?/", answer)
+    match = re.search(r"-ss\s+((\d{1,3}:[0-6])?\d:[0-6])?\d(\.\d{1,2})?", answer)
 
     if match:
         colon = match[0].rindex(":")
@@ -255,16 +251,15 @@ def task_4(answer: str):
         if not colon:
             colon = match[0].index(" ")
 
-        ss = int(match[0][colon + 1 : -1])
+        ss = int(match[0][colon + 1:-1])
 
-    answer = answer.replace(match[0], "", 1)
+        answer = answer.replace(match[0], "", 1)
 
     # Something
-    match = re.search(r"/-t\s+(0?0:(0?0:)?)?10(\.00?)?/", answer)
+    match = re.search(r"-t\s+(0?0:(0?0:)?)?10(\.00?)?", answer)
 
     if not match:
-        match = re.search(r"/-to\s+((\d{1,3}:[0-6])?\d:[0-6])?\d/", answer)
-
+        match = re.search(r"-to\s+((\d{1,3}:[0-6])?\d:[0-6])?\d", answer)
         if not match:
             feedback += "Длительность.\n"
         else:
@@ -277,25 +272,26 @@ def task_4(answer: str):
 
             if t - ss == 10 or t - ss == -50:
                 grade += 0.3
+
+                answer = answer.replace(match[0], "", 1)
             else:
                 feedback += "Длительность.\n"
     else:
         grade += 0.3
 
-    if grade == 0.3:
-        answer.replace(match[0], "", 1)
+        answer = answer.replace(match[0], "", 1)
 
     # Main
     for job in jobs:
         answer, grade, feedback = run_job(answer, job, grade, feedback)
 
-    grade, feedback = run_extra(answer, grade, 0.9, feedback, r"/^\s*(-f\s+gif)?\s*$/")
+    grade, feedback = run_extra(answer, grade, 0.9, feedback, r"^\s*(-f\s+gif)?\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 4: {0}/{1}\n{2}".format(grade, 1.0, feedback)
+    total_feedback += "\nЗадание 4: {0}/{1}\n{2}".format(round(grade, 1), 1.0, feedback)
 
 
 def task_5_1(answer: str):
@@ -309,14 +305,14 @@ def task_5_1(answer: str):
 
     jobs = [
         {
-            "regex": r"/^\s*ffmpeg(\.exe)?\s+/",
+            "regex": r"^\s*ffmpeg(\.exe)?\s+",
             "comment": "Вызов ffmpeg.",
             "weight": 0.1,
         },
-        {"regex": r"/-i\s+input\.mp4\s+/", "comment": "Входной файл.", "weight": 0.1},
-        {"regex": r"/output%d\.png\s*$/", "comment": "Выходные файлы.", "weight": 0.3},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
+        {"regex": r"output%d\.png\s*$", "comment": "Выходные файлы.", "weight": 0.3},
         {
-            "regex": r"/-to?\s+(0?0:(0?0:)?)?0?1(\.00?)?/",
+            "regex": r"-to?\s+(0?0:(0?0:)?)?0?1(\.00?)?",
             "comment": "Длительность.",
             "weight": 0.1,
         },
@@ -325,18 +321,18 @@ def task_5_1(answer: str):
     for job in jobs:
         answer, grade, feedback = run_job(answer, job, grade, feedback)
 
-    match = re.search(r"/-f\s+image2/", answer)
+    match = re.search(r"-f\s+image2", answer)
 
     if match:
         answer = answer.replace(match[0], "", 1)
 
-    grade, feedback = run_extra(answer, grade, 0.6, feedback, r"/^\s*(-an)?\s*$/")
+    grade, feedback = run_extra(answer, grade, 0.6, feedback, r"^\s*(-an)?\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 5. Часть 1: {0}/{1}\n{2}".format(grade, 0.7, feedback)
+    total_feedback += "\nЗадание 5. Часть 1: {0}/{1}\n{2}".format(round(grade, 1), 0.7, feedback)
 
 
 def task_5_2(answer: str):
@@ -349,33 +345,33 @@ def task_5_2(answer: str):
     feedback = ""
 
     jobs = [
-        {"regex": r"/^\s*ffmpeg(\.exe)?\s+/", "comment": "Вызов ffmpeg", "weight": 0.1},
-        {"regex": r"/-i\s+input%d\.png\s+/", "comment": "Входные файлы", "weight": 0.3},
-        {"regex": r"/output\.mp4\s*$/", "comment": "Выходной файл", "weight": 0.1},
-        {"regex": r"/-r\s+25/", "comment": "Частота кадров", "weight": 0.2},
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg", "weight": 0.1},
+        {"regex": r"-i\s+input%d\.png\s+", "comment": "Входные файлы", "weight": 0.3},
+        {"regex": r"output\.mp4\s*$", "comment": "Выходной файл", "weight": 0.1},
+        {"regex": r"-r\s+25", "comment": "Частота кадров", "weight": 0.2},
         {
-            "regex": r"/-c:v\s+(libx264(rgb)?|h264)/",
+            "regex": r"-c:v\s+(libx264(rgb)?|h264)",
             "comment": "Видеокодек",
             "weight": 0.3,
         },
-        {"regex": r"/-b(:v)?\s+1024(k|000)/", "comment": "Битрейт", "weight": 0.2},
+        {"regex": r"-b(:v)?\s+1024(k|000)", "comment": "Битрейт", "weight": 0.2},
     ]
 
     for job in jobs:
         answer, grade, feedback = run_job(answer, job, grade, feedback)
 
-    match = re.search(r"/-f\s+image2/", answer)
+    match = re.search(r"-f\s+image2", answer)
 
     if match:
         answer = answer.replace(match[0], "", 1)
 
-    grade, feedback = run_extra(answer, grade, 1.2, feedback, r"/^\s*(-an)?\s*$/")
+    grade, feedback = run_extra(answer, grade, 1.2, feedback, r"^\s*(-an)?\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 5. Часть 2: {0}/{1}\n{2}".format(grade, 1.3, feedback)
+    total_feedback += "\nЗадание 5. Часть 2: {0}/{1}\n{2}".format(round(grade, 1), 1.3, feedback)
 
 
 def task_6(answer: str):
@@ -388,24 +384,24 @@ def task_6(answer: str):
     feedback = ""
 
     jobs = [
-        {"regex": r"/^\s*ffmpeg(\.exe)?\s+/", "comment": "Вызов ffmpeg", "weight": 0.1},
-        {"regex": r"/-i\s+input\.mp4\s+/", "comment": "Входной файл", "weight": 0.1},
-        {"regex": r"/output\.avi\s*$/", "comment": "Выходной файл", "weight": 0.4},
-        {"regex": r"/-s\s+640x360\s+/", "comment": "Размер", "weight": 0.3},
-        {"regex": r"/-c:v\s+mpeg2?video\s+/", "comment": "Видеокодек", "weight": 0.4},
-        {"regex": r"/-c:a\s+(mp3|libmp3lame)/", "comment": "Аудиокодек", "weight": 0.4},
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg", "weight": 0.1},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл", "weight": 0.1},
+        {"regex": r"output\.avi\s*$", "comment": "Выходной файл", "weight": 0.4},
+        {"regex": r"-s\s+640x360\s+", "comment": "Размер", "weight": 0.3},
+        {"regex": r"-c:v\s+mpeg2?video\s+", "comment": "Видеокодек", "weight": 0.4},
+        {"regex": r"-c:a\s+(mp3|libmp3lame)", "comment": "Аудиокодек", "weight": 0.4},
         {
-            "regex": r"/-ss\s+(00:)?3[78]:[0-6]\d(\.\d{1,2})?\s+/",
+            "regex": r"-ss\s+(00:)?3[78]:[0-6]\d(\.\d{1,2})?\s+",
             "comment": "Время начала",
             "weight": 0.4,
         },
         {
-            "regex": r"/-t(\s+(00:)?(10|0?[89])|o\s+(00:)?4[67]):[0-6]\d(\.\d{1,2})?\s+/",
+            "regex": r"-t(\s+(00:)?(10|0?[89])|o\s+(00:)?4[67]):[0-6]\d(\.\d{1,2})?\s+",
             "comment": "Время окончания (длительность)",
             "weight": 0.4,
         },
         {
-            "regex": r"/-b(\s+1879|:v\s+1684)(000|k)\s+/",
+            "regex": r"-b(\s+1879|:v\s+1684)(000|k)\s+",
             "comment": "Битрейт",
             "weight": 0.4,
         },
@@ -414,25 +410,32 @@ def task_6(answer: str):
     for job in jobs:
         answer, grade, feedback = run_job(answer, job, grade, feedback)
 
-    grade, feedback = run_extra(answer, grade, 2.9, feedback, r"/^\s*$/")
+    grade, feedback = run_extra(answer, grade, 2.9, feedback, r"^\s*$")
 
     global total_grade
-    total_grade += grade
+    total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 6: {0}/{1}\n{2}".format(grade, 3.0, feedback)
+    total_feedback += "\nЗадание 6: {0}/{1}\n{2}".format(round(grade, 1), 3.0, feedback)
 
 
 if __name__ == "__main__":
+    total_grade = 0
+    total_feedback = ""
+
     student_answer = get_answer()
 
-    if len(student_answer) > 0:
+    try:
         task_1(student_answer[0])
-    if len(student_answer) > 1:
-        task_2_1(student_answer[1])
+        task_2_1(student_answer[1], student_answer[2])
+        task_2_2(student_answer[3], student_answer[4])
+        task_3(student_answer[5])
+        task_4(student_answer[6])
+        task_5_1(student_answer[7])
+        task_5_2(student_answer[8])
+        task_6(student_answer[9])
+    except IndexError:
+        pass
 
-    global total_grade
-    global total_feedback
-
-    print(total_grade)
+    print(round(total_grade, 1))
     print(total_feedback, file=sys.stderr)
