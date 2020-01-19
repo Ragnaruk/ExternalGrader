@@ -352,7 +352,10 @@ def grade_epicbox(
     logger.debug("Result: %s", result)
 
     try:
-        score: float = float(result["stdout"].decode().split("\n")[-2])
+        try:
+            score: int = int(result["stdout"].decode().split("\n")[-2])
+        except ValueError:
+            score: float = float(result["stdout"].decode().split("\n")[-2])
         msg: str = result["stderr"].decode()  # .split("\n")[-2] + "\n"
         correct: bool = bool(score)
     except ValueError:
