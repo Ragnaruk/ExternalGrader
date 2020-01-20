@@ -120,7 +120,7 @@ def callback_function(
             "xqueue_body": {
                 "correct": False,
                 "score": 0,
-                "msg": "Неверный ID скрипта проверки."
+                "msg": "Неверный скрипт проверки."
             },
         }
         logger.debug("Reply message: %s", reply)
