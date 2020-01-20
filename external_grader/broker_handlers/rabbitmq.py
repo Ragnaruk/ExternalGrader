@@ -15,7 +15,6 @@ from logging import Logger
 
 from external_grader.logs import get_logger
 from external_grader.process_answer import process_answer
-from external_grader.exceptions import InvalidSubmissionException
 
 
 def receive_messages(
@@ -80,10 +79,10 @@ def callback_function(
     """
     logger: Logger = get_logger("rabbitmq")
 
-    try:
-        message: dict = json.loads(body.decode("utf8").replace("'", '"'))
-        logger.debug("Received message: %s", message)
+    message: dict = json.loads(body.decode("utf8").replace("'", '"'))
+    logger.debug("Received message: %s", message)
 
+    try:
         reply: dict = {
             "xqueue_header": message["xqueue_header"],
             "xqueue_body": process_answer(message),
@@ -97,9 +96,23 @@ def callback_function(
             properties=BasicProperties(correlation_id=properties.correlation_id),
             body=json.dumps(reply),
         )
-    except InvalidSubmissionException:
-        pass
     except Exception as exception:
+        reply: dict = {
+            "xqueue_header": message["xqueue_header"],
+            "xqueue_body": {
+                "correct": False,
+                "score": 0,
+                "msg": "Неверный формат сообщения."
+            },
+        }
+        logger.debug("Reply message: %s", reply)
+
+        current_channel.basic_publish(
+            exchange="",
+            routing_key=properties.reply_to,
+            properties=BasicProperties(correlation_id=properties.correlation_id),
+            body=json.dumps(reply),
+        )
         raise exception
 
     # Acknowledge message in queue
