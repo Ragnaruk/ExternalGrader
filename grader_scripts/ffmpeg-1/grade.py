@@ -345,16 +345,16 @@ def task_5_2(answer: str):
     feedback = ""
 
     jobs = [
-        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg", "weight": 0.1},
-        {"regex": r"-i\s+input%d\.png\s+", "comment": "Входные файлы", "weight": 0.3},
-        {"regex": r"output\.mp4\s*$", "comment": "Выходной файл", "weight": 0.1},
-        {"regex": r"-r\s+25", "comment": "Частота кадров", "weight": 0.2},
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1},
+        {"regex": r"-i\s+input%d\.png\s+", "comment": "Входные файлы.", "weight": 0.3},
+        {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
+        {"regex": r"-r\s+25", "comment": "Частота кадров.", "weight": 0.2},
         {
             "regex": r"-c:v\s+(libx264(rgb)?|h264)",
-            "comment": "Видеокодек",
+            "comment": "Видеокодек.",
             "weight": 0.3,
         },
-        {"regex": r"-b(:v)?\s+1024(k|000)", "comment": "Битрейт", "weight": 0.2},
+        {"regex": r"-b(:v)?\s+1024(k|000)", "comment": "Битрейт.", "weight": 0.2},
     ]
 
     for job in jobs:
@@ -384,25 +384,25 @@ def task_6(answer: str):
     feedback = ""
 
     jobs = [
-        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg", "weight": 0.1},
-        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл", "weight": 0.1},
-        {"regex": r"output\.avi\s*$", "comment": "Выходной файл", "weight": 0.4},
-        {"regex": r"-s\s+640x360\s+", "comment": "Размер", "weight": 0.3},
-        {"regex": r"-c:v\s+mpeg2?video\s+", "comment": "Видеокодек", "weight": 0.4},
-        {"regex": r"-c:a\s+(mp3|libmp3lame)", "comment": "Аудиокодек", "weight": 0.4},
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1},
+        {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
+        {"regex": r"output\.avi\s*$", "comment": "Выходной файл.", "weight": 0.4},
+        {"regex": r"-s\s+640x360\s+", "comment": "Размер.", "weight": 0.3},
+        {"regex": r"-c:v\s+mpeg2?video\s+", "comment": "Видеокодек.", "weight": 0.4},
+        {"regex": r"-c:a\s+(mp3|libmp3lame)", "comment": "Аудиокодек.", "weight": 0.4},
         {
             "regex": r"-ss\s+(00:)?3[78]:[0-6]\d(\.\d{1,2})?\s+",
-            "comment": "Время начала",
+            "comment": "Время начала.",
             "weight": 0.4,
         },
         {
             "regex": r"-t(\s+(00:)?(10|0?[89])|o\s+(00:)?4[67]):[0-6]\d(\.\d{1,2})?\s+",
-            "comment": "Время окончания (длительность)",
+            "comment": "Время окончания (длительность).",
             "weight": 0.4,
         },
         {
             "regex": r"-b(\s+1879|:v\s+1684)(000|k)\s+",
-            "comment": "Битрейт",
+            "comment": "Битрейт.",
             "weight": 0.4,
         },
     ]
