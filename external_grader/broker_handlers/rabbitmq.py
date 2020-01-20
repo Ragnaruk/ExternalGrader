@@ -15,6 +15,7 @@ from logging import Logger
 
 from external_grader.logs import get_logger
 from external_grader.process_answer import process_answer
+from external_grader.exceptions import InvalidSubmissionException, InvalidGraderScriptException
 
 
 def receive_messages(
@@ -96,7 +97,7 @@ def callback_function(
             properties=BasicProperties(correlation_id=properties.correlation_id),
             body=json.dumps(reply),
         )
-    except Exception as exception:
+    except InvalidSubmissionException:
         reply: dict = {
             "xqueue_header": message["xqueue_header"],
             "xqueue_body": {
@@ -113,6 +114,41 @@ def callback_function(
             properties=BasicProperties(correlation_id=properties.correlation_id),
             body=json.dumps(reply),
         )
+    except InvalidGraderScriptException:
+        reply: dict = {
+            "xqueue_header": message["xqueue_header"],
+            "xqueue_body": {
+                "correct": False,
+                "score": 0,
+                "msg": "Неверный ID скрипта проверки."
+            },
+        }
+        logger.debug("Reply message: %s", reply)
+
+        current_channel.basic_publish(
+            exchange="",
+            routing_key=properties.reply_to,
+            properties=BasicProperties(correlation_id=properties.correlation_id),
+            body=json.dumps(reply),
+        )
+    except Exception as exception:
+        reply: dict = {
+            "xqueue_header": message["xqueue_header"],
+            "xqueue_body": {
+                "correct": False,
+                "score": 0,
+                "msg": "Ошибка при проверке ответа."
+            },
+        }
+        logger.debug("Reply message: %s", reply)
+
+        current_channel.basic_publish(
+            exchange="",
+            routing_key=properties.reply_to,
+            properties=BasicProperties(correlation_id=properties.correlation_id),
+            body=json.dumps(reply),
+        )
+
         raise exception
 
     # Acknowledge message in queue
