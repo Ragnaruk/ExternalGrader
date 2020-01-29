@@ -64,8 +64,10 @@ make compose
 ```
 
 В качестве ответа студента используется поле `student_response` в словаре `xqueue_body`.
-
 Если поле пустое, то файл `student_response.txt` в словаре `xqueue_files`.
+
+Значение `grader_payload` может быть словарем, но тогда он должен содержать поле `script_id`.
+
 
 ## Добавление скриптов проверки
 В директории `/grader_scripts/` создается папка с id скрипта. Этот id будет приходит в поле `grader_payload`.
@@ -89,22 +91,9 @@ if __name__ == '__main__':
     main()
 ```
 
-Если для проверки кода нужны пакеты, отсутствующие в стандарной библиотеке Python, их нужно устанавливать динамически:
-```python
-import subprocess
-import sys
-
-
-def install(package):
-    subprocess.call(
-        [sys.executable, "-m", "pip", "install", package]
-    )
-```
-
 Значение поля `score` берется из `stdout`, а поля `msg` — из `stderr`.
-Программа ожидает, что в `stdout` будет только одно число — оценка.
 
-Поле `correct` равно `true`, если `score` = 100, иначе — `false`.
+Поле `correct` равно `true`, если `score` - отлично от 0, иначе — `false`.
 
 ### settings.json
 Файл, где находятся настройки скрипта проверки.
