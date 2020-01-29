@@ -333,18 +333,24 @@ def grade_epicbox(
     )
     logger.debug("Result: %s", result)
 
-    try:
-        try:
-            score: int = int(result["stdout"].decode().split("\n")[-2])
-        except ValueError:
-            score: float = float(result["stdout"].decode().split("\n")[-2])
-        msg: str = result["stderr"].decode()  # .split("\n")[-2] + "\n"
-        correct: bool = bool(score)
-    except ValueError:
-        raise InvalidGraderScriptException(
-            "Grading script returned invalid results: %s", result
-        )
+    grade: dict = {"correct": False, "score": 0, "msg": ""}
 
-    grade: dict = {"correct": correct, "score": score, "msg": msg}
+    # Handling result
+    if result["timeout"]:
+        grade["msg"] = "Проверка заняла слишком много времени."
+    elif result["oom_killed"]:
+        grade["msg"] = "Проверка заняла слишком много памяти."
+    else:
+        try:
+            try:
+                grade["score"] = int(result["stdout"].decode().split("\n")[-2])
+            except ValueError:
+                grade["score"] = float(result["stdout"].decode().split("\n")[-2])
+            grade["msg"] = result["stderr"].decode()  # .split("\n")[-2] + "\n"
+            grade["correct"] = bool(grade["score"])
+        except ValueError:
+            raise InvalidGraderScriptException(
+                "Grading script returned invalid results: %s", result
+            )
 
     return grade
