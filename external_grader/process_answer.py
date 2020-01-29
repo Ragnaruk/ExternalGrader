@@ -59,11 +59,8 @@ def process_answer(submission: dict) -> dict:
     """
     logger: Logger = get_logger("process_answer")
 
-    submission: dict = submission_validate(submission)
+    submission, script_name = submission_validate(submission)
     logger.info("Student submission: %s", submission)
-
-    # Grader payload can be either dict or a string
-    script_name: str = submission_get_grader_payload(submission)
     logger.debug("Script name: %s", script_name)
 
     settings: dict = settings_load(script_name)
@@ -86,7 +83,7 @@ def process_answer(submission: dict) -> dict:
     return grade
 
 
-def submission_validate(submission: dict) -> dict:
+def submission_validate(submission: dict) -> tuple:
     """
     Validate received student submission.
 
@@ -154,7 +151,7 @@ def submission_validate(submission: dict) -> dict:
                 "Submission has invalid student response:", submission
             )
 
-    return submission
+    return submission, script_name
 
 
 def submission_get_response(submission: dict) -> str:
@@ -175,24 +172,6 @@ def submission_get_response(submission: dict) -> str:
             response: str = file.read()
 
     return response
-
-
-def submission_get_grader_payload(submission: dict) -> str:
-    """
-    Get grader payload from submission.
-
-    :param submission: Student submission received from message broker.
-    :return: Grader payload.
-    """
-    if (
-        isinstance(submission["xqueue_body"]["grader_payload"], dict)
-        and "script_id" in submission["xqueue_body"]["grader_payload"]
-    ):
-        script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
-    else:
-        script_name: str = submission["xqueue_body"]["grader_payload"]
-
-    return script_name
 
 
 def settings_load(script_name: str) -> dict:
