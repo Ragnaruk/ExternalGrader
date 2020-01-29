@@ -83,7 +83,6 @@ def process_submission(
         logger.debug("Message: %s", message)
 
         if message.startswith("Queue"):
-            logger.debug("Queue is empty: %s", message)
             return
 
         message: dict = json.loads(message)
