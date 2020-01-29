@@ -67,11 +67,7 @@ def task_1(answer: str):
     feedback = ""
 
     jobs = [
-        {
-            "regex": r"^\s*ffmpeg(\.exe)?\s+",
-            "comment": "Вызов ffmpeg.",
-            "weight": 0.1,
-        },
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1,},
         {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
         {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {
@@ -117,11 +113,7 @@ def task_2_1(answer_1: str, answer_2: str):
     _, grade, feedback = run_job(answer_1, job, grade, feedback)
 
     jobs = [
-        {
-            "regex": r"^\s*ffmpeg(\.exe)?\s+",
-            "comment": "Вызов ffmpeg.",
-            "weight": 0.1,
-        },
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1,},
         {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
         {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {"regex": r"-b\s+1180(k|000)\s+", "comment": "Битрейт.", "weight": 0.3},
@@ -136,7 +128,9 @@ def task_2_1(answer_1: str, answer_2: str):
     total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 2. Часть 1: {0}/{1}\n{2}".format(round(grade, 1), 1.0, feedback)
+    total_feedback += "\nЗадание 2. Часть 1: {0}/{1}\n{2}".format(
+        round(grade, 1), 1.0, feedback
+    )
 
 
 def task_2_2(answer_1: str, answer_2: str):
@@ -158,11 +152,7 @@ def task_2_2(answer_1: str, answer_2: str):
     _, grade, feedback = run_job(answer_1, job, grade, feedback)
 
     jobs = [
-        {
-            "regex": r"^\s*ffmpeg(\.exe)?\s+",
-            "comment": "Вызов ffmpeg.",
-            "weight": 0.1,
-        },
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1,},
         {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
         {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {
@@ -181,7 +171,9 @@ def task_2_2(answer_1: str, answer_2: str):
     total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 2. Часть 2: {0}/{1}\n{2}".format(round(grade, 1), 1.0, feedback)
+    total_feedback += "\nЗадание 2. Часть 2: {0}/{1}\n{2}".format(
+        round(grade, 1), 1.0, feedback
+    )
 
 
 def task_3(answer: str):
@@ -194,11 +186,7 @@ def task_3(answer: str):
     feedback = ""
 
     jobs = [
-        {
-            "regex": r"^\s*ffmpeg(\.exe)?\s+",
-            "comment": "Вызов ffmpeg.",
-            "weight": 0.1,
-        },
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1,},
         {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
         {"regex": r"output\.mp4\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {
@@ -231,11 +219,7 @@ def task_4(answer: str):
     feedback = ""
 
     jobs = [
-        {
-            "regex": r"^\s*ffmpeg(\.exe)?\s+",
-            "comment": "Вызов ffmpeg.",
-            "weight": 0.1,
-        },
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1,},
         {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
         {"regex": r"output\.gif\s*$", "comment": "Выходной файл.", "weight": 0.1},
         {"regex": r"-s\s+640x480\s+", "comment": "Размер.", "weight": 0.3},
@@ -251,7 +235,7 @@ def task_4(answer: str):
         if not colon:
             colon = match[0].index(" ")
 
-        ss = int(match[0][colon + 1:-1])
+        ss = int(match[0][colon + 1 : -1])
 
         answer = answer.replace(match[0], "", 1)
 
@@ -304,11 +288,7 @@ def task_5_1(answer: str):
     feedback = ""
 
     jobs = [
-        {
-            "regex": r"^\s*ffmpeg(\.exe)?\s+",
-            "comment": "Вызов ffmpeg.",
-            "weight": 0.1,
-        },
+        {"regex": r"^\s*ffmpeg(\.exe)?\s+", "comment": "Вызов ffmpeg.", "weight": 0.1,},
         {"regex": r"-i\s+input\.mp4\s+", "comment": "Входной файл.", "weight": 0.1},
         {"regex": r"output%d\.png\s*$", "comment": "Выходные файлы.", "weight": 0.3},
         {
@@ -332,7 +312,9 @@ def task_5_1(answer: str):
     total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 5. Часть 1: {0}/{1}\n{2}".format(round(grade, 1), 0.7, feedback)
+    total_feedback += "\nЗадание 5. Часть 1: {0}/{1}\n{2}".format(
+        round(grade, 1), 0.7, feedback
+    )
 
 
 def task_5_2(answer: str):
@@ -371,7 +353,9 @@ def task_5_2(answer: str):
     total_grade += round(grade, 1)
 
     global total_feedback
-    total_feedback += "\nЗадание 5. Часть 2: {0}/{1}\n{2}".format(round(grade, 1), 1.3, feedback)
+    total_feedback += "\nЗадание 5. Часть 2: {0}/{1}\n{2}".format(
+        round(grade, 1), 1.3, feedback
+    )
 
 
 def task_6(answer: str):
