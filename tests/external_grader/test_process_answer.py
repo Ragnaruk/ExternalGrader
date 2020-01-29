@@ -270,7 +270,7 @@ def test_submission_settings_parse_valid_empty():
         EPICBOX_SETTINGS["container_limits"],
     )
 
-    assert process_answer.settings_parse(script_name, settings) == expected_response
+    assert process_answer.settings_proceed(script_name, settings) == expected_response
 
 
 def test_submission_settings_parse_valid_container_limits():
@@ -288,7 +288,7 @@ def test_submission_settings_parse_valid_container_limits():
         settings["container_limits"],
     )
 
-    assert process_answer.settings_parse(script_name, settings) == expected_response
+    assert process_answer.settings_proceed(script_name, settings) == expected_response
 
 
 def test_submission_settings_parse_valid_profile():
@@ -311,7 +311,7 @@ def test_submission_settings_parse_valid_profile():
         EPICBOX_SETTINGS["container_limits"],
     )
 
-    assert process_answer.settings_parse(script_name, settings) == expected_response
+    assert process_answer.settings_proceed(script_name, settings) == expected_response
 
 
 def test_submission_settings_parse_valid_external():
@@ -339,7 +339,7 @@ def test_submission_settings_parse_valid_external():
         EPICBOX_SETTINGS["container_limits"],
     )
 
-    assert process_answer.settings_parse(script_name, settings) == expected_response
+    assert process_answer.settings_proceed(script_name, settings) == expected_response
 
 
 def test_submission_settings_parse_valid_all():
@@ -385,7 +385,7 @@ def test_submission_settings_parse_valid_all():
         settings["container_limits"],
     )
 
-    assert process_answer.settings_parse(script_name, settings) == expected_response
+    assert process_answer.settings_proceed(script_name, settings) == expected_response
 
 
 def test_submission_settings_parse_invalid_external():
@@ -398,7 +398,7 @@ def test_submission_settings_parse_invalid_external():
     }
 
     with pytest.raises(FailedFilesLoadException):
-        process_answer.settings_parse(script_name, settings)
+        process_answer.settings_proceed(script_name, settings)
 
 
 def test_submission_settings_parse_invalid_local():
@@ -409,4 +409,4 @@ def test_submission_settings_parse_invalid_local():
     settings: dict = {"files": {"local": [{"name": "abcdef.txt", "path": "abc.def"}]}}
 
     with pytest.raises(FailedFilesLoadException):
-        process_answer.settings_parse(script_name, settings)
+        process_answer.settings_proceed(script_name, settings)
