@@ -109,7 +109,7 @@ def callback_function(
             "xqueue_body": {
                 "correct": False,
                 "score": 0,
-                "msg": "Неверный формат сообщения.",
+                "msg": "Неверный формат сообщения или ID скрипта проверки.",
             },
         }
         logger.debug("Reply message: %s", reply)
