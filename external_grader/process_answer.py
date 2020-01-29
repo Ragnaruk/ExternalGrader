@@ -32,6 +32,7 @@ from logging import Logger
 import epicbox
 
 from external_grader.logs import get_logger
+from external_grader.decorators import hashable_lru
 from external_grader.exceptions import (
     FailedFilesLoadException,
     InvalidSubmissionException,
@@ -44,11 +45,13 @@ from external_grader.config import (
 )
 
 
+@hashable_lru
 def process_answer(submission: dict) -> dict:
     """
     Function which receives answers, proceeds them, and returns results.
 
-    :param submission: Student submission received from message broker.
+    :param submission: Student submission received from message broker without unique fields like 
+    xqueue_header or student_info.
 
     :raises ValueError: Invalid student submission.
     :raises FailedFilesLoadException: Failed to load required files.
@@ -59,15 +62,15 @@ def process_answer(submission: dict) -> dict:
     submission: dict = submission_validate(submission)
     logger.info("Student submission: %s", submission)
 
+    # Grader payload can be either dict or a string
     script_name: str = submission_get_grader_payload(submission)
     logger.debug("Script name: %s", script_name)
 
-    # Load settings from file
     settings: dict = settings_load(script_name)
     logger.debug("Settings: %s", settings)
 
-    # Load required files and raise FailedFilesLoadException if loading failed
-    prepared_files, docker_profile, docker_limits = settings_parse(
+    # Parse settings, load required files and raise FailedFilesLoadException if loading failed
+    prepared_files, docker_profile, docker_limits = settings_proceed(
         script_name, settings
     )
     logger.debug("Docker profile: %s", docker_profile)
@@ -116,8 +119,8 @@ def submission_validate(submission: dict) -> dict:
 
     # Check for grading script id
     if (
-            isinstance(submission["xqueue_body"]["grader_payload"], dict)
-            and "script_id" in submission["xqueue_body"]["grader_payload"]
+        isinstance(submission["xqueue_body"]["grader_payload"], dict)
+        and "script_id" in submission["xqueue_body"]["grader_payload"]
     ):
         script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
     elif isinstance(submission["xqueue_body"]["grader_payload"], str):
@@ -134,18 +137,18 @@ def submission_validate(submission: dict) -> dict:
 
     # Check the existence of student answer
     if not (
-            "student_response" in submission["xqueue_body"].keys()
-            and submission["xqueue_body"]["student_response"]
+        "student_response" in submission["xqueue_body"].keys()
+        and submission["xqueue_body"]["student_response"]
     ):
         if "xqueue_files" in submission.keys() and isinstance(
-                submission["xqueue_files"], str
+            submission["xqueue_files"], str
         ):
             submission["xqueue_files"]: dict = json.loads(submission["xqueue_files"])
 
         if not (
-                "xqueue_files" in submission.keys()
-                and "student_response.txt" in submission["xqueue_files"].keys()
-                and submission["xqueue_files"]["student_response.txt"]
+            "xqueue_files" in submission.keys()
+            and "student_response.txt" in submission["xqueue_files"].keys()
+            and submission["xqueue_files"]["student_response.txt"]
         ):
             raise InvalidSubmissionException(
                 "Submission has invalid student response:", submission
@@ -182,8 +185,8 @@ def submission_get_grader_payload(submission: dict) -> str:
     :return: Grader payload.
     """
     if (
-            isinstance(submission["xqueue_body"]["grader_payload"], dict)
-            and "script_id" in submission["xqueue_body"]["grader_payload"]
+        isinstance(submission["xqueue_body"]["grader_payload"], dict)
+        and "script_id" in submission["xqueue_body"]["grader_payload"]
     ):
         script_name: str = submission["xqueue_body"]["grader_payload"]["script_id"]
     else:
@@ -216,7 +219,7 @@ def settings_load(script_name: str) -> dict:
     return settings
 
 
-def settings_parse(script_name: str, settings: dict) -> (list, dict, dict):
+def settings_proceed(script_name: str, settings: dict) -> (list, dict, dict):
     """
     Parse settings for grading script and load required files.
 
@@ -266,7 +269,7 @@ def settings_parse(script_name: str, settings: dict) -> (list, dict, dict):
                     logger.debug("File already downloaded: %s", file_path)
                 else:
                     try:
-                        urllib.request.urlretrieve(f["link"], file_path)
+                        urllib.request.urlretrieve(str(f["link"]), str(file_path))
                         logger.debug("File downloaded: %s", file_path)
                     except Exception:
                         raise FailedFilesLoadException(
@@ -294,11 +297,11 @@ def settings_parse(script_name: str, settings: dict) -> (list, dict, dict):
 
 
 def grade_epicbox(
-        submission: dict,
-        script_name: str,
-        prepared_files: list,
-        docker_profile: dict,
-        docker_limits: dict,
+    submission: dict,
+    script_name: str,
+    prepared_files: list,
+    docker_profile: dict,
+    docker_limits: dict,
 ) -> dict:
     """
     Running grading script in a separate Docker container.

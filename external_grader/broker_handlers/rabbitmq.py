@@ -15,7 +15,10 @@ from logging import Logger
 
 from external_grader.logs import get_logger
 from external_grader.process_answer import process_answer
-from external_grader.exceptions import InvalidSubmissionException, InvalidGraderScriptException
+from external_grader.exceptions import (
+    InvalidSubmissionException,
+    InvalidGraderScriptException,
+)
 
 
 def receive_messages(
@@ -83,9 +86,12 @@ def callback_function(
     message: dict = json.loads(body.decode("utf8").replace("'", '"'))
     logger.debug("Received message: %s", message)
 
+    # XQueue header is a unique dict, so it is removed from message to allow caching
+    xqueue_header = message.pop("xqueue_header", None)
+
     try:
         reply: dict = {
-            "xqueue_header": message["xqueue_header"],
+            "xqueue_header": xqueue_header,
             "xqueue_body": process_answer(message),
         }
         logger.debug("Reply message: %s", reply)
@@ -99,11 +105,11 @@ def callback_function(
         )
     except InvalidSubmissionException:
         reply: dict = {
-            "xqueue_header": message["xqueue_header"],
+            "xqueue_header": xqueue_header,
             "xqueue_body": {
                 "correct": False,
                 "score": 0,
-                "msg": "Неверный формат сообщения."
+                "msg": "Неверный формат сообщения.",
             },
         }
         logger.debug("Reply message: %s", reply)
@@ -116,11 +122,11 @@ def callback_function(
         )
     except InvalidGraderScriptException:
         reply: dict = {
-            "xqueue_header": message["xqueue_header"],
+            "xqueue_header": xqueue_header,
             "xqueue_body": {
                 "correct": False,
                 "score": 0,
-                "msg": "Неверный скрипт проверки."
+                "msg": "Неверный скрипт проверки.",
             },
         }
         logger.debug("Reply message: %s", reply)
@@ -133,11 +139,11 @@ def callback_function(
         )
     except Exception as exception:
         reply: dict = {
-            "xqueue_header": message["xqueue_header"],
+            "xqueue_header": xqueue_header,
             "xqueue_body": {
                 "correct": False,
                 "score": 0,
-                "msg": "Ошибка при проверке ответа."
+                "msg": "Ошибка при проверке ответа.",
             },
         }
         logger.debug("Reply message: %s", reply)

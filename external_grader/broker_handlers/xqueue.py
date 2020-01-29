@@ -86,12 +86,15 @@ def process_submission(
             logger.debug("Queue is empty: %s", message)
             return
 
-        content: dict = json.loads(message)
-        logger.debug("Content: %s", content)
+        message: dict = json.loads(message)
+        logger.debug("Content: %s", message)
+
+        # XQueue header is a unique dict, so it is removed from message to allow caching
+        xqueue_header = message.pop("xqueue_header", None)
 
         reply: dict = {
-            "xqueue_header": content["xqueue_header"],
-            "xqueue_body": json.dumps(process_answer(content)),
+            "xqueue_header": xqueue_header,
+            "xqueue_body": json.dumps(process_answer(message)),
         }
         logger.debug("Reply message: %s", reply)
 
