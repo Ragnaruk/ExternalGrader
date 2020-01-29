@@ -193,30 +193,6 @@ def test_submission_get_response_file():
     assert process_answer.submission_get_response(submission) == expected_response
 
 
-def test_submission_get_grader_payload_string():
-    """
-    Test process_answer.submission_get_grader_payload function.
-    Submission is expected to be valid, since this function is called after submission_validate.
-    """
-    submission: dict = {"xqueue_body": {"grader_payload": "1"}}
-
-    expected_response: str = "1"
-
-    assert process_answer.submission_get_grader_payload(submission) == expected_response
-
-
-def test_submission_get_grader_payload_dict():
-    """
-    Test process_answer.submission_get_grader_payload function.
-    Submission is expected to be valid, since this function is called after submission_validate.
-    """
-    submission: dict = {"xqueue_body": {"grader_payload": {"script_id": "1"}}}
-
-    expected_response: str = "1"
-
-    assert process_answer.submission_get_grader_payload(submission) == expected_response
-
-
 def test_submission_settings_load_valid():
     """
     Test process_answer.settings_load function.
