@@ -83,8 +83,13 @@ def callback_function(
     """
     logger: Logger = get_logger("rabbitmq")
 
-    message: dict = json.loads(body.decode("utf8").replace("'", '"'))
-    logger.debug("Received message: %s", message)
+    try:
+        message: dict = json.loads(body.decode("utf8").replace("'", '"'))
+        logger.debug("Received message: %s", message)
+    except json.decoder.JSONDecodeError as exception:
+        current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
+        logger.info("Failed to decode message: {}.".format(body.decode("utf8")))
+        return
 
     # XQueue header is a unique dict, so it is removed from message to allow caching
     xqueue_header = message.pop("xqueue_header", None)
