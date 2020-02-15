@@ -84,7 +84,7 @@ def callback_function(
     logger: Logger = get_logger("rabbitmq")
 
     try:
-        message: dict = json.loads(body.decode("utf8").replace("'", '"'))
+        message: dict = json.loads(body.decode("utf8"))
         logger.debug("Received message: %s", message)
     except json.decoder.JSONDecodeError as exception:
         current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
