@@ -85,84 +85,118 @@ def callback_function(
 
     try:
         message: dict = json.loads(body.decode("utf8"))
+
         logger.debug("Received message: %s", message)
     except json.decoder.JSONDecodeError as exception:
-        current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
+        send_reply(
+            logger,
+            current_channel,
+            basic_deliver,
+            properties,
+            {},
+            False,
+            0,
+            "Ошибка при декодировании сообщения.",
+        )
+
         logger.info("Failed to decode message: {}.".format(body.decode("utf8")))
+
         return
 
     # XQueue header is a unique dict, so it is removed from message to allow caching
     xqueue_header = message.pop("xqueue_header", None)
 
     try:
-        reply: dict = {
-            "xqueue_header": xqueue_header,
-            "xqueue_body": process_answer(message),
-        }
-        logger.debug("Reply message: %s", reply)
+        xqueue_body: dict = process_answer(message)
 
-        # Send a response
-        current_channel.basic_publish(
-            exchange="",
-            routing_key=properties.reply_to,
-            properties=BasicProperties(correlation_id=properties.correlation_id),
-            body=json.dumps(reply),
+        send_reply(
+            logger,
+            current_channel,
+            basic_deliver,
+            properties,
+            xqueue_header,
+            xqueue_body=xqueue_body,
         )
     except InvalidSubmissionException:
-        reply: dict = {
-            "xqueue_header": xqueue_header,
-            "xqueue_body": {
-                "correct": False,
-                "score": 0,
-                "msg": "Неверный формат сообщения или ID скрипта проверки.",
-            },
-        }
-        logger.debug("Reply message: %s", reply)
-
-        current_channel.basic_publish(
-            exchange="",
-            routing_key=properties.reply_to,
-            properties=BasicProperties(correlation_id=properties.correlation_id),
-            body=json.dumps(reply),
+        send_reply(
+            logger,
+            current_channel,
+            basic_deliver,
+            properties,
+            xqueue_header,
+            False,
+            0,
+            "Неверный формат сообщения или ID скрипта проверки.",
         )
     except InvalidGraderScriptException:
-        reply: dict = {
-            "xqueue_header": xqueue_header,
-            "xqueue_body": {
-                "correct": False,
-                "score": 0,
-                "msg": "Неверный скрипт проверки.",
-            },
-        }
-        logger.debug("Reply message: %s", reply)
-
-        current_channel.basic_publish(
-            exchange="",
-            routing_key=properties.reply_to,
-            properties=BasicProperties(correlation_id=properties.correlation_id),
-            body=json.dumps(reply),
+        send_reply(
+            logger,
+            current_channel,
+            basic_deliver,
+            properties,
+            xqueue_header,
+            False,
+            0,
+            "Неверный скрипт проверки.",
         )
     except Exception as exception:
-        reply: dict = {
-            "xqueue_header": xqueue_header,
-            "xqueue_body": {
-                "correct": False,
-                "score": 0,
-                "msg": "Ошибка при проверке ответа.",
-            },
-        }
-        logger.debug("Reply message: %s", reply)
-
-        current_channel.basic_publish(
-            exchange="",
-            routing_key=properties.reply_to,
-            properties=BasicProperties(correlation_id=properties.correlation_id),
-            body=json.dumps(reply),
+        send_reply(
+            logger,
+            current_channel,
+            basic_deliver,
+            properties,
+            xqueue_header,
+            False,
+            0,
+            "Ошибка при проверке ответа.",
         )
 
         raise exception
 
+    logger.debug("Finished handling message.")
+
+
+def send_reply(
+    logger: Logger,
+    current_channel: channel.Channel,
+    basic_deliver: spec.Basic.Deliver,
+    properties: spec.BasicProperties,
+    xqueue_header: dict,
+    correct: bool = False,
+    score: int = 0,
+    msg: str = "",
+    xqueue_body: dict = None,
+):
+    """
+    Send a reply message and acknowledge received one.
+
+    :param logger: Logger object.
+    :param current_channel: Channel object.
+    :param basic_deliver: Object which has exchange, routing key,
+     delivery tag and a redelivered flag of the message.
+    :param properties: Message properties.
+    :param xqueue_header: Unique message header.
+    :param correct: xqueue_body parameter.
+    :param score: xqueue_body parameter.
+    :param msg: xqueue_body parameter.
+    :param xqueue_body: alternative way to pass values.
+    """
+    if not xqueue_body:
+        xqueue_body = {
+            "correct": correct,
+            "score": score,
+            "msg": msg,
+        }
+
+    reply: dict = {"xqueue_header": xqueue_header, "xqueue_body": xqueue_body}
+    logger.debug("Reply message: %s", reply)
+
+    current_channel.basic_publish(
+        exchange="",
+        routing_key=properties.reply_to,
+        properties=BasicProperties(correlation_id=properties.correlation_id),
+        body=json.dumps(reply),
+    )
+
     # Acknowledge message in queue
     current_channel.basic_ack(delivery_tag=basic_deliver.delivery_tag)
-
-    logger.debug("Finished handling message.")
