@@ -1,5 +1,5 @@
 """
-PyTest test file for grader_scripts.3.grade module.
+PyTest test file for grader_scripts.computer_graphics_2_6.grade module.
 """
 import pytest
 
@@ -97,7 +97,7 @@ def test_grade_correct():
 
     expected_response: dict = {
         "correct": True,
-        "score": 10,
+        "score": 1,
         "msg": "Верный ответ.\n",
     }
 

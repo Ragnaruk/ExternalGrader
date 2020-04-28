@@ -151,7 +151,7 @@ if __name__ == "__main__":
         correct, comment = check(reply)
 
         if correct:
-            print(10)
+            print(1)
             print("Верный ответ.", file=sys.stderr)
         else:
             print(0)

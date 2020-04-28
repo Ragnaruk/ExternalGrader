@@ -1,0 +1,14 @@
+{
+  "container_limits": {
+    "cputime": 2,
+    "realtime": 6,
+    "memory": 64,
+    "processes": -1
+  },
+  "profile": {
+    "docker_image": "ragnaruk/python:latest",
+    "user": "guest",
+    "read_only": false,
+    "network_disabled": true
+  }
+}
