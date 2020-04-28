@@ -49,7 +49,7 @@ def test_grade_incorrect_no_shape():
         "correct": False,
         "score": 0,
         "msg": "Мы не нашли одну из фигур в вашей команде (иногда это сообщение появляется,"
-               " если в теге svg есть лишние атрибуты)\n",
+        " если в теге svg есть лишние атрибуты)\n",
     }
 
     assert process_answer.process_answer(answer) == expected_response
@@ -74,7 +74,7 @@ def test_grade_incorrect_tags():
         "correct": False,
         "score": 0,
         "msg": "Проверьте ваш текст на наличие открывающих и закрывающих тегов <svg>,"
-               " на наличие синтаксических ошибок в тегах и на то, что все теги закрыты\n",
+        " на наличие синтаксических ошибок в тегах и на то, что все теги закрыты\n",
     }
 
     assert process_answer.process_answer(answer) == expected_response
