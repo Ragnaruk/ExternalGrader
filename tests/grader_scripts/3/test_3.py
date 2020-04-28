@@ -13,22 +13,21 @@ def test_grade_incorrect():
     """
     answer: dict = {
         "xqueue_body": {
-            "student_response": (
-                "from onvif import ONVIFCamera\n"
-                'cam = ONVIFCamera("172.18.191.143", "80", "admin", "Supervisor")\n'
-                "media_service = cam.create_media_service()\n"
-                "profiles = media_service.GetProfiles()\n"
-                "media_profile = profiles[0]\n"
-                "ptz = cam.create_ptz_service()\n"
-                'status = ptz.GetStatus({"ProfileToken": media_profile.token})\n'
-                "status.Position.PanTilt.x = 0.6\n"
-                "status.Position.PanTilt.y = 0.6\n"
-                "status.Position.Zoom.x = 0.0\n"
-                'request_absolute_move = ptz.create_type("AbsoluteMove")\n'
-                "request_absolute_move.ProfileToken = media_profile.token\n"
-                "request_absolute_move.Position = status.Position\n"
-                "ptz.AbsoluteMove(request_absolute_move)\n"
-            ),
+            "student_response": """from onvif import ONVIFCamera
+cam = ONVIFCamera("172.18.191.143", "80", "admin", "Supervisor")
+media_service = cam.create_media_service()
+profiles = media_service.GetProfiles()
+media_profile = profiles[0]
+ptz = cam.create_ptz_service()
+status = ptz.GetStatus({"ProfileToken": media_profile.token})
+status.Position.PanTilt.x = 0.6
+status.Position.PanTilt.y = 0.6
+status.Position.Zoom.x = 0.0
+request_absolute_move = ptz.create_type("AbsoluteMove")
+request_absolute_move.ProfileToken = media_profile.token
+request_absolute_move.Position = status.Position
+ptz.AbsoluteMove(request_absolute_move)
+""",
             "grader_payload": "3",
         }
     }
@@ -49,22 +48,21 @@ def test_grade_correct():
     """
     answer: dict = {
         "xqueue_body": {
-            "student_response": (
-                "from onvif import ONVIFCamera\n"
-                'cam = ONVIFCamera("172.18.191.143", "80", "admin", "Supervisor")\n'
-                "media_service = cam.create_media_service()\n"
-                "profiles = media_service.GetProfiles()\n"
-                "media_profile = profiles[0]\n"
-                "ptz = cam.create_ptz_service()\n"
-                'status = ptz.GetStatus({"ProfileToken": media_profile.token})\n'
-                "status.Position.PanTilt.x = 0.7\n"
-                "status.Position.PanTilt.y = 0.7\n"
-                "status.Position.Zoom.x = 0.0\n"
-                'request_absolute_move = ptz.create_type("AbsoluteMove")\n'
-                "request_absolute_move.ProfileToken = media_profile.token\n"
-                "request_absolute_move.Position = status.Position\n"
-                "ptz.AbsoluteMove(request_absolute_move)\n"
-            ),
+            "student_response": """from onvif import ONVIFCamera
+cam = ONVIFCamera("172.18.191.143", "80", "admin", "Supervisor")
+media_service = cam.create_media_service()
+profiles = media_service.GetProfiles()
+media_profile = profiles[0]
+ptz = cam.create_ptz_service()
+status = ptz.GetStatus({"ProfileToken": media_profile.token})
+status.Position.PanTilt.x = 0.7
+status.Position.PanTilt.y = 0.7
+status.Position.Zoom.x = 0.0
+request_absolute_move = ptz.create_type("AbsoluteMove")
+request_absolute_move.ProfileToken = media_profile.token
+request_absolute_move.Position = status.Position
+ptz.AbsoluteMove(request_absolute_move)
+""",
             "grader_payload": "3",
         }
     }
