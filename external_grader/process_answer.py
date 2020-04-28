@@ -328,6 +328,14 @@ def grade_epicbox(
         }
     )
 
+    # Script parameters
+    files.append(
+        {
+            "name": "script_parameters.json",
+            "content": submission["xqueue_body"]["grader_payload"].encode(),
+        }
+    )
+
     result: dict = epicbox.run(
         "python", "python3 grade.py", files=files, limits=docker_limits
     )
